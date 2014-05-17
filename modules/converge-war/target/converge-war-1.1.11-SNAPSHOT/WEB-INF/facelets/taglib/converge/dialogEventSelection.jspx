@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<jsp:root version="2.0" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:c="http://java.sun.com/jstl/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+    <ui:composition>
+        <h:form id="frmEventSelection#{id}" rendered="#{userSession.privileged['OUTLET_PLANNING']}">
+            <rich:modalPanel id="mpEventSelection" autosized="true" domElementAttachment="parent">
+
+                <f:facet name="header">
+                    <h:panelGroup>
+                        <h:outputText value="#{msgs.planning_CALENDAR}" />
+                    </h:panelGroup>
+                </f:facet>
+
+                <h:panelGrid id="pgSelect" style="width: 480px;">
+
+                    <rich:tabPanel switchType="client" activeTabClass="tabActive" inactiveTabClass="tabInactive">
+
+                        <rich:tab id="tabEvent" label="#{msgs.planning_EXISTING_EVENTS}">
+                            <h:panelGrid columnClasses="tabSheet" style="padding: 10px; width: 100%">
+                                <h:panelGrid columns="3" columnClasses="left, center, right" style="width: 100%">
+                                    <a4j:commandButton id="btnPrevMonth" ajaxSingle="true" styleClass="button mediumButton" value="#{msgs.planning_PREVIOUS_MONTH}" actionListener="#{bean.onCalendarPrevMonth}" reRender="dtSchedule" limitToList="true" />
+                                    <a4j:commandButton id="btnThisMonth" ajaxSingle="true" styleClass="button mediumButton" value="#{msgs.planning_THIS_MONTH}" actionListener="#{bean.onCalendarThisMonth}" reRender="dtSchedule" limitToList="true" />
+                                    <a4j:commandButton id="btnNextMonth" ajaxSingle="true" styleClass="button mediumButton" value="#{msgs.planning_NEXT_MONTH}" actionListener="#{bean.onCalendarNextMonth}" reRender="dtSchedule" limitToList="true" />
+                                </h:panelGrid>
+
+                                <rich:dataTable id="dtSchedule" value="#{bean.schedule}"
+                                                var="event" rows="25" width="100%"
+                                                styleClass="table" headerClass="tableHeader"
+                                                rowClasses="odd, even">
+
+                                    <f:facet name="header">
+                                        <h:outputText value="#{bean.calendarDate.time}">
+                                            <f:convertDateTime pattern="#{msgs.FORMAT_MONTH_AND_YEAR}" timeZone="#{userSession.user.timeZone}" />
+                                        </h:outputText>
+                                    </f:facet>
+
+                                    <rich:column sortBy="#{event.startDate}" sortOrder="ASCENDING" styleClass="columnDay center">
+                                        <h:panelGroup>
+                                            <h:outputText value="#{event.startDate.time}">
+                                                <f:convertDateTime pattern="#{msgs.FORMAT_SHORT_DAY}" timeZone="#{userSession.user.timeZone}" />
+                                            </h:outputText>
+                                            <f:verbatim rendered="#{!event.startAndEndSameDay}"> - </f:verbatim>
+                                            <h:outputText value="#{event.endDate.time}" rendered="#{!event.startAndEndSameDay}">
+                                                <f:convertDateTime pattern="#{msgs.FORMAT_SHORT_DAY}" timeZone="#{userSession.user.timeZone}" />
+                                            </h:outputText>
+                                        </h:panelGroup>
+                                    </rich:column>
+
+                                    <rich:column styleClass="columnTime right">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{msgs.START}" />
+                                        </f:facet>
+
+                                        <h:panelGroup rendered="#{!event.allDayEvent}">
+                                            <h:outputText value="#{event.startDate.time}">
+                                                <f:convertDateTime pattern="#{msgs.FORMAT_SHORT_TIME}"
+                                                                   timeZone="#{userSession.user.timeZone}" />
+                                            </h:outputText>
+                                        </h:panelGroup>
+                                    </rich:column>
+
+                                    <rich:column styleClass="columnTime right">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{msgs.END}" />
+                                        </f:facet>
+
+                                        <h:panelGroup rendered="#{!event.allDayEvent}">
+                                            <h:outputText value="#{event.endDate.time}">
+                                                <f:convertDateTime pattern="#{msgs.FORMAT_SHORT_TIME}"
+                                                                   timeZone="#{userSession.user.timeZone}" />
+                                            </h:outputText>
+                                        </h:panelGroup>
+                                    </rich:column>
+
+                                    <rich:column sortBy="#{event.summary}">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{msgs.EVENT_SUMMARY}" />
+                                        </f:facet>
+                                        <h:outputText value="#{event.summary}" />
+                                        <converge:eventToolTip value="#{event}" />
+                                    </rich:column>
+
+                                    <rich:column sortBy="#{event.category}">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{msgs.EVENT_CATEGORY}" />
+                                        </f:facet>
+                                        <h:outputText value="#{event.category}" />
+                                    </rich:column>
+
+                                    <rich:column styleClass="columnIcon center">
+                                        <a4j:commandLink id="lnkUseEvent">
+                                            <f:setPropertyActionListener value="#{event}" target="#{bean.event}" />
+                                            <a4j:support event="oncomplete" actionListener="#{bean.onSelectEvent}" reRender="#{reRenderOnSelect}">
+                                                <rich:componentControl for="mpEventSelection" operation="hide" event="oncomplete" />
+                                            </a4j:support>
+                                            <h:graphicImage alt="#{msgs.planning_SELECT}" title="#{msgs.planning_SELECT}" value="#{res.ASSIGNMENT_ICON}"/>
+                                        </a4j:commandLink>
+                                    </rich:column>
+
+                                </rich:dataTable>
+                                <rich:datascroller id="scheduleScroller" for="dtSchedule" align="center" maxPages="20" renderIfSinglePage="false" reRender="scheduleScroller" />
+                            </h:panelGrid>
+                        </rich:tab>
+                    </rich:tabPanel>
+
+                    <h:panelGroup styleClass="dialogueButtons">
+                        <h:commandLink id="lnkCloseCalendar" styleClass="dialogButton" value="#{msgs.CANCEL}" onclick="#{rich:component('mpEventSelection')}.hide(); return false;" />
+                    </h:panelGroup>
+                </h:panelGrid>
+
+            </rich:modalPanel>
+        </h:form>
+
+    </ui:composition>
+</jsp:root>

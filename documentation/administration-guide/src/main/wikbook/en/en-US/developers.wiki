@@ -1,0 +1,37 @@
+
+= Logging =
+
+Converge uses the JDK Logger API for logging. The JDK Logger API has several levels of logging:
+
+* SEVERE
+* WARNING
+* INFO
+* CONFIG
+* FINE
+* FINER
+* FINEST
+
+== Support logging ==
+
+Support logging is used by support staff, system administrators and operators
+to diagnose a failure or monitor the progress of a running system. Support
+logging levels are SEVERE, WARNING, INFO and CONFIG.
+
+== Diagnostic logging ==
+
+Diagnostic logging is used by developers to trace and debug. Diagnostic logging
+should not be enabled in production environments. Diagnostic logging levels are
+FINE, FINER, and FINEST.
+
+
+= Developing Extensions =
+
+There are five extension points in Converge
+
+* Workflow Action - a piece of code that is executed upon selecting a workflow option
+* Validator - a piece of code that validates a new items before allowing a workflow option to be executed
+* Edition Action - a piece of code that is executed upon closing an edition
+* Catalogue Hook - a piece of code that is executed when an item is added or updated in a catalogue
+* Newswire Decoders - the ability to write code that decode external news so that it appears as a newswire service inside Converge
+
+All extension points derive from the Plugin class

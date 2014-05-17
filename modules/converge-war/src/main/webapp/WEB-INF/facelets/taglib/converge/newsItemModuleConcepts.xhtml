@@ -1,0 +1,196 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://java.sun.com/jstl/core" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+
+    <c:if test="#{newsItem.fieldVisible['METADATA']}">
+
+        <converge:moduleHeader moduleTitle="#{i18n.NewsItem_CONCEPTS_TITLE}" id="moduleMetaData">
+            <ui:define name="module_options">
+            </ui:define>
+        </converge:moduleHeader>
+
+        <div class="moduleContent">
+            <a4j:region>
+                <h:panelGrid columns="4" rendered="#{value.currentActor &amp;&amp; !value.readOnly}">
+                    <h:column>
+                        <h:inputText id="txtNewConcept" value="#{newsItem.newConcept}" styleClass="text mediumInput" />
+                        <rich:suggestionbox id="sbNewConcept" for="txtNewConcept" var="result" suggestionAction="#{newsItem.onConceptSuggestion}" ajaxSingle="true" fetchValue="#{result.name}" minChars="2" nothingLabel="#{i18n.NewsItem_CONCEPTS_NO_MATCH}">
+                            <h:column>
+                                <c:set var="key" value="resource_ICON_#{result.type}" />
+                                <h:graphicImage value="#{i18n[key]}" />
+                            </h:column>
+                            <h:column>
+                                <h:outputText value="#{result.name}" />
+                            </h:column>
+                        </rich:suggestionbox>
+                    </h:column>
+
+                    <a4j:commandButton styleClass="button dynamicButton" value="#{i18n.Generic_ADD}" actionListener="#{newsItem.onAddConcept}" reRender="dtConcepts,mpNewConcept,txtNewConcept,sbNewConcept" oncomplete="if (#{!newsItem.conceptAdded}){ #{rich:component('mpNewConcept')}.show(); return false; }" />
+                    <a4j:commandButton styleClass="button dynamicButton" value="#{i18n.NewsItem_CONCEPTS_SUBJECTS}" reRender="pgConceptSelector" oncomplete="#{rich:component('mpConceptSelector')}.show();" />
+                    <h:column>
+
+                        <a4j:commandButton styleClass="button dynamicButton" value="#{i18n.NewsItem_CONCEPTS_SUGGEST}" reRender="pgConceptSuggestion" actionListener="#{newsItem.onSuggestConcepts}" onclick="document.getElementById('frmNewsItem:btnSilentSave').click()" oncomplete="if (#{converge:isAllValid()}){ #{rich:component('mpConceptSuggestion')}.show(); return false; }" />
+                        <a4j:status>
+                            <f:facet name="start">
+                                <h:graphicImage value="#{i18n.resource_ICON_AJAX_LOADING}" />
+                            </f:facet>
+                            <f:facet name="stop">
+                                <h:graphicImage value="#{i18n.resource_ICON_EMPTY}" width="16" height="16" />
+                            </f:facet>
+                        </a4j:status>
+
+                    </h:column>
+                </h:panelGrid>
+
+                <rich:dataGrid id="dtConcepts" var="concept" value="#{newsItem.selectedNewsItem.concepts}" columns="3" styleClass="noborder" columnClasses="noborder">
+                    <h:panelGrid columns="3">
+                        <a4j:commandLink reRender="dtConcepts">
+                            <f:setPropertyActionListener target="#{newsItem.removeConcept}" value="#{concept}" />
+                            <h:graphicImage url="#{i18n.resource_ICON_REMOVE}" />
+                        </a4j:commandLink>
+                        <h:column>
+                            <c:set var="keyIcon" value="resource_ICON_#{concept.type}" />
+                            <c:set var="keyName" value="Generic_#{concept.type}_NAME" />
+                            <h:graphicImage value="#{i18n[keyIcon]}" title="#{i18n[keyName]}" />
+                        </h:column>
+                        <h:column>
+                            <h:outputText value="#{concept.fullTitle}" id="conceptTitle" />
+                            <rich:toolTip style="width: 350px;" styleClass="tooltip" for="conceptTitle">
+                                <h:panelGrid>
+                                    <h:outputText styleClass="smallHeading" value="#{concept.fullTitle}" />
+                                    <h:outputText value="#{concept.definition}" escape="false" />
+                                </h:panelGrid>
+                            </rich:toolTip>
+                        </h:column>
+                    </h:panelGrid>
+                </rich:dataGrid>
+
+                <h:panelGroup id="pgConceptSelector" rendered="#{value.currentActor &amp;&amp; !value.readOnly}">
+                    <rich:modalPanel id="mpConceptSelector" autosized="true" domElementAttachment="parent">
+                        <f:facet name="header">
+                            <h:panelGroup>
+                                <h:outputText value="#{msgs.concepts_SELECT_META_DATA}" />
+                            </h:panelGroup>
+                        </f:facet>
+                        <f:facet name="controls">
+                            <h:panelGroup>
+                                <h:graphicImage id="imgCloseMetaDataSelect" value="#{i18n.resource_ICON_DIALOGUE_CLOSE}" styleClass="link" />
+                                <rich:componentControl for="mpConceptSelector" attachTo="imgCloseMetaDataSelect" operation="hide" event="onclick"/>
+                            </h:panelGroup>
+                        </f:facet>
+
+                        <h:panelGrid id="pgMetaDataSelect" style="width: 480px;">
+
+                            <rich:tabPanel id="tpMetaDataSelect" switchType="client" activeTabClass="tabActive" inactiveTabClass="tabInactive">
+                                <rich:tab id="tabSubjects" label="#{msgs.concepts_SUBJECTS}">
+
+                                    <h:panelGrid id="pgSubjects" columnClasses="tabSheet" style="padding: 10px; width: 100%">
+                                        <h:panelGroup styleClass="scrollableContent" layout="block">
+                                            <rich:tree switchType="ajax" ajaxSingle="true" ajaxSubmitSelection="true" nodeSelectListener="#{newsItem.onSelectSubject}" reRender="dtConcepts">
+                                                <rich:recursiveTreeNodesAdaptor roots="#{common.parentSubjects}" var="item" nodes="#{item.narrower}" >
+                                                    <rich:treeNode>
+                                                        <h:outputText value=" #{item.name}" />
+                                                        <rich:toolTip style="width: 350px;" styleClass="tooltip" showDelay="1000">
+                                                            <h:panelGrid>
+                                                                <h:outputText styleClass="smallHeading" value="#{item.name}" />
+                                                                <h:outputText value="#{item.definition}" escape="false" />
+                                                            </h:panelGrid>
+                                                        </rich:toolTip>
+                                                    </rich:treeNode>
+                                                </rich:recursiveTreeNodesAdaptor>
+                                            </rich:tree>
+                                        </h:panelGroup>
+                                    </h:panelGrid>
+                                </rich:tab>
+                            </rich:tabPanel>
+
+                            <h:panelGroup styleClass="dialogueButtons">
+                                <h:commandLink id="lnkCloseConceptSelector" styleClass="dialogButton" value="#{i18n.Generic_CLOSE}" onclick="#{rich:component('mpConceptSelector')}.hide(); return false;" />
+                            </h:panelGroup>
+                        </h:panelGrid>
+                    </rich:modalPanel>
+                </h:panelGroup>
+
+                <h:panelGroup id="pgConceptSuggestion" rendered="#{value.currentActor &amp;&amp; !value.readOnly}">
+                    <rich:modalPanel id="mpConceptSuggestion" autosized="true" domElementAttachment="parent">
+                        <f:facet name="header">
+                            <h:panelGroup>
+                                <h:outputText value="#{i18n.NewsItem_CONCEPTS_SUGGEST}" />
+                            </h:panelGroup>
+                        </f:facet>
+                        <f:facet name="controls">
+                            <h:panelGroup>
+                                <h:graphicImage id="imgCloseConceptSuggestion" value="#{i18n.resource_ICON_DIALOGUE_CLOSE}" styleClass="link" />
+                                <rich:componentControl for="mpConceptSuggestion" attachTo="imgCloseConceptSuggestion" operation="hide" event="onclick"/>
+                            </h:panelGroup>
+                        </f:facet>
+
+                        <h:panelGrid id="pgConceptSuggestionSelect" style="width: 480px;">
+
+                            <rich:tabPanel id="tpConceptSuggestionSelect" switchType="client" activeTabClass="tabActive" inactiveTabClass="tabInactive">
+                                <rich:tab id="tabConceptSuggestions" label="#{i18n.NewsItem_CONCEPTS_SUGGESTIONS}">
+
+                                    <h:panelGrid id="pgConceptSuggestions" columnClasses="tabSheet" style="padding: 10px; width: 100%">
+                                        <rich:pickList id="plConceptSuggestions" value="#{newsItem.selectedConcepts}" converter="#{converters.conceptConverter}" copyAllVisible="true" copyAllControlLabel="#{i18n.pickList_ADD_ALL}" copyControlLabel="#{i18n.pickList_ADD}" removeAllControlLabel="#{i18n.pickList_REMOVE_ALL}" removeControlLabel="#{i18n.pickList_REMOVE}" removeAllVisible="true">
+                                            <f:selectItems value="#{newsItem.suggestedConcepts}" />
+                                        </rich:pickList>
+                                    </h:panelGrid>
+                                </rich:tab>
+                            </rich:tabPanel>
+
+                            <h:panelGroup styleClass="dialogueButtons">
+                                <a4j:commandLink id="lnkSaveSuggestion" styleClass="dialogButton" value="#{i18n.Generic_SAVE}" actionListener="#{newsItem.onSaveConceptSuggestions}" reRender="dtConcepts" oncomplete="if (#{converge:isAllValid()}){ #{rich:component('mpConceptSuggestion')}.hide(); return false; }" />
+                                <h:commandLink id="lnkCloseConceptSuggestion" styleClass="dialogButton" value="#{i18n.Generic_CANCEL}" onclick="#{rich:component('mpConceptSuggestion')}.hide(); return false;" />
+                            </h:panelGroup>
+                        </h:panelGrid>
+                    </rich:modalPanel>
+                </h:panelGroup>
+
+
+                <rich:modalPanel id="mpNewConcept" autosized="true" domElementAttachment="parent">
+                    <f:facet name="header">
+                        <h:panelGroup>
+                            <h:outputText value="#{msgs.concepts_NEW_CONCEPT}" />
+                        </h:panelGroup>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:panelGroup>
+                            <h:graphicImage id="imgCloseNewConcept" value="#{i18n.resource_ICON_DIALOGUE_CLOSE}" styleClass="link" />
+                            <rich:componentControl for="mpNewConcept" attachTo="imgCloseNewConcept" operation="hide" event="onclick"/>
+                        </h:panelGroup>
+                    </f:facet>
+
+                    <h:panelGrid id="pgNewConcept" style="width: 480px;">
+
+                        <rich:tabPanel id="tpNewConcept" switchType="client" activeTabClass="tabActive" inactiveTabClass="tabInactive">
+
+                            <rich:tab id="tabNewConcept" label="New Concept">
+
+                                <h:panelGrid id="pgDetails" columnClasses="tabSheet" style="padding: 10px; width: 100%">
+                                    <h:outputText value="#{msgs.concepts_CONCEPT_TYPE}" />
+                                    <h:selectOneRadio value="#{newsItem.conceptType}">
+                                        <f:selectItem itemLabel="#{i18n['Generic_dk.i2m.converge.core.metadata.Organisation_NAME']}" itemValue="ORGANISATION" />
+                                        <f:selectItem itemLabel="#{i18n['Generic_dk.i2m.converge.core.metadata.Person_NAME']}" itemValue="PERSON" />
+                                        <f:selectItem itemLabel="#{i18n['Generic_dk.i2m.converge.core.metadata.GeoArea_NAME']}" itemValue="LOCATION" />
+                                        <f:selectItem itemLabel="#{i18n['Generic_dk.i2m.converge.core.metadata.PointOfInterest_NAME']}" itemValue="POI" />
+                                    </h:selectOneRadio>
+
+                                    <h:outputText value="#{msgs.concepts_CONCEPT}" />
+                                    <h:inputText value="#{newsItem.newConceptName}" styleClass="text mediumInput" />
+
+                                    <h:outputText value="#{msgs.concepts_DEFINITION}" />
+                                    <h:inputTextarea value="#{newsItem.newConceptDescription}" styleClass="text mediumTextArea" />
+                                </h:panelGrid>
+                            </rich:tab>
+                        </rich:tabPanel>
+
+                        <h:panelGroup styleClass="dialogueButtons">
+                            <a4j:commandLink id="lnkAddNewConcept" styleClass="dialogButton" value="#{msgs.ADD}" actionListener="#{newsItem.onAddNewConcept}" reRender="dtConcepts,txtNewConcept,sbNewConcept" oncomplete="if (#{converge:isAllValid()}){ #{rich:component('mpNewConcept')}.hide(); return false; }" />
+                            <h:commandLink id="lnkCloseNewConcept" styleClass="dialogButton" value="#{msgs.CANCEL}" onclick="#{rich:component('mpNewConcept')}.hide(); return false;" />
+                        </h:panelGroup>
+                    </h:panelGrid>
+                </rich:modalPanel>
+            </a4j:region>
+        </div>
+
+        <converge:moduleSpacer />
+    </c:if>
+</ui:composition>

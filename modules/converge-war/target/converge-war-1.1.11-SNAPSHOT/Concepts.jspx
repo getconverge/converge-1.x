@@ -1,0 +1,794 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jsp:root version="2.0" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:c="http://java.sun.com/jstl/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:v="http://converge.i2m.dk" xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+
+    <ui:composition template="/WEB-INF/facelets/templates/concepts.xhtml">
+        <ui:define name="body">
+            <a4j:keepAlive beanName="concepts" />
+            <a4j:outputPanel ajaxRendered="true">
+                <v:message />
+            </a4j:outputPanel>
+
+            <h:form id="frmPage">
+
+            </h:form>
+
+            <h:form id="frmConceptDisplay"  rendered="#{concepts.showConcept}">
+                <c:set var="key" value="Generic_#{concepts.selectedConcept.type}_NAME" />
+                <converge:moduleHeader moduleTitle="#{concepts.selectedConcept.name} (#{i18n[key]})" />
+                <div class="moduleContent">
+                    <h:panelGrid columns="2" columnClasses="left, right" style="width: 100%">
+                        <h:column>
+                            <h:outputText value="#{i18n.Concepts_LAST_UPDATE}&#160;" style="font-style: italic;" rendered="#{!concepts.updatingConcept}"  />
+                            <h:outputText value="#{concepts.selectedConcept.updated.time}" style="font-style: italic;" rendered="#{!concepts.updatingConcept}">
+                                <f:convertDateTime pattern="#{i18n.Generic_FORMAT_MEDIUM_DATE_AND_TIME}" timeZone="#{userSession.user.timeZone}" />
+                            </h:outputText>
+                            <h:outputText value="&#160;by&#160;" style="font-style: italic;" rendered="#{!concepts.updatingConcept}"  />
+                            <h:outputText value="#{concepts.selectedConcept.updatedBy.fullName}" style="font-style: italic;" rendered="#{!concepts.updatingConcept &amp;&amp; concepts.selectedConcept.updatedBy != null}"  />
+                            <h:outputText value="#{i18n.Concepts_UNKNOWN}" style="font-style: italic;" rendered="#{!concepts.updatingConcept &amp;&amp; concepts.selectedConcept.updatedBy == null}"  />
+                        </h:column>
+                        <h:column>
+                            <a4j:commandButton id="btnEditConcept" ajaxSingle="true" styleClass="button mediumButton" value="#{i18n.Concepts_EDIT}" actionListener="#{concepts.onEditConcept}" reRender="frmConceptDisplay" rendered="#{!concepts.updatingConcept}" />
+
+                            <a4j:commandButton id="btnPickSameAs"
+                                               styleClass="button dynamicButton"
+                                               style="margin-left: 5px;"
+                                               value="#{i18n.Concepts_SAME_AS}"
+                                               actionListener="#{concepts.onSelectMetaDataSameAs}"
+                                               reRender="ajaxPage"
+                                               rendered="#{concepts.updatingConcept}">
+                                <rich:componentControl for="mpMetaDataSelect"
+                                                       operation="show"
+                                                       event="oncomplete"/>
+                            </a4j:commandButton>
+
+                            <a4j:commandButton id="btnPickRelated"
+                                               styleClass="button dynamicButton"
+                                               style="margin-left: 5px;"
+                                               value="#{i18n.Concepts_RELATED}"
+                                               actionListener="#{concepts.onSelectMetaDataRelated}"
+                                               reRender="ajaxPage"
+                                               rendered="#{concepts.updatingConcept}">
+                                <rich:componentControl for="mpMetaDataSelect"
+                                                       operation="show"
+                                                       event="oncomplete"/>
+                            </a4j:commandButton>
+
+                            <a4j:commandButton id="btnPickBroader"
+                                               styleClass="button dynamicButton"
+                                               style="margin-left: 5px;"
+                                               value="#{i18n.Concepts_BROADER}"
+                                               actionListener="#{concepts.onSelectMetaDataBroader}"
+                                               reRender="ajaxPage"
+                                               rendered="#{concepts.updatingConcept}">
+                                <rich:componentControl for="mpMetaDataSelect"
+                                                       operation="show"
+                                                       event="oncomplete"/>
+                            </a4j:commandButton>
+
+                            <a4j:commandButton id="btnPickNarrower"
+                                               styleClass="button dynamicButton"
+                                               style="margin-left: 5px;"
+                                               value="#{i18n.Concepts_NARROWER}"
+                                               actionListener="#{concepts.onSelectMetaDataNarrower}"
+                                               reRender="ajaxPage"
+                                               rendered="#{concepts.updatingConcept}">
+                                <rich:componentControl for="mpMetaDataSelect"
+                                                       operation="show"
+                                                       event="oncomplete"/>
+                            </a4j:commandButton>
+
+                            <a4j:commandButton id="btnDeleteConcept"
+                                               styleClass="button dynamicButton"
+                                               style="margin-left: 5px;"
+                                               value="#{i18n.Generic_DELETE}"
+                                               actionListener="#{concepts.onDeleteConcept}"
+                                               reRender="ajaxPage"
+                                               ajaxSingle="true"
+                                               onclick="if (confirm('#{i18n.Concepts_PROMPT_DELETE}') != true){ return false; };"
+                                               rendered="#{concepts.updatingConcept}">
+                                <a4j:support event="oncomplete" reRender="ajaxPage" />
+                            </a4j:commandButton>
+
+
+                            <a4j:commandButton id="btnSaveConcept"
+                                               style="margin-left: 5px;"
+                                               styleClass="button dynamicButton"
+                                               value="#{i18n.Generic_SAVE}"
+                                               actionListener="#{concepts.onSaveConcept}"
+                                               reRender="ajaxPage"
+                                               rendered="#{concepts.updatingConcept}">
+                            </a4j:commandButton>
+
+                            <a4j:commandButton id="btnCancelConcept"
+                                               ajaxSingle="true"
+                                               style="margin-left: 5px;"
+                                               styleClass="button dynamicButton"
+                                               value="#{i18n.Generic_CANCEL}"
+                                               actionListener="#{concepts.onCancelConcept}"
+                                               reRender="ajaxPage"
+                                               rendered="#{concepts.updatingConcept}">
+                            </a4j:commandButton>
+                        </h:column>
+                    </h:panelGrid>
+
+                    <h:panelGrid columns="2" style="width: 100%" columnClasses="left top, geoLeft" rendered="#{!concepts.updatingConcept}">
+                        <h:outputText value="#{concepts.selectedConcept.definition}" escape="false" style="float:left" rendered="#{concepts.selectedConcept.definition != ''}" />
+                        <h:outputFormat value="#{i18n.Concepts_NO_DEFINITION}" escape="false" style="font-size: 1.4em; float:left" rendered="#{concepts.selectedConcept.definition == ''}">
+                            <f:param value="#{concepts.selectedConcept.name}" />
+                        </h:outputFormat>
+
+                        <h:column>
+                            <h:panelGrid rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.GeoArea'}">
+                                <h:outputLink value="http://maps.google.com/maps/api/staticmap?center=#{concepts.selectedConcept.latitude},#{concepts.selectedConcept.longitude}&amp;zoom=12&amp;size=1000x700&amp;sensor=false" target="_blank"
+                                              rendered="#{!concepts.updatingConcept &amp;&amp; concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.GeoArea' &amp;&amp; concepts.selectedConcept.latitude != 0.0 &amp;&amp; concepts.selectedConcept.longitude != null}">
+                                    <h:graphicImage url="http://maps.google.com/maps/api/staticmap?center=#{concepts.selectedConcept.latitude},#{concepts.selectedConcept.longitude}&amp;zoom=4&amp;size=300x300&amp;sensor=false&amp;markers=color:red|#{concepts.selectedConcept.latitude},#{concepts.selectedConcept.longitude}"
+                                                    style="border: 1px solid #aaaaaa;" />
+                                </h:outputLink>
+
+                                <h:outputText value="#{i18n.Concepts_GEOAREA_LATITUDE}:" styleClass="bold" rendered="#{concepts.selectedConcept.latitude != '0.0'}" />
+                                <h:outputText value="#{concepts.selectedConcept.latitude}" rendered="#{concepts.selectedConcept.latitude != '0.0'}" />
+
+                                <h:outputText value="#{i18n.Concepts_GEOAREA_LONGITUDE}:"  styleClass="bold" rendered="#{concepts.selectedConcept.longitude != '0.0'}" />
+                                <h:outputText value="#{concepts.selectedConcept.longitude}" rendered="#{concepts.selectedConcept.longitude != '0.0'}" />
+
+                                <h:outputText value="#{i18n.Concepts_GEOAREA_ALTITUDE}:" styleClass="bold" rendered="#{concepts.selectedConcept.altitude != '0'}" />
+                                <h:outputText value="#{concepts.selectedConcept.altitude}" rendered="#{concepts.selectedConcept.altitude != '0'}"  />
+                            </h:panelGrid>
+
+                            <h:panelGrid rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.Organisation'}">
+                                <h:outputText value="#{i18n.Concepts_ORG_FOUNDED}:" styleClass="bold" rendered="#{concepts.selectedConcept.founded != ''}"  />
+                                <h:outputText value="#{concepts.selectedConcept.founded}" rendered="#{concepts.selectedConcept.founded != ''}" escape="false" />
+
+                                <h:outputText value="#{i18n.Concepts_ORG_DISSOLVED}:" styleClass="bold" rendered="#{concepts.selectedConcept.dissolved != ''}" />
+                                <h:outputText value="#{concepts.selectedConcept.dissolved}"  rendered="#{concepts.selectedConcept.dissolved != ''}" escape="false" />
+                            </h:panelGrid>
+
+                            <h:panelGrid rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.Person'}">
+                                <h:outputText value="#{i18n.Concepts_PERSON_BORN}:" styleClass="bold" rendered="#{concepts.selectedConcept.born != ''}" />
+                                <h:outputText value="#{concepts.selectedConcept.born}" rendered="#{concepts.selectedConcept.born != ''}" escape="false" />
+
+                                <h:outputText value="#{i18n.Concepts_PERSON_DIED}:" styleClass="bold" rendered="#{concepts.selectedConcept.died != ''}" />
+                                <h:outputText value="#{concepts.selectedConcept.died}" rendered="#{concepts.selectedConcept.died != ''}" escape="false" />
+                            </h:panelGrid>
+
+                            <h:panelGrid rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.PointOfInterest'}">
+                                <h:outputLink value="http://maps.google.com/maps/api/staticmap?center=#{concepts.selectedConcept.latitude},#{concepts.selectedConcept.longitude}&amp;zoom=12&amp;size=1000x700&amp;sensor=false" target="_blank"
+                                              rendered="#{!concepts.updatingConcept &amp;&amp; concepts.selectedConcept.latitude != 0.0 &amp;&amp; concepts.selectedConcept.longitude != null}">
+                                    <h:graphicImage url="http://maps.google.com/maps/api/staticmap?center=#{concepts.selectedConcept.latitude},#{concepts.selectedConcept.longitude}&amp;zoom=4&amp;size=300x300&amp;sensor=false&amp;markers=color:red|#{concepts.selectedConcept.latitude},#{concepts.selectedConcept.longitude}"
+                                                    style="border: 1px solid #aaaaaa;" />
+                                </h:outputLink>
+
+                                <h:outputText value="#{i18n.Concepts_POI_OPEN_HOURS}:" styleClass="bold" rendered="#{concepts.selectedConcept.openHours != ''}" />
+                                <h:outputText value="#{concepts.selectedConcept.openHours}" rendered="#{concepts.selectedConcept.openHours != ''}" escape="false" />
+
+                                <h:outputText value="#{i18n.Concepts_POI_ADDRESS_INFO}:" styleClass="bold" rendered="#{concepts.selectedConcept.addressInfo != ''}" />
+                                <h:outputText value="#{concepts.selectedConcept.addressInfo}" rendered="#{concepts.selectedConcept.addressInfo != ''}"  escape="false" />
+
+                                <h:outputText value="#{i18n.Concepts_POI_CAPACITY}:" styleClass="bold" rendered="#{concepts.selectedConcept.capacity != ''}" />
+                                <h:outputText value="#{concepts.selectedConcept.capacity}" rendered="#{concepts.selectedConcept.capacity != ''}"  escape="false" />
+
+                                <h:outputText value="#{i18n.Concepts_POI_CONTACT_INFO}:" styleClass="bold" rendered="#{concepts.selectedConcept.contactInfo != ''}" />
+                                <h:outputText value="#{concepts.selectedConcept.contactInfo}" rendered="#{concepts.selectedConcept.contactInfo != ''}"  escape="false" />
+
+                                <h:outputText value="#{i18n.Concepts_POI_LATITUDE}:" styleClass="bold"  rendered="#{concepts.selectedConcept.latitude != '0.0'}" />
+                                <h:outputText value="#{concepts.selectedConcept.latitude}" rendered="#{concepts.selectedConcept.latitude != '0.0'}"  escape="false" />
+
+                                <h:outputText value="#{i18n.Concepts_POI_LONGITUDE}:" styleClass="bold"  rendered="#{concepts.selectedConcept.longitude != '0.0'}" />
+                                <h:outputText value="#{concepts.selectedConcept.longitude}"  rendered="#{concepts.selectedConcept.longitude != '0.0'}"  escape="false" />
+                            </h:panelGrid>
+
+                            <h:panelGrid>
+                                <h:outputText value="#{i18n.Concepts_SAME_AS}:" styleClass="bold" rendered="#{!empty concepts.selectedConcept.sameAs}" />
+
+                                <h:dataTable var="relatedConcept" value="#{concepts.selectedConcept.sameAs}" rendered="#{!empty concepts.selectedConcept.sameAs}">
+                                    <h:column>
+                                        <c:set var="key" value="#{relatedConcept.type}_SHORT" />
+                                        <h:panelGroup layout="block" styleClass="concept_#{msgs[key]}">
+                                            <h:outputText value="#{msgs[key]}" />
+                                        </h:panelGroup>
+                                    </h:column>
+
+                                    <h:column>
+                                        <a4j:commandLink actionListener="#{concepts.onShowConcept}" reRender="ajaxPage">
+                                            <f:setPropertyActionListener value="#{relatedConcept}" target="#{concepts.selectedConcept}" />
+                                            <h:outputText value="#{relatedConcept.name}" />
+                                        </a4j:commandLink>
+                                    </h:column>
+                                </h:dataTable>
+
+
+                                <h:outputText value="#{i18n.Concepts_BROADER}:" styleClass="bold" rendered="#{!empty concepts.selectedConcept.broader}" />
+
+                                <h:dataTable var="relatedConcept" value="#{concepts.selectedConcept.broader}" rendered="#{!empty concepts.selectedConcept.broader}">
+                                    <h:column>
+                                        <c:set var="key" value="#{relatedConcept.type}_SHORT" />
+                                        <h:panelGroup layout="block" styleClass="concept_#{msgs[key]}">
+                                            <h:outputText value="#{msgs[key]}" />
+                                        </h:panelGroup>
+                                    </h:column>
+
+                                    <h:column>
+                                        <a4j:commandLink actionListener="#{concepts.onShowConcept}" reRender="ajaxPage">
+                                            <f:setPropertyActionListener value="#{relatedConcept}" target="#{concepts.selectedConcept}" />
+                                            <h:outputText value="#{relatedConcept.name}" />
+                                        </a4j:commandLink>
+                                    </h:column>
+                                </h:dataTable>
+
+                                <h:outputText value="#{i18n.Concepts_NARROWER}:" styleClass="bold" rendered="#{!empty concepts.selectedConcept.narrower}" />
+
+                                <h:dataTable var="relatedConcept" value="#{concepts.selectedConcept.narrower}" rendered="#{!empty concepts.selectedConcept.narrower}">
+                                    <h:column>
+                                        <c:set var="key" value="#{relatedConcept.type}_SHORT" />
+                                        <h:panelGroup layout="block" styleClass="concept_#{msgs[key]}">
+                                            <h:outputText value="#{msgs[key]}" />
+                                        </h:panelGroup>
+                                    </h:column>
+
+                                    <h:column>
+                                        <a4j:commandLink actionListener="#{concepts.onShowConcept}" reRender="ajaxPage">
+                                            <f:setPropertyActionListener value="#{relatedConcept}" target="#{concepts.selectedConcept}" />
+                                            <h:outputText value="#{relatedConcept.name}" />
+                                        </a4j:commandLink>
+                                    </h:column>
+                                </h:dataTable>
+
+
+                                <h:outputText value="#{i18n.Concepts_RELATED}:" styleClass="bold" rendered="#{!empty concepts.selectedConcept.related}" />
+
+                                <h:dataTable var="relatedConcept" value="#{concepts.selectedConcept.related}" rendered="#{!empty concepts.selectedConcept.related}">
+                                    <h:column>
+                                        <c:set var="key" value="#{relatedConcept.type}_SHORT" />
+                                        <h:panelGroup layout="block" styleClass="concept_#{msgs[key]}">
+                                            <h:outputText value="#{msgs[key]}" />
+                                        </h:panelGroup>
+                                    </h:column>
+
+                                    <h:column>
+                                        <a4j:commandLink actionListener="#{concepts.onShowConcept}" reRender="ajaxPage">
+                                            <f:setPropertyActionListener value="#{relatedConcept}" target="#{concepts.selectedConcept}" />
+                                            <h:outputText value="#{relatedConcept.name}" />
+                                        </a4j:commandLink>
+                                    </h:column>
+                                </h:dataTable>
+
+                            </h:panelGrid>
+
+                        </h:column>
+                    </h:panelGrid>
+
+                    <h:panelGrid rendered="#{concepts.updatingConcept}" styleClass="propertySheet">
+                        <h:outputText value="#{i18n.Concepts_NAME}" />
+                        <h:inputText value="#{concepts.selectedConcept.name}" styleClass="text" style="width: 98%" />
+                        <h:outputText value="#{i18n.Concepts_DEFINITION}" />
+                        <rich:editor id="edDefinition"
+                                     value="#{concepts.selectedConcept.definition}"
+                                     theme="advanced"
+                                     plugins="safari,spellchecker,inlinepopups,paste,fullscreen"
+                                     required="false"
+                                     rendered="true"
+                                     skin="default"
+                                     height="400"
+                                     readonly="false"
+                                     dialogType="window"
+                                     inputElementType="input">
+                            <f:param name="theme_advanced_buttons1" value="bold,italic,underline,separator,cut,copy,paste,pastetext,pasteword,separator,spellchecker,separator,link,unlink,separator,fullscreen"/>
+                            <f:param name="theme_advanced_buttons2" value=""/>
+                            <f:param name="theme_advanced_buttons3" value=""/>
+                            <f:param name="theme_advanced_toolbar_location" value="top"/>
+                            <f:param name="theme_advanced_toolbar_align" value="left"/>
+                            <f:param name="theme_advanced_resizing" value="true"/>
+                            <f:param name="spellchecker_languages" value="+English=en" />
+                            <f:param name="spellchecker_rpc_url" value="spell.check" />
+                            <f:param name="spellchecker_report_misspellings" value="false" />
+                            <f:param name="language" value="en" />
+                            <f:param name="apply_source_formatting" value="false" />
+                            <f:param name="remove_linebreaks" value="false" />
+                            <f:param name="paste_use_dialog" value="true" />
+                            <f:param name="paste_auto_cleanup_on_paste" value="true" />
+                            <f:param name="forced_root_block" value="p" />
+                            <f:param name="force_p_newline" value="true" />
+                            <f:param name="verify_html" value="true" />
+                            <f:param name="fix_list_elements" value="true" />
+                            <f:param name="width" value="100%" />
+                        </rich:editor>
+
+                        <h:outputText value="#{i18n.Concepts_GEOAREA_LATITUDE}:" rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.GeoArea'}" />
+                        <h:inputText value="#{concepts.selectedConcept.latitude}"  rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.GeoArea'}" styleClass="text" style="width: 99%" />
+
+                        <h:outputText value="#{i18n.Concepts_GEOAREA_LONGITUDE}:" rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.GeoArea'}" />
+                        <h:inputText value="#{concepts.selectedConcept.longitude}"  rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.GeoArea'}" styleClass="text" style="width: 99%" />
+
+                        <h:outputText value="#{i18n.Concepts_GEOAREA_ALTITUDE}:" rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.GeoArea'}" />
+                        <h:inputText value="#{concepts.selectedConcept.altitude}"  rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.GeoArea'}" styleClass="text" style="width: 99%" />
+
+                        <h:outputText value="#{i18n.Concepts_ORG_FOUNDED}:" rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.Organisation'}" />
+                        <h:inputText value="#{concepts.selectedConcept.founded}"  rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.Organisation'}" styleClass="text" style="width: 99%" />
+
+                        <h:outputText value="#{i18n.Concepts_ORG_DISSOLVED}:" rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.Organisation'}" />
+                        <h:inputText value="#{concepts.selectedConcept.dissolved}"  rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.Organisation'}" styleClass="text" style="width: 99%" />
+
+                        <h:outputText value="#{i18n.Concepts_PERSON_BORN}:" rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.Person'}" />
+                        <h:inputText value="#{concepts.selectedConcept.born}"  rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.Person'}" styleClass="text" style="width: 99%" />
+
+                        <h:outputText value="#{i18n.Concepts_PERSON_DIED}:" rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.Person'}" />
+                        <h:inputText value="#{concepts.selectedConcept.died}"  rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.Person'}" styleClass="text" style="width: 99%" />
+
+                        <h:outputText value="#{i18n.Concepts_POI_OPEN_HOURS}:" rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.PointOfInterest'}" />
+                        <h:inputText value="#{concepts.selectedConcept.openHours}"  rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.PointOfInterest'}" styleClass="text" style="width: 99%" />
+
+                        <h:outputText value="#{i18n.Concepts_POI_ADDRESS_INFO}:" rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.PointOfInterest'}" />
+                        <h:inputTextarea value="#{concepts.selectedConcept.addressInfo}"  rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.PointOfInterest'}" styleClass="text" style="width: 99%; height: 150px;" />
+
+                        <h:outputText value="#{i18n.Concepts_POI_CAPACITY}:" rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.PointOfInterest'}" />
+                        <h:inputText value="#{concepts.selectedConcept.capacity}"  rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.PointOfInterest'}" styleClass="text" style="width: 99%" />
+
+                        <h:outputText value="#{i18n.Concepts_POI_CONTACT_INFO}:" rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.PointOfInterest'}" />
+                        <h:inputText value="#{concepts.selectedConcept.contactInfo}"  rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.PointOfInterest'}" styleClass="text" style="width: 99%; height: 150px;" />
+
+                        <h:outputText value="#{i18n.Concepts_POI_LATITUDE}:" rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.PointOfInterest'}" />
+                        <h:inputText value="#{concepts.selectedConcept.latitude}"  rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.PointOfInterest'}" styleClass="text" style="width: 99%" />
+
+                        <h:outputText value="#{i18n.Concepts_POI_LONGITUDE}:" rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.PointOfInterest'}" />
+                        <h:inputText value="#{concepts.selectedConcept.longitude}"  rendered="#{concepts.selectedConcept.type == 'dk.i2m.converge.core.metadata.PointOfInterest'}" styleClass="text" style="width: 99%" />
+
+
+                        <h:outputText value="#{i18n.Concepts_SAME_AS}:" styleClass="bold"  />
+                        <h:dataTable id="dtConceptSameAsConcepts" var="relatedConcept" value="#{concepts.selectedConcept.sameAs}">
+                            <h:column>
+                                <c:set var="key" value="#{relatedConcept.type}_SHORT" />
+                                <h:panelGroup layout="block" styleClass="concept_#{msgs[key]}">
+                                    <h:outputText value="#{msgs[key]}" />
+                                </h:panelGroup>
+                            </h:column>
+
+                            <h:column>
+                                <h:outputText value="#{relatedConcept.name}" />
+                            </h:column>
+
+                            <h:column>
+                                <a4j:commandLink ajaxSingle="true">
+                                    <f:setPropertyActionListener value="#{relatedConcept}" target="#{concepts.selectedMetaDataConcept}" />
+                                    <a4j:support event="oncomplete" actionListener="#{concepts.onRemoveSameAsFromConcept}" reRender="dtConceptSameAsConcepts" />
+                                    <h:graphicImage value="#{i18n.resource_ICON_DELETE}" alt="#{i18n.Concepts_REMOVE_META_DATA_FROM_CONCEPT}" title="#{i18n.Concepts_REMOVE_META_DATA_FROM_CONCEPT}" />
+                                </a4j:commandLink>
+                            </h:column>
+                        </h:dataTable>
+
+                        <h:outputText value="#{i18n.Concepts_RELATED}:" styleClass="bold"  />
+                        <h:dataTable id="dtConceptRelatedConcepts" var="relatedConcept" value="#{concepts.selectedConcept.related}">
+
+                            <h:column>
+                                <c:set var="key" value="#{relatedConcept.type}_SHORT" />
+                                <h:panelGroup layout="block" styleClass="concept_#{msgs[key]}">
+                                    <h:outputText value="#{msgs[key]}" />
+                                </h:panelGroup>
+                            </h:column>
+
+                            <h:column>
+                                <h:outputText value="#{relatedConcept.name}" />
+                            </h:column>
+
+                            <h:column>
+                                <a4j:commandLink ajaxSingle="true" >
+                                    <a4j:support event="oncomplete" actionListener="#{concepts.onRemoveRelatedFromConcept}" reRender="dtConceptRelatedConcepts" />
+                                    <f:setPropertyActionListener value="#{relatedConcept}" target="#{concepts.selectedMetaDataConcept}" />
+                                    <h:graphicImage value="#{i18n.resource_ICON_DELETE}" alt="#{i18n.Concepts_REMOVE_META_DATA_FROM_CONCEPT}" title="#{i18n.Concepts_REMOVE_META_DATA_FROM_CONCEPT}" />
+                                </a4j:commandLink>
+                            </h:column>
+
+                        </h:dataTable>
+
+
+                        <h:outputText value="#{i18n.Concepts_BROADER}:" styleClass="bold"  />
+                        <h:dataTable id="dtConceptBroaderConcepts" var="relatedConcept" value="#{concepts.selectedConcept.broader}">
+                            <h:column>
+                                <c:set var="key" value="#{relatedConcept.type}_SHORT" />
+                                <h:panelGroup layout="block" styleClass="concept_#{msgs[key]}">
+                                    <h:outputText value="#{msgs[key]}" />
+                                </h:panelGroup>
+                            </h:column>
+
+                            <h:column>
+                                <h:outputText value="#{relatedConcept.name}" />
+                            </h:column>
+
+                            <h:column>
+                                <a4j:commandLink ajaxSingle="true">
+                                    <a4j:support event="oncomplete" actionListener="#{concepts.onRemoveBroaderFromConcept}" reRender="dtConceptBroaderConcepts" />
+                                    <f:setPropertyActionListener value="#{relatedConcept}" target="#{concepts.selectedMetaDataConcept}" />
+                                    <h:graphicImage value="#{i18n.resource_ICON_DELETE}" alt="#{i18n.Concepts_REMOVE_META_DATA_FROM_CONCEPT}" title="#{i18n.Concepts_REMOVE_META_DATA_FROM_CONCEPT}" />
+                                </a4j:commandLink>
+                            </h:column>
+                        </h:dataTable>
+
+
+                        <h:outputText value="#{i18n.Concepts_NARROWER}:" styleClass="bold"  />
+                        <h:dataTable id="dtConceptNarrowerConcepts" var="relatedConcept" value="#{concepts.selectedConcept.narrower}">
+                            <h:column>
+                                <c:set var="key" value="#{relatedConcept.type}_SHORT" />
+                                <h:panelGroup layout="block" styleClass="concept_#{msgs[key]}">
+                                    <h:outputText value="#{msgs[key]}" />
+                                </h:panelGroup>
+                            </h:column>
+
+                            <h:column>
+                                <h:outputText value="#{relatedConcept.name}" />
+                            </h:column>
+
+                            <h:column>
+                                <a4j:commandLink ajaxSingle="true">
+                                    <a4j:support event="oncomplete" actionListener="#{concepts.onRemoveNarrowerFromConcept}" reRender="dtConceptNarrowerConcepts" />
+                                    <f:setPropertyActionListener value="#{relatedConcept}" target="#{concepts.selectedMetaDataConcept}" />
+                                    <h:graphicImage value="#{i18n.resource_ICON_DELETE}" alt="#{i18n.Concepts_REMOVE_META_DATA_FROM_CONCEPT}" title="#{i18n.Concepts_REMOVE_META_DATA_FROM_CONCEPT}" />
+                                </a4j:commandLink>
+                            </h:column>
+                        </h:dataTable>
+                    </h:panelGrid>
+                </div>
+            </h:form>
+
+            <h:form id="frmSearchResults" rendered="#{concepts.showSearchResults}">
+                <converge:moduleHeader moduleTitle="#{i18n.Concepts_SEARCH_RESULTS}" />
+                <div class="moduleContent">
+
+                    <rich:dataTable id="dtSearchResults"
+                                    rows="25"
+                                    value="#{concepts.searchResult}"
+                                    var="concept"
+                                    styleClass="table"
+                                    headerClass="tableHeader"
+                                    columnClasses="center, left"
+                                    rowClasses="odd, even" >
+
+                        <rich:column sortBy="#{concept.type}" style="width: 35px; text-align: center;">
+                            <f:facet name="header">
+                                <h:outputText value="&#160;" />
+                            </f:facet>
+                            <c:set var="key" value="#{concept.type}_SHORT" />
+                            <h:panelGroup layout="block" styleClass="concept_#{msgs[key]}">
+                                <h:outputText value="#{msgs[key]}" />
+                            </h:panelGroup>
+                        </rich:column>
+
+                        <rich:column sortBy="#{concept.name}" filterBy="#{concept.name}" filterEvent="onkeyup" >
+                            <f:facet name="header">
+                                <h:outputText value="#{i18n.Concepts_CONCEPT}" />
+                            </f:facet>
+                            <a4j:commandLink actionListener="#{concepts.onShowConcept}" reRender="ajaxPage">
+                                <f:setPropertyActionListener target="#{concepts.selectedConcept}" value="#{concept}" />
+                                <h:outputText value="#{concept.name}" />
+                            </a4j:commandLink>
+                        </rich:column>
+
+                    </rich:dataTable>
+                    <rich:datascroller id="dsSearchResults" for="dtSearchResults"
+                                       align="center" maxPages="999" renderIfSinglePage="false"
+                                       reRender="dsSearchReults" />
+                </div>
+            </h:form>
+
+            <h:form id="frmImport">
+                <rich:modalPanel id="mpImport" autosized="true" domElementAttachment="parent" rendered="#{userSession.privileged['MANAGE_CONCEPTS']}">
+                    <f:facet name="header">
+                        <h:panelGroup>
+                            <h:outputText value="#{i18n.Concepts_SUBJECTS_IMPORT}" />
+                        </h:panelGroup>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:panelGroup>
+                            <h:graphicImage id="imgCloseDialogue"
+                                            value="#{i18n.resource_ICON_DIALOGUE_CLOSE}"
+                                            style="link" />
+                            <rich:componentControl for="mpImport"
+                                                   attachTo="imgCloseDialogue"
+                                                   operation="hide"
+                                                   event="onclick"/>
+                        </h:panelGroup>
+                    </f:facet>
+
+                    <h:panelGrid id="pgImport">
+                        <h:outputText value="#{i18n.Concepts_SUBJECTS_IMPORT_FILE}" />
+                        <h:column>
+                            <rich:fileUpload id="fuConceptFile" acceptedTypes="xml" fileUploadListener="#{concepts.onUploadConcepts}" immediateUpload="true" allowFlash="true">
+                                <a4j:support event="onuploadcomplete" actionListener="#{concepts.onReadAvailableLanguages}" reRender="sltLanguage" />
+                            </rich:fileUpload>
+                        </h:column>
+
+                        <h:outputText value="#{i18n.Concepts_SUBJECTS_IMPORT_LANGUAGE}" />
+                        <h:column>
+                            <h:selectOneMenu id="sltLanguage" value="#{concepts.importLanguage}" >
+                                <f:selectItems value="#{concepts.availableImportLanguages}" />
+                                <a4j:support event="onchange" reRender="lang" />
+                            </h:selectOneMenu>
+                        </h:column>
+
+                        <h:outputText value="#{i18n.Concepts_SUBJECTS_IMPORT_FORMAT}" />
+                        <h:selectOneRadio value="#{concepts.importFormat}">
+                            <f:selectItem itemLabel="#{i18n.Concepts_SUBJECTS_IMPORT_FORMAT_NEWSML_G2_KNOWLEDGE_ITEM}"
+                                          itemValue="NEWSML_G2_KNOWLEDGE_ITEM" />
+                        </h:selectOneRadio>
+
+                        <h:panelGroup styleClass="dialogueButtons">
+                            <a4j:commandLink id="lnkImportSubjects"
+                                             actionListener="#{concepts.onImport}"
+                                             styleClass="dialogButton"
+                                             value="#{i18n.Concepts_SUBJECTS_IMPORT}"
+                                             reRender="ajaxPage">
+                                <rich:componentControl for="mpImport"
+                                                       operation="hide"
+                                                       event="oncomplete" />
+                            </a4j:commandLink>
+
+
+                            <h:commandLink id="lnkCloseImportSubjects"
+                                           styleClass="dialogButton"
+                                           value="#{i18n.Generic_CANCEL}"
+                                           onclick="#{rich:component('mpImport')}.hide(); return false;" />
+                        </h:panelGroup>
+                    </h:panelGrid>
+                </rich:modalPanel>
+            </h:form>
+
+            <h:form id="frmConceptDetails">
+                <rich:modalPanel id="mpConceptDetails" autosized="true" domElementAttachment="parent" rendered="#{userSession.privileged['MANAGE_CONCEPTS'] || userSession.privileged['NEW_CONCEPTS']}">
+                    <f:facet name="header">
+                        <h:panelGroup>
+                            <h:outputText value="#{i18n.Concepts_CONCEPT_DETAILS}" />
+                        </h:panelGroup>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:panelGroup>
+                            <h:graphicImage id="imgCloseConceptDetails"
+                                            value="#{i18n.resource_ICON_DIALOGUE_CLOSE}"
+                                            style="link" />
+                            <rich:componentControl for="mpConceptDetails"
+                                                   attachTo="imgCloseConceptDetails"
+                                                   operation="hide"
+                                                   event="onclick"/>
+                        </h:panelGroup>
+                    </f:facet>
+                    <h:panelGrid id="pgMetaDataSelect" columnClasses="tabSheet" style="padding: 10px; width: 100%">
+                        <h:outputText value="#{i18n.Concepts_NAME}" />
+                        <h:inputText value="#{concepts.newName}" styleClass="text mediumInput" />
+
+                        <h:outputText value="#{i18n.Concepts_TYPE}" />
+                        <h:selectOneRadio value="#{concepts.newType}">
+                            <f:selectItem itemLabel="#{i18n['Generic_dk.i2m.converge.core.metadata.Subject_NAME']}" itemValue="dk.i2m.converge.core.metadata.Subject" />
+                            <f:selectItem itemLabel="#{i18n['Generic_dk.i2m.converge.core.metadata.Organisation_NAME']}" itemValue="dk.i2m.converge.core.metadata.Organisation" />
+                            <f:selectItem itemLabel="#{i18n['Generic_dk.i2m.converge.core.metadata.Person_NAME']}" itemValue="dk.i2m.converge.core.metadata.Person" />
+                            <f:selectItem itemLabel="#{i18n['Generic_dk.i2m.converge.core.metadata.GeoArea_NAME']}" itemValue="dk.i2m.converge.core.metadata.GeoArea" />
+                            <f:selectItem itemLabel="#{i18n['Generic_dk.i2m.converge.core.metadata.PointOfInterest_NAME']}" itemValue="dk.i2m.converge.core.metadata.PointOfInterest" />
+                        </h:selectOneRadio>
+
+                        <h:panelGroup styleClass="dialogueButtons">
+                            <a4j:commandLink id="lnkSaveConceptDetails"
+                                             styleClass="dialogButton"
+                                             value="#{i18n.Generic_SAVE}"
+                                             actionListener="#{concepts.onSaveNewConcept}"
+                                             reRender="ajaxPage"
+                                             oncomplete="if (#{converge:isAllValid()}) { Richfaces.hideModalPanel('mpConceptDetails'); return false;}" />
+
+                            <h:commandLink id="lnkCancelConceptDetails"
+                                           styleClass="dialogButton"
+                                           value="#{i18n.Generic_CANCEL}"
+                                           onclick="#{rich:component('mpConceptDetails')}.hide(); return false;">
+                            </h:commandLink>
+                        </h:panelGroup>
+
+                    </h:panelGrid>
+                </rich:modalPanel>
+            </h:form>
+
+
+            <h:form id="frmMetaDataSelect">
+                <rich:modalPanel id="mpMetaDataSelect" autosized="true" domElementAttachment="parent">
+                    <f:facet name="header">
+                        <h:panelGroup>
+                            <h:outputText value="#{i18n.Concepts_SELECT_META_DATA}" />
+                        </h:panelGroup>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:panelGroup>
+                            <h:graphicImage id="imgCloseMetaDataSelect"
+                                            value="#{i18n.resource_ICON_DIALOGUE_CLOSE}"
+                                            style="link" />
+                            <rich:componentControl for="mpMetaDataSelect"
+                                                   attachTo="imgCloseMetaDataSelect"
+                                                   operation="hide"
+                                                   event="onclick"/>
+                        </h:panelGroup>
+                    </f:facet>
+
+                    <h:panelGrid id="pgMetaDataSelect" style="width: 480px;">
+
+                        <rich:tabPanel id="tpMetaDataSelect" switchType="client"
+                                       activeTabClass="tabActive"
+                                       inactiveTabClass="tabInactive">
+
+                            <rich:tab id="tabSubjects" label="#{i18n.Concepts_SUBJECTS}">
+
+                                <h:panelGrid id="pgSubjects" columnClasses="tabSheet" style="padding: 10px; width: 100%">
+
+                                    <rich:dataTable id="dtMetaDataSubjects"
+                                                    rows="25"
+                                                    value="#{concepts.metaDataSubjects}"
+                                                    var="concept"
+                                                    styleClass="table"
+                                                    headerClass="tableHeader"
+                                                    columnClasses="center, left"
+                                                    rowClasses="odd, even" >
+
+                                        <rich:column sortBy="#{concept.type}" style="width: 35px; text-align: center;">
+                                            <f:facet name="header">
+                                                <h:outputText value="&#160;" />
+                                            </f:facet>
+                                            <c:set var="key" value="#{concept.type}_SHORT" />
+                                            <h:panelGroup layout="block" styleClass="concept_#{msgs[key]}">
+                                                <h:outputText value="#{msgs[key]}" />
+                                            </h:panelGroup>
+                                        </rich:column>
+
+                                        <rich:column sortBy="#{concept.name}" filterBy="#{concept.name}" filterEvent="onkeyup" >
+                                            <f:facet name="header">
+                                                <h:outputText value="#{i18n.Concepts_CONCEPT}" />
+                                            </f:facet>
+                                            <a4j:commandLink id="lnkSelectMetaDataSubject" ajaxSingle="true">
+                                                <f:setPropertyActionListener target="#{concepts.selectedMetaDataConcept}" value="#{concept}" />
+                                                <a4j:support event="oncomplete" actionListener="#{concepts.onSelectMetaData}" reRender="ajaxPage" />
+                                                <h:outputText value="#{concept.name}" />
+                                            </a4j:commandLink>
+                                        </rich:column>
+
+                                    </rich:dataTable>
+                                    <rich:datascroller id="dsMetaDataSubjects" for="dtMetaDataSubjects"
+                                                       align="center" maxPages="999" renderIfSinglePage="false"
+                                                       reRender="dsMetaDataSubjects" />
+
+                                </h:panelGrid>
+                            </rich:tab>
+
+                            <rich:tab id="tabPerson" label="#{i18n.Concepts_PERSONS}">
+
+                                <h:panelGrid id="pgPersons" columnClasses="tabSheet" style="padding: 10px; width: 100%">
+
+                                    <rich:dataTable id="dtMetaDataPersons"
+                                                    rows="25"
+                                                    value="#{concepts.metaDataPersons}"
+                                                    var="concept"
+                                                    styleClass="table"
+                                                    headerClass="tableHeader"
+                                                    columnClasses="center, left"
+                                                    rowClasses="odd, even" >
+
+                                        <rich:column sortBy="#{concept.type}" style="width: 35px; text-align: center;">
+                                            <f:facet name="header">
+                                                <h:outputText value="&#160;" />
+                                            </f:facet>
+                                            <c:set var="key" value="#{concept.type}_SHORT" />
+                                            <h:panelGroup layout="block" styleClass="concept_#{msgs[key]}">
+                                                <h:outputText value="#{msgs[key]}" />
+                                            </h:panelGroup>
+                                        </rich:column>
+
+                                        <rich:column sortBy="#{concept.name}" filterBy="#{concept.name}" filterEvent="onkeyup" >
+                                            <f:facet name="header">
+                                                <h:outputText value="#{i18n.Concepts_CONCEPT}" />
+                                            </f:facet>
+                                            <a4j:commandLink id="lnkSelectMetaDataPerson" ajaxSingle="true">
+                                                <f:setPropertyActionListener target="#{concepts.selectedMetaDataConcept}" value="#{concept}" />
+                                                <a4j:support event="oncomplete" actionListener="#{concepts.onSelectMetaData}" reRender="ajaxPage" />
+                                                <h:outputText value="#{concept.name}" />
+                                            </a4j:commandLink>
+                                        </rich:column>
+
+                                    </rich:dataTable>
+                                    <rich:datascroller id="dsMetaDataPersons" for="dtMetaDataPersons"
+                                                       align="center" maxPages="999" renderIfSinglePage="false"
+                                                       reRender="dsMetaDataPersons" />
+
+                                </h:panelGrid>
+                            </rich:tab>
+
+                            <rich:tab id="tabOrganisation" label="#{i18n.Concepts_ORGANISATIONS}">
+
+                                <h:panelGrid id="pgOrganisations" columnClasses="tabSheet" style="padding: 10px; width: 100%">
+
+                                    <rich:dataTable id="dtMetaDataOrganisations"
+                                                    rows="25"
+                                                    value="#{concepts.metaDataOrganisations}"
+                                                    var="concept"
+                                                    styleClass="table"
+                                                    headerClass="tableHeader"
+                                                    columnClasses="center, left"
+                                                    rowClasses="odd, even" >
+
+                                        <rich:column sortBy="#{concept.type}" style="width: 35px; text-align: center;">
+                                            <f:facet name="header">
+                                                <h:outputText value="&#160;" />
+                                            </f:facet>
+                                            <c:set var="key" value="#{concept.type}_SHORT" />
+                                            <h:panelGroup layout="block" styleClass="concept_#{msgs[key]}">
+                                                <h:outputText value="#{msgs[key]}" />
+                                            </h:panelGroup>
+                                        </rich:column>
+
+                                        <rich:column sortBy="#{concept.name}" filterBy="#{concept.name}" filterEvent="onkeyup" >
+                                            <f:facet name="header">
+                                                <h:outputText value="#{i18n.Concepts_CONCEPT}" />
+                                            </f:facet>
+                                            <a4j:commandLink id="lnkSelectMetaDataOrganisation" ajaxSingle="true">
+                                                <f:setPropertyActionListener target="#{concepts.selectedMetaDataConcept}" value="#{concept}" />
+                                                <a4j:support event="oncomplete" actionListener="#{concepts.onSelectMetaData}" reRender="ajaxPage" />
+                                                <h:outputText value="#{concept.name}" />
+                                            </a4j:commandLink>
+                                        </rich:column>
+
+                                    </rich:dataTable>
+                                    <rich:datascroller id="dsMetaDataOrganisations" for="dtMetaDataOrganisations"
+                                                       align="center" maxPages="999" renderIfSinglePage="false"
+                                                       reRender="dsMetaDataOrganisations" />
+
+                                </h:panelGrid>
+                            </rich:tab>
+
+                            <rich:tab id="tabLocations" label="#{i18n.Concepts_LOCATIONS}">
+
+                                <h:panelGrid id="pgLocations" columnClasses="tabSheet" style="padding: 10px; width: 100%">
+
+                                    <rich:dataTable id="dtMetaDataLocations"
+                                                    rows="25"
+                                                    value="#{concepts.metaDataLocations}"
+                                                    var="concept"
+                                                    styleClass="table"
+                                                    headerClass="tableHeader"
+                                                    columnClasses="center, left"
+                                                    rowClasses="odd, even" >
+
+                                        <rich:column sortBy="#{concept.type}" style="width: 35px; text-align: center;">
+                                            <f:facet name="header">
+                                                <h:outputText value="&#160;" />
+                                            </f:facet>
+                                            <c:set var="key" value="#{concept.type}_SHORT" />
+                                            <h:panelGroup layout="block" styleClass="concept_#{msgs[key]}">
+                                                <h:outputText value="#{msgs[key]}" />
+                                            </h:panelGroup>
+                                        </rich:column>
+
+                                        <rich:column sortBy="#{concept.name}" filterBy="#{concept.name}" filterEvent="onkeyup" >
+                                            <f:facet name="header">
+                                                <h:outputText value="#{i18n.Concepts_CONCEPT}" />
+                                            </f:facet>
+                                            <a4j:commandLink id="lnkSelectMetaDataLocation" ajaxSingle="true">
+                                                <f:setPropertyActionListener target="#{concepts.selectedMetaDataConcept}" value="#{concept}" />
+                                                <a4j:support event="oncomplete" actionListener="#{concepts.onSelectMetaData}" reRender="ajaxPage" />
+                                                <h:outputText value="#{concept.name}" />
+                                            </a4j:commandLink>
+                                        </rich:column>
+
+                                    </rich:dataTable>
+                                    <rich:datascroller id="dsMetaDataLocations" for="dtMetaDataLocations"
+                                                       align="center" maxPages="999" renderIfSinglePage="false"
+                                                       reRender="dsMetaDataLocations" />
+
+                                </h:panelGrid>
+                            </rich:tab>
+
+
+                        </rich:tabPanel>
+
+                        <h:panelGroup styleClass="dialogueButtons">
+                            <h:commandLink id="lnkCancelConceptDetails"
+                                           styleClass="dialogButton"
+                                           value="#{i18n.Generic_CLOSE}"
+                                           onclick="#{rich:component('mpMetaDataSelect')}.hide(); return false;">
+                            </h:commandLink>
+                        </h:panelGroup>
+                    </h:panelGrid>
+                </rich:modalPanel>
+            </h:form>
+
+        </ui:define>
+
+    </ui:composition>
+</jsp:root>

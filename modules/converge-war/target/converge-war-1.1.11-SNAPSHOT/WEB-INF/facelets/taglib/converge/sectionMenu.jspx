@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<jsp:root version="2.0"
+          xmlns:html="http://www.w3.org/1999/xhtml"
+          xmlns:jsp="http://java.sun.com/JSP/Page"
+          xmlns:ui="http://java.sun.com/jsf/facelets"
+          xmlns:h="http://java.sun.com/jsf/html"
+          xmlns:f="http://java.sun.com/jsf/core"
+          xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+          xmlns:a4j="http://richfaces.org/a4j"
+          xmlns:rich="http://richfaces.org/rich"
+          xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+    <ui:composition>
+        <h:form rendered="#{rendered != 'false' ? 'true' : 'false'}">
+            <converge:moduleHeader moduleTitle="#{menuTitle}" />
+            <div class="moduleContent">
+                <h:dataTable value="#{menuItems}" var="menuItem">
+                    <h:column>
+                        <h:graphicImage value="/images/template/bullet.gif" 
+                                        alt="#{i18n[menuItem.label]}"
+                                        title="#{i18n[menuItem.label]}" />
+                    </h:column>
+                    <h:column>
+                        <h:commandLink action="#{menuItem.action}" immediate="true">
+                            <h:outputText value="#{i18n[menuItem.label]}" />
+                        </h:commandLink>
+                    </h:column>
+                </h:dataTable>
+            </div>
+            <converge:moduleSpacer />
+        </h:form>
+
+    </ui:composition>
+</jsp:root>

@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jsp:root version="2.0" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:c="http://java.sun.com/jstl/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags" xmlns:v="http://converge.i2m.dk">
+
+    <ui:composition template="/WEB-INF/facelets/templates/listings.xhtml">
+
+        <ui:define name="leftColumnBottom">
+            <converge:moduleHeader moduleTitle="#{msgs.OPTIONS}" />
+            <div class="moduleContent">
+                <h:panelGrid columns="2">
+                    <h:graphicImage value="#{i18n.resource_ICON_BULLET}" />
+                    <h:outputLink value="#{facesContext.externalContext.request.contextPath}/Listings-StockMarkets.xhtml">
+                        <h:outputText value="#{msgs.listing_STOCK_MARKETS}" />
+                    </h:outputLink>
+
+                    <h:graphicImage value="#{i18n.resource_ICON_BULLET}" />
+                    <a4j:commandLink value="#{msgs.listing_FINANCIAL_MARKETS}" ajaxSingle="true" reRender="frmFinancialMarkets" onclick="#{rich:component('mpFinancialMarkets')}.show();" />
+                </h:panelGrid>
+            </div>
+        </ui:define>
+
+        <ui:define name="body">
+            <a4j:keepAlive beanName="listings" />
+            <a4j:outputPanel ajaxRendered="true"><v:message /></a4j:outputPanel>
+
+            <h:form id="frmPage">
+                <converge:moduleHeader moduleTitle="#{msgs.listing_STOCK_MARKETS}" />
+                <div class="moduleContent">
+
+                    <rich:dataTable id="dtMarketValues" value="#{listings.marketValues}" var="item" width="100%" styleClass="table" headerClass="tableHeader" rowClasses="odd, even" rows="30">
+                        <rich:column styleClass="columnIcon center" headerClass="columnSubIcon">
+                            <f:facet name="header">
+                                <a4j:status id="staMarketValues">
+                                    <f:facet name="start">
+                                        <h:graphicImage value="#{i18n.resource_ICON_AJAX_LOADING}" title="#{msgs.UPDATING}" />
+                                    </f:facet>
+                                </a4j:status>
+                            </f:facet>
+                            <h:graphicImage value="#{res.MARKET_VALUE_ICON}" />
+                        </rich:column>
+
+                        <rich:column sortBy="#{item.updated}" sortOrder="DESCENDING" style="width: 115px;">
+                            <f:facet name="header">
+                                <h:outputText value="#{msgs.UPDATED}" />
+                            </f:facet>
+                            <h:outputText value="#{item.updated.time}">
+                                <f:convertDateTime type="both" dateStyle="short" timeZone="#{userSession.user.timeZone}" />
+                            </h:outputText>
+                        </rich:column>
+
+                        <rich:column sortBy="#{item.financialMarket.name}">
+                            <f:facet name="header">
+                                <h:outputText value="#{msgs.listing_FINANCIAL_MARKET}" />
+                            </f:facet>
+                            <h:outputText value="#{item.financialMarket.name} (#{item.financialMarket.shortName})" />
+                        </rich:column>
+
+                        <rich:column sortBy="#{item.value}">
+                            <f:facet name="header">
+                                <h:outputText value="#{msgs.listing_VALUE}" />
+                            </f:facet>
+                            <h:outputText value="#{item.value}" />
+                        </rich:column>
+
+                        <rich:column sortBy="#{item.change}">
+                            <f:facet name="header">
+                                <h:outputText value="#{msgs.listing_CHANGE}" />
+                            </f:facet>
+                            <h:outputText value="#{item.change}" />
+                        </rich:column>
+
+                        <rich:column styleClass="columnOneButton center" headerClass="columnOneButton">
+                            <f:facet name="header">
+                                <a4j:commandButton styleClass="button smallButton" value="#{msgs.NEW}" ajaxSingle="true" reRender="frmMarketValue" actionListener="#{listings.onNewMarketValue}" oncomplete="#{rich:component('mpMarketValue')}.show();" />
+                            </f:facet>
+                            <a4j:commandButton styleClass="button smallButton" value="#{msgs.MODIFY}" ajaxSingle="true" reRender="frmMarketValue" oncomplete="#{rich:component('mpMarketValue')}.show();">
+                                <f:setPropertyActionListener target="#{listings.selectedMarketValue}" value="#{item}" />
+                            </a4j:commandButton>
+                        </rich:column>
+
+                    </rich:dataTable>
+
+                    <rich:datascroller id="scMarketValues" for="dtMarketValues" align="center" maxPages="20" renderIfSinglePage="false" reRender="scMarketValues" />
+
+                </div>
+            </h:form>
+
+            <h:form id="frmMarketValue">
+                <rich:modalPanel id="mpMarketValue" autosized="true" domElementAttachment="parent" >
+                    <f:facet name="header">
+                        <h:panelGroup>
+                            <h:outputText value="#{msgs.listing_MARKET_VALUE}" />
+                        </h:panelGroup>
+                    </f:facet>
+                    <h:panelGrid style="width: 450px;" rendered="#{listings.selectedMarketValue != null}">
+
+                        <rich:tabPanel switchType="client" activeTabClass="tabActive" inactiveTabClass="tabInactive">
+
+                            <rich:tab label="#{msgs.listing_MARKET_VALUE}">
+
+                                <h:panelGrid columnClasses="tabSheet" styleClass="tabSheetGrid">
+                                    <h:outputText value="#{msgs.listing_FINANCIAL_MARKET}" />
+                                    <h:selectOneMenu id="somFinancialMarkets" value="#{listings.selectedMarketValue.financialMarket}" converter="#{converters.financialMarketConverter}" required="true">
+                                        <f:selectItems value="#{common.financialMarkets}" />
+                                    </h:selectOneMenu>
+
+                                    <h:outputText value="#{msgs.listing_VALUE}" />
+                                    <h:inputText id="txtValue" value="#{listings.selectedMarketValue.value}" styleClass="text" required="true">
+                                        <f:convertNumber/>
+                                    </h:inputText>
+
+                                    <h:outputText value="#{msgs.listing_CHANGE}" />
+                                    <h:inputText id="txtChange" value="#{listings.selectedMarketValue.change}" styleClass="text" required="true">
+                                        <f:convertNumber/>
+                                    </h:inputText>
+
+                                    <h:outputText value="#{msgs.listing_UPDATED}" />
+                                    <rich:calendar id="calUpdated" value="#{listings.selectedMarketValue.updated}" popup="true" timeZone="#{userSession.user.timeZone}" datePattern="#{msgs.FORMAT_DATE_AND_TIME}" />
+
+                                </h:panelGrid>
+
+                            </rich:tab>
+                        </rich:tabPanel>
+
+                        <h:panelGroup styleClass="dialogueButtons">
+                            <a4j:commandLink id="lnkSaveMarketValue" styleClass="dialogButton" value="#{msgs.CREATE}" actionListener="#{listings.onAddMarketValue}" reRender="dtMarketValues" oncomplete="if (#{converge:isAllValid()}){ #{rich:component('mpMarketValue')}.hide(); return false; }" rendered="#{listings.selectedMarketValue.id == null}" />
+                            <a4j:commandLink id="lnkUpdateMarketValue" styleClass="dialogButton" value="#{msgs.UPDATE}" actionListener="#{listings.onUpdateMarketValue}" reRender="dtMarketValues" oncomplete="if (#{converge:isAllValid()}){ #{rich:component('mpMarketValue')}.hide(); return false; }" rendered="#{listings.selectedMarketValue.id != null}" />
+                            <a4j:commandLink id="lnkRemoveMarketValue" styleClass="dialogButton" value="#{msgs.DELETE}" actionListener="#{listings.onDeleteMarketValue}" reRender="dtMarketValues" oncomplete="if (#{converge:isAllValid()}){ #{rich:component('mpMarketValue')}.hide(); return false; }" rendered="#{listings.selectedMarketValue.id != null}" />
+                            <h:commandLink id="lnkCancelMarketValue" styleClass="dialogButton" value="#{msgs.CANCEL}" onclick="#{rich:component('mpMarketValue')}.hide(); return false;" />
+                        </h:panelGroup>
+                    </h:panelGrid>
+
+                </rich:modalPanel>
+            </h:form>
+
+            <h:form id="frmFinancialMarkets">
+                <rich:modalPanel id="mpFinancialMarkets" autosized="true" domElementAttachment="parent" >
+                    <f:facet name="header">
+                        <h:panelGroup>
+                            <h:outputText value="#{msgs.listing_STOCK_MARKETS}" />
+                        </h:panelGroup>
+                    </f:facet>
+                    <h:panelGrid style="width: 450px;">
+
+                        <rich:tabPanel switchType="client" activeTabClass="tabActive" inactiveTabClass="tabInactive">
+
+                            <rich:tab label="#{msgs.listing_STOCK_MARKETS}">
+
+                                <h:panelGrid columnClasses="tabSheet" styleClass="tabSheetGrid">
+                                    <rich:dataTable id="dtFinancialMarkets" value="#{listings.financialMarkets}" var="financialMarket" width="100%" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
+                                        <rich:column styleClass="columnIcon center" headerClass="columnSubIcon">
+                                            <f:facet name="header">
+                                            </f:facet>
+                                            <h:graphicImage value="#{res.MARKET_VALUE_ICON}" />
+                                        </rich:column>
+
+                                        <rich:column sortBy="#{financialMarket.name}">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.listing_FINANCIAL_MARKET_NAME}" />
+                                            </f:facet>
+                                            <h:outputText value="#{financialMarket.name}" />
+                                        </rich:column>
+
+                                        <rich:column sortBy="#{financialMarket.shortName}">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.listing_FINANCIAL_MARKET_SHORT_NAME}" />
+                                            </f:facet>
+                                            <h:outputText value="#{financialMarket.shortName}" />
+                                        </rich:column>
+
+                                        <rich:column sortBy="#{financialMarket.active}">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.listing_FINANCIAL_MARKET_ACTIVE}" />
+                                            </f:facet>
+                                            <h:outputText value="#{msgs.YES}" rendered="#{financialMarket.active}" />
+                                            <h:outputText value="#{msgs.NO}" rendered="#{!financialMarket.active}" />
+                                        </rich:column>
+
+                                        <rich:column styleClass="columnOneButton center" headerClass="columnOneButton">
+                                            <f:facet name="header">
+                                                <a4j:commandButton styleClass="button smallButton" value="#{msgs.NEW}" ajaxSingle="true" reRender="frmFinancialMarket" actionListener="#{listings.onNewFinancialMarket}" oncomplete="#{rich:component('mpFinancialMarket')}.show();" />
+                                            </f:facet>
+                                            <a4j:commandButton styleClass="button smallButton" value="#{msgs.MODIFY}" ajaxSingle="true" reRender="frmFinancialMarket" oncomplete="#{rich:component('mpFinancialMarket')}.show();">
+                                                <f:setPropertyActionListener target="#{listings.selectedFinancialMarket}" value="#{financialMarket}" />
+                                            </a4j:commandButton>
+                                        </rich:column>
+                                    </rich:dataTable>
+
+
+                                </h:panelGrid>
+
+                            </rich:tab>
+                        </rich:tabPanel>
+
+                        <h:panelGroup styleClass="dialogueButtons">
+                            <h:commandLink id="lnkCloseFinancialMarkets" styleClass="dialogButton" value="#{msgs.CLOSE}" onclick="#{rich:component('mpFinancialMarkets')}.hide(); return false;" />
+                        </h:panelGroup>
+                    </h:panelGrid>
+
+                </rich:modalPanel>
+            </h:form>
+
+            <h:form id="frmFinancialMarket">
+                <rich:modalPanel id="mpFinancialMarket" autosized="true" domElementAttachment="parent" >
+                    <f:facet name="header">
+                        <h:panelGroup>
+                            <h:outputText value="#{msgs.listing_FINANCIAL_MARKET}" />
+                        </h:panelGroup>
+                    </f:facet>
+                    <h:panelGrid style="width: 450px;" rendered="#{listings.selectedFinancialMarket != null}">
+
+                        <rich:tabPanel switchType="client" activeTabClass="tabActive" inactiveTabClass="tabInactive">
+
+                            <rich:tab label="#{msgs.listing_FINANCIAL_MARKET}">
+
+                                <h:panelGrid columnClasses="tabSheet" styleClass="tabSheetGrid">
+                                    <h:outputText value="#{msgs.listing_FINANCIAL_MARKET_NAME}" />
+                                    <h:inputText id="txtFinancialMarketName" value="#{listings.selectedFinancialMarket.name}" styleClass="text" required="true" />
+
+                                    <h:outputText value="#{msgs.listing_FINANCIAL_MARKET_SHORT_NAME}" />
+                                    <h:inputText id="txtFinancialMarketShortName" value="#{listings.selectedFinancialMarket.shortName}" styleClass="text" required="true" />
+
+                                    <h:outputText value="#{msgs.listing_FINANCIAL_MARKET_ACTIVE}" />
+                                    <h:selectOneRadio id="sorFinancialMarketActive" value="#{listings.selectedFinancialMarket.active}">
+                                        <f:selectItem itemLabel="#{msgs.YES}" itemValue="#{true}" />
+                                        <f:selectItem itemLabel="#{msgs.NO}" itemValue="#{false}" />
+                                    </h:selectOneRadio>
+                                </h:panelGrid>
+
+                            </rich:tab>
+                        </rich:tabPanel>
+
+                        <h:panelGroup styleClass="dialogueButtons">
+                            <a4j:commandLink id="lnkSaveFinancialMarket" styleClass="dialogButton" value="#{msgs.CREATE}" actionListener="#{listings.onAddFinancialMarket}" reRender="dtFinancialMarkets" oncomplete="if (#{converge:isAllValid()}){ #{rich:component('mpFinancialMarket')}.hide(); return false; }" rendered="#{listings.selectedFinancialMarket.id == null}" />
+                            <a4j:commandLink id="lnkUpdateFinancialMarket" styleClass="dialogButton" value="#{msgs.UPDATE}" actionListener="#{listings.onUpdateFinancialMarket}" reRender="dtFinancialMarkets" oncomplete="if (#{converge:isAllValid()}){ #{rich:component('mpFinancialMarket')}.hide(); return false; }" rendered="#{listings.selectedFinancialMarket.id != null}" />
+                            <a4j:commandLink id="lnkRemoveFinancialMarket" styleClass="dialogButton" value="#{msgs.DELETE}" actionListener="#{listings.onDeleteFinancialMarket}" reRender="dtFinancialMarkets" oncomplete="if (#{converge:isAllValid()}){ #{rich:component('mpFinancialMarket')}.hide(); return false; }" rendered="#{listings.selectedFinancialMarket.id != null}" />
+                            <h:commandLink id="lnkCancelFinancialMarket" styleClass="dialogButton" value="#{msgs.CANCEL}" onclick="#{rich:component('mpFinancialMarket')}.hide(); return false;" />
+                        </h:panelGroup>
+                    </h:panelGrid>
+
+                </rich:modalPanel>
+            </h:form>
+
+
+        </ui:define>
+    </ui:composition>
+</jsp:root>

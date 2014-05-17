@@ -1,0 +1,339 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<jsp:root version="2.0" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:c="http://java.sun.com/jstl/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:v="http://converge.i2m.dk" xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+
+    <ui:composition template="/WEB-INF/facelets/templates/administration.xhtml">
+        <ui:define name="title">#{i18n.administrator_OpenCalais_TITLE}</ui:define>
+
+        <ui:define name="body">
+
+            <a4j:keepAlive beanName="administrator_OpenCalais" />
+
+            <a4j:outputPanel ajaxRendered="true">
+                <v:message />
+            </a4j:outputPanel>
+
+            <h:form id="frmOpenCalais">
+                <converge:moduleHeader moduleTitle="#{i18n.administrator_OpenCalais_API}" />
+                <div class="moduleContent">
+                    <h:outputText value="#{i18n.administrator_OpenCalais_API_HELP}" escape="false" style="font-size: 0.9em;" />
+                    <h:panelGrid columns="2" style="width: 100%; margin-top: 10px;" columnClasses="left, btnC">
+                        <h:inputText value="#{administrator_OpenCalais.apiKey}" styleClass="text" style="width: 100%" />
+                        <a4j:commandButton id="btnSave" styleClass="button dynamicButton" value="#{i18n.Generic_SAVE}" 
+                                           actionListener="#{administrator_OpenCalais.onSaveApiKey}" reRender="frmOpenCalais" />
+                    </h:panelGrid>
+                </div>
+                <converge:moduleSpacer />
+
+                <converge:moduleHeader moduleTitle="#{i18n.administrator_OpenCalais_CONCEPT_MAPPING}" />
+                <div class="moduleContent">
+                    <h:outputText value="#{i18n.administrator_OpenCalais_MAPPING_HELP}" escape="false" style="font-size: 0.9em;" />
+                    <rich:dataTable id="dtMappings" value="#{administrator_OpenCalais.mappings}" var="mapping" styleClass="table" headerClass="tableHeader" style="margin-top: 10px;">
+                        <rich:column styleClass="center columnIcon">
+                            <f:facet name="header">
+                                <h:graphicImage value="#{i18n.resource_ICON_EMPTY}" width="16" height="16" />
+                            </f:facet>
+                            <h:graphicImage title="#{i18n.OpenCalais_PROPERTY}" alt="#{i18n.OpenCalais_PROPERTY}" value="#{res.PROPERTY_ICON}" />
+                        </rich:column>
+                        <rich:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{i18n.administrator_OpenCalais_MAPPING_TYPE_GROUP}" />
+                            </f:facet>
+                            <h:outputText value="#{mapping.typeGroup}" />
+                        </rich:column>
+
+                        <rich:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{i18n.administrator_OpenCalais_MAPPING_FIELD}" />
+                            </f:facet>
+                            <h:outputText value="#{mapping.field}" />
+                        </rich:column>
+
+                        <rich:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{i18n.administrator_OpenCalais_MAPPING_FIELD_VALUE}" />
+                            </f:facet>
+                            <h:outputText value="#{mapping.value}" />
+                        </rich:column>
+
+                        <rich:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{i18n.administrator_OpenCalais_MAPPING_CONCEPT}" />
+                            </f:facet>
+                            <c:set var="key" value="#{mapping.concept.type}_SHORT" />
+                            <h:panelGrid columns="2">
+                                <h:panelGroup layout="block" styleClass="concept_#{msgs[key]}">
+                                    <h:outputText value="#{msgs[key]}" />
+                                </h:panelGroup>
+                                <h:outputText value="#{mapping.concept.fullTitle}" />
+                            </h:panelGrid>
+                        </rich:column>
+
+                        <rich:column styleClass="columnOneButton center" headerClass="columnOneButton center">
+                            <f:facet name="header">
+                                <a4j:commandButton styleClass="button smallButton" value="#{i18n.Generic_ADD}" actionListener="#{administrator_OpenCalais.onNewMapping}" reRender="frmMappingDetails" ajaxSingle="true">
+                                    <rich:componentControl for="mpMappingDetails" operation="show" event="oncomplete" />
+                                </a4j:commandButton>
+                            </f:facet>
+
+                            <a4j:commandButton styleClass="button smallButton" value="#{i18n.Generic_REMOVE}" reRender="dtMappings" onclick="if (confirm('#{i18n.administrator_OpenCalais_MAPPING_REMOVE_COMFIRM}') != true){ return false; };">
+                                <f:setPropertyActionListener target="#{administrator_OpenCalais.deleteMapping}" value="#{mapping.id}" />
+                            </a4j:commandButton>
+
+                        </rich:column>
+                    </rich:dataTable>
+                </div>
+                <converge:moduleSpacer />
+            </h:form>
+
+            <h:form id="frmMappingDetails">
+
+                <rich:modalPanel id="mpMappingDetails" autosized="true" domElementAttachment="parent" rendered="#{administrator_OpenCalais.selectedMapping != null}">
+                    <f:facet name="header">
+                        <h:panelGroup>
+                            <h:outputText value="#{i18n.administrator_OpenCalais_MAPPING_DETAILS}" />
+                        </h:panelGroup>
+                    </f:facet>
+                    <h:panelGrid id="pgMappingDetails" style="width: 480px;">
+
+                        <rich:tabPanel switchType="client" activeTabClass="tabActive" inactiveTabClass="tabInactive">
+                            <rich:tab id="tabMapping" label="#{i18n.administrator_OpenCalais_MAPPING}">
+                                <h:panelGrid columnClasses="tabSheet" style="padding: 10px; width: 100%">
+                                    <h:outputText value="#{i18n.administrator_OpenCalais_MAPPING_TYPE_GROUP}:" />
+                                    <h:inputText styleClass="text mediumInput" value="#{administrator_OpenCalais.selectedMapping.typeGroup}" required="true" requiredMessage="#{i18n.administrator_OpenCalais_MAPPING_TYPE_GROUP_REQUIRED}" />
+
+                                    <h:outputText value="#{i18n.administrator_OpenCalais_MAPPING_FIELD}:" />
+                                    <h:inputText styleClass="text mediumInput" value="#{administrator_OpenCalais.selectedMapping.field}" required="true" requiredMessage="#{i18n.administrator_OpenCalais_MAPPING_FIELD_REQUIRED}" />
+
+                                    <h:outputText value="#{i18n.administrator_OpenCalais_MAPPING_FIELD_VALUE}:" />
+                                    <h:inputText styleClass="text mediumInput" value="#{administrator_OpenCalais.selectedMapping.value}" required="true" requiredMessage="#{i18n.administrator_OpenCalais_MAPPING_FIELD_VALUE_REQUIRED}" />
+
+                                    <h:outputText value="#{i18n.administrator_OpenCalais_MAPPING_CONCEPT}:" />
+                                    <h:column>
+                                        <h:inputHidden id="ihConcept" required="true" value="#{administrator_OpenCalais.conceptId}" requiredMessage="#{i18n.administrator_OpenCalais_MAPPING_CONCEPT_REQUIRED}" />
+                                        <h:inputText id="txtConceptName" styleClass="text" style="width: 370px; margin-right: 5px;" value="#{administrator_OpenCalais.selectedMapping.concept.fullTitle}" disabled="true" />
+                                        <a4j:commandButton styleClass="button dynamicButton" value="#{i18n.Generic_SELECT}" reRender="frmConceptSelector" ajaxSingle="true">
+                                            <rich:componentControl for="mpConceptSelector" operation="show" event="oncomplete" />
+                                        </a4j:commandButton>
+                                    </h:column>
+                                </h:panelGrid>
+                            </rich:tab>
+                        </rich:tabPanel>
+
+                        <h:panelGroup styleClass="dialogueButtons">
+                            <a4j:commandLink id="lnkSave" styleClass="dialogButton" value="#{i18n.Generic_SAVE}" actionListener="#{administrator_OpenCalais.onSaveMapping}" reRender="frmOpenCalais" oncomplete="if (#{converge:isAllValid()}){ #{rich:component('mpMappingDetails')}.hide(); return false; }" /> 
+                            <h:commandLink id="lnkCloseMappingDetails" styleClass="dialogButton" value="#{i18n.Generic_CANCEL}" onclick="#{rich:component('mpMappingDetails')}.hide(); return false;" />
+                        </h:panelGroup>
+                    </h:panelGrid>
+                </rich:modalPanel>
+            </h:form>
+
+            <h:form id="frmConceptSelector">
+                <rich:modalPanel id="mpConceptSelector" autosized="true" domElementAttachment="parent">
+                    <f:facet name="header">
+                        <h:panelGroup>
+                            <h:outputText value="#{i18n.administrator_OpenCalais_CONCEPT_SELECTOR}" />
+                        </h:panelGroup>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:panelGroup>
+                            <h:graphicImage id="imgCloseConceptSelector" value="#{i18n.resource_ICON_DIALOGUE_CLOSE}" style="link" />
+                            <rich:componentControl for="mpConceptSelector" attachTo="imgCloseConceptSelector" operation="hide" event="onclick"/>
+                        </h:panelGroup>
+                    </f:facet>
+
+                    <h:panelGrid id="pgConceptSelector" style="width: 480px;">
+
+                        <rich:tabPanel id="tpConceptSelector" switchType="client" activeTabClass="tabActive" inactiveTabClass="tabInactive">
+
+                            <rich:tab id="tabSubjects" label="#{i18n.administrator_OpenCalais_CONCEPT_SELECTOR_SUBJECTS}">
+
+                                <h:panelGrid id="pgSubjects" columnClasses="tabSheet" style="padding: 10px; width: 100%">
+
+                                    <rich:dataTable id="dtMetaDataSubjects"
+                                                    rows="20"
+                                                    value="#{administrator_OpenCalais.subjects}"
+                                                    var="concept"
+                                                    styleClass="table"
+                                                    headerClass="tableHeader"
+                                                    columnClasses="center, left"
+                                                    rowClasses="odd, even" >
+
+                                        <rich:column style="width: 35px; text-align: center;">
+                                            <f:facet name="header">
+                                                <h:outputText value="&#160;" />
+                                            </f:facet>
+                                            <c:set var="key" value="#{concept.type}_SHORT" />
+                                            <h:panelGroup layout="block" styleClass="concept_#{msgs[key]}">
+                                                <h:outputText value="#{msgs[key]}" />
+                                            </h:panelGroup>
+                                        </rich:column>
+
+                                        <rich:column sortBy="#{concept.fullTitle}" filterBy="#{concept.name}" filterEvent="onkeyup" >
+                                            <f:facet name="header">
+                                                <h:outputText value="#{i18n.Concepts_CONCEPT}" />
+                                            </f:facet>
+                                            <a4j:commandLink id="lnkSelectMetaDataSubject" ajaxSingle="true">
+                                                <f:setPropertyActionListener target="#{administrator_OpenCalais.conceptId}" value="#{concept.id}" />
+                                                <f:setPropertyActionListener target="#{administrator_OpenCalais.selectedMapping.concept}" value="#{concept}" />
+                                                <a4j:support event="oncomplete" reRender="txtConceptName, ihConcept" oncomplete="#{rich:component('mpConceptSelector')}.hide();" />
+                                                <h:outputText value="#{concept.fullTitle}" />
+                                            </a4j:commandLink>
+                                        </rich:column>
+
+                                    </rich:dataTable>
+                                    <rich:datascroller id="dsMetaDataSubjects" for="dtMetaDataSubjects" align="center" maxPages="30" renderIfSinglePage="false" reRender="dsMetaDataSubjects" />
+
+                                </h:panelGrid>
+                            </rich:tab>
+
+                            <rich:tab id="tabPerson" label="#{i18n.administrator_OpenCalais_CONCEPT_SELECTOR_PERSONS}">
+
+                                <h:panelGrid id="pgPersons" columnClasses="tabSheet" style="padding: 10px; width: 100%">
+
+                                    <rich:dataTable id="dtMetaDataPersons"
+                                                    rows="20"
+                                                    value="#{administrator_OpenCalais.persons}"
+                                                    var="concept"
+                                                    styleClass="table"
+                                                    headerClass="tableHeader"
+                                                    columnClasses="center, left"
+                                                    rowClasses="odd, even" >
+
+                                        <rich:column style="width: 35px; text-align: center;">
+                                            <f:facet name="header">
+                                                <h:outputText value="&#160;" />
+                                            </f:facet>
+                                            <c:set var="key" value="#{concept.type}_SHORT" />
+                                            <h:panelGroup layout="block" styleClass="concept_#{msgs[key]}">
+                                                <h:outputText value="#{msgs[key]}" />
+                                            </h:panelGroup>
+                                        </rich:column>
+
+                                        <rich:column sortBy="#{concept.name}" filterBy="#{concept.name}" filterEvent="onkeyup" >
+                                            <f:facet name="header">
+                                                <h:outputText value="#{i18n.Concepts_CONCEPT}" />
+                                            </f:facet>
+                                            <a4j:commandLink id="lnkSelectMetaDataPerson" ajaxSingle="true">
+                                                <f:setPropertyActionListener target="#{administrator_OpenCalais.conceptId}" value="#{concept.id}" />
+                                                <f:setPropertyActionListener target="#{administrator_OpenCalais.selectedMapping.concept}" value="#{concept}" />
+                                                <a4j:support event="oncomplete" reRender="txtConceptName, ihConcept" oncomplete="#{rich:component('mpConceptSelector')}.hide();" />
+                                                <h:outputText value="#{concept.fullTitle}" />
+                                            </a4j:commandLink>
+                                        </rich:column>
+
+                                    </rich:dataTable>
+                                    <rich:datascroller id="dsMetaDataPersons" for="dtMetaDataPersons"
+                                                       align="center" maxPages="30" renderIfSinglePage="false"
+                                                       reRender="dsMetaDataPersons" />
+
+                                </h:panelGrid>
+                            </rich:tab>
+
+
+                            <rich:tab id="tabOrganisation" label="#{i18n.administrator_OpenCalais_CONCEPT_SELECTOR_ORGANISATIONS}">
+
+                                <h:panelGrid id="pgOrganisations" columnClasses="tabSheet" style="padding: 10px; width: 100%">
+
+                                    <rich:dataTable id="dtMetaDataOrganisations"
+                                                    rows="20"
+                                                    value="#{administrator_OpenCalais.organisations}"
+                                                    var="concept"
+                                                    styleClass="table"
+                                                    headerClass="tableHeader"
+                                                    columnClasses="center, left"
+                                                    rowClasses="odd, even" >
+
+                                        <rich:column sortBy="#{concept.type}" style="width: 35px; text-align: center;">
+                                            <f:facet name="header">
+                                                <h:outputText value="&#160;" />
+                                            </f:facet>
+                                            <c:set var="key" value="#{concept.type}_SHORT" />
+                                            <h:panelGroup layout="block" styleClass="concept_#{msgs[key]}">
+                                                <h:outputText value="#{msgs[key]}" />
+                                            </h:panelGroup>
+                                        </rich:column>
+
+                                        <rich:column sortBy="#{concept.name}" filterBy="#{concept.name}" filterEvent="onkeyup" >
+                                            <f:facet name="header">
+                                                <h:outputText value="#{i18n.Concepts_CONCEPT}" />
+                                            </f:facet>
+                                            <a4j:commandLink id="lnkSelectMetaDataOrganisation" ajaxSingle="true">
+                                                <f:setPropertyActionListener target="#{administrator_OpenCalais.conceptId}" value="#{concept.id}" />
+                                                <f:setPropertyActionListener target="#{administrator_OpenCalais.selectedMapping.concept}" value="#{concept}" />
+                                                <a4j:support event="oncomplete" reRender="txtConceptName, ihConcept" oncomplete="#{rich:component('mpConceptSelector')}.hide();" />
+                                                <h:outputText value="#{concept.fullTitle}" />
+                                            </a4j:commandLink>
+                                        </rich:column>
+
+                                    </rich:dataTable>
+                                    <rich:datascroller id="dsMetaDataOrganisations" for="dtMetaDataOrganisations"
+                                                       align="center" maxPages="30" renderIfSinglePage="false"
+                                                       reRender="dsMetaDataOrganisations" />
+
+                                </h:panelGrid>
+                            </rich:tab>
+
+                            <rich:tab id="tabLocations" label="#{i18n.Concepts_LOCATIONS}">
+
+                                <h:panelGrid id="pgLocations" columnClasses="tabSheet" style="padding: 10px; width: 100%">
+
+                                    <rich:dataTable id="dtMetaDataLocations"
+                                                    rows="20"
+                                                    value="#{administrator_OpenCalais.locations}"
+                                                    var="concept"
+                                                    styleClass="table"
+                                                    headerClass="tableHeader"
+                                                    columnClasses="center, left"
+                                                    rowClasses="odd, even" >
+
+                                        <rich:column sortBy="#{concept.type}" style="width: 35px; text-align: center;">
+                                            <f:facet name="header">
+                                                <h:outputText value="&#160;" />
+                                            </f:facet>
+                                            <c:set var="key" value="#{concept.type}_SHORT" />
+                                            <h:panelGroup layout="block" styleClass="concept_#{msgs[key]}">
+                                                <h:outputText value="#{msgs[key]}" />
+                                            </h:panelGroup>
+                                        </rich:column>
+
+                                        <rich:column sortBy="#{concept.name}" filterBy="#{concept.name}" filterEvent="onkeyup" >
+                                            <f:facet name="header">
+                                                <h:outputText value="#{i18n.Concepts_CONCEPT}" />
+                                            </f:facet>
+                                            <a4j:commandLink id="lnkSelectMetaDataLocation" ajaxSingle="true">
+                                                <f:setPropertyActionListener target="#{administrator_OpenCalais.conceptId}" value="#{concept.id}" />
+                                                <f:setPropertyActionListener target="#{administrator_OpenCalais.selectedMapping.concept}" value="#{concept}" />
+                                                <a4j:support event="oncomplete" reRender="txtConceptName, ihConcept" oncomplete="#{rich:component('mpConceptSelector')}.hide();" />
+                                                <h:outputText value="#{concept.fullTitle}" />
+                                            </a4j:commandLink>
+                                        </rich:column>
+
+                                    </rich:dataTable>
+                                    <rich:datascroller id="dsMetaDataLocations" for="dtMetaDataLocations"
+                                                       align="center" maxPages="30" renderIfSinglePage="false"
+                                                       reRender="dsMetaDataLocations" />
+
+                                </h:panelGrid>
+                            </rich:tab>
+
+
+
+
+                        </rich:tabPanel>
+
+                        <h:panelGroup styleClass="dialogueButtons">
+                            <h:commandLink id="lnkCancelConceptDetails"
+                                           styleClass="dialogButton"
+                                           value="#{i18n.Generic_CLOSE}"
+                                           onclick="#{rich:component('mpConceptSelector')}.hide(); return false;">
+                            </h:commandLink>
+                        </h:panelGroup>
+                    </h:panelGrid>
+                </rich:modalPanel>
+            </h:form>
+
+
+
+        </ui:define>
+    </ui:composition>
+</jsp:root>

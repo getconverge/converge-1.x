@@ -1,0 +1,48 @@
+body {
+    background-color: #FFFFFF;
+    font-family: Palatino, Georgia, Times, 'Times New Roman', serif; 
+    font-size: 16px;
+    padding: 5px;
+    scrollbar-3dlight-color: #F0F0EE;
+    scrollbar-arrow-color: #676662;
+    scrollbar-base-color: #F0F0EE;
+    scrollbar-darkshadow-color: #DDDDDD;
+    scrollbar-face-color: #E0E0DD;
+    scrollbar-highlight-color: #F0F0EE;
+    scrollbar-shadow-color: #F0F0EE;
+    scrollbar-track-color: #F5F5F5;
+}
+
+td { 
+    font-family: Palatino, Georgia, Times, 'Times New Roman', serif;  
+    font-size: 16px; 
+}
+
+pre { 
+    font-family: Palatino, Georgia, Times, 'Times New Roman', serif; 
+    font-size: 16px; 
+}
+
+.tablerow1 { 
+    background-color: #BBBBBB; 
+}
+
+/* Fix for MS Office unindeted lists */
+.unIndentedList { 
+    margin: 0; 
+    padding: 0; 
+    list-style-position: inside; 
+}
+.unIndentedList li { 
+    padding: 0; 
+}
+
+/* Fix for MS Office UL lists */
+ul { 
+    margin-top: 0; 
+    margin-bottom: 0; 
+}
+
+h1 {
+    font-size: 18px;
+}

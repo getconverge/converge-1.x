@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: dk.i2m.converge.plugins.decoders.mailnewswire.MailNewswireDecoderTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 sec

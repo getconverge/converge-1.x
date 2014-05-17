@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="menuItem" type="menuItem"/>
+
+    <xs:element name="menuItems" type="menuItems"/>
+
+    <xs:complexType name="menuItem">
+        <xs:sequence>
+            <xs:element name="children" type="menuItem" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="label" type="xs:string" minOccurs="0"/>
+            <xs:element name="action" type="xs:string" minOccurs="0"/>
+            <xs:element name="role" type="xs:string" minOccurs="0"/>
+            <xs:element name="privilege" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="active" type="xs:boolean" use="required"/>
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="resetOnClick" type="xs:boolean" use="required"/>
+        <xs:attribute name="resetSectionMenu" type="xs:boolean" use="required"/>
+        <xs:attribute name="sectionMenu" type="xs:boolean" use="required"/>
+        <xs:attribute name="type" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="menuItems">
+        <xs:sequence>
+            <xs:element name="item" type="menuItem" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>
+

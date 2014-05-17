@@ -1,0 +1,38 @@
+= Introduction = 
+
+This document describes the changes in Converge 1.1.2. Topics include:
+
+* Changes in Converge 1.1.2
+
+For information on downloading, installing, upgrading Converge, see the Installation Section.
+
+= Changes in Converge 1.1.2 = 
+
+New features, enhancements, and other changes in Converge 1.1.2 are as follows: 
+
+== Bugs fixed ==
+
+* [[Bug #429>>http://issues.i2m.dk/issues/429]]: Missing caption in media item yields "Field is required"
+* [[Bug #430>>http://issues.i2m.dk/issues/430]]: Number of days to keep is ignored when fetching newswire items
+* [[Bug #434>>http://issues.i2m.dk/issues/434]]: Excessive debug info from the MailNewswireDecoder
+* [[Bug #435>>http://issues.i2m.dk/issues/435]]: Space missing between "Show more..." and "Dismiss all"
+* [[Bug #436>>http://issues.i2m.dk/issues/436]]: Opening the Newswire Item details containing photos fields an HTTP Status 500 error
+* [[Bug #437>>http://issues.i2m.dk/issues/437]]: Add to Catalogue from Photo Newswire not importing images and caption
+* [[Bug #439>>http://issues.i2m.dk/issues/439]]: Media items indexed under 1.0.8 shows Null in the description
+* [[Bug #440>>http://issues.i2m.dk/issues/440]]: Content of documents with extractable text is not indexed
+
+== New features ==
+
+* [[Feature #438>>http://issues.i2m.dk/issues/438]]: Add option for executing catalogue hooks ad-hoc on a media item
+* [[Feature #441>>http://issues.i2m.dk/issues/441]]: Include date ranges in search
+* [[Feature #455>>http://issues.i2m.dk/issues/455]]: User activity report for non-submitters
+* [[Feature #478>>http://issues.i2m.dk/issues/478]]: Add newswire items to database and search engine during processing
+
+= Other =
+
+For more information on a bug or to provide feedback, use the Converge Issue Tracker 
+located at http://issues.i2m.dk. To view the complete list of bugs fixed in this specific 
+release go to http://issues.i2m.dk/projects/converge/versions/43. You'll be able to update
+existing bugs with additional information as necessary.
+
+

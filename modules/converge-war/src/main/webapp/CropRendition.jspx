@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jsp:root version="2.0" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:c="http://java.sun.com/jstl/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags" xmlns:v="http://converge.i2m.dk">
+
+    <ui:composition template="/WEB-INF/facelets/templates/croprendition.xhtml">
+
+        <ui:define name="header">
+            <script type="text/javascript">
+                
+                jQuery(function($){
+
+                    // Create variables (in this scope) to hold the API and image size
+                    var jcrop_api, boundx, boundy;
+                    
+                    jQuery('#target').Jcrop({
+                        onChange: updatePreview,
+                        onSelect: updatePreview,
+                        aspectRatio: #{cropRendition.generateRenditionWidth} / #{cropRendition.generateRenditionHeight}
+                    },function(){
+                        // Use the API to get the real image size
+                        var bounds = this.getBounds();
+                        boundx = bounds[0];
+                        boundy = bounds[1];
+                        // Store the API in the jcrop_api variable
+                        jcrop_api = this;
+                    });
+                    
+                    
+
+                    function updatePreview(c) {
+                        if (parseInt(c.w) > 0) {
+                            var rx = #{cropRendition.generateRenditionWidth} / c.w;
+                            var ry = #{cropRendition.generateRenditionHeight} / c.h;
+                            
+                            jQuery('#preview').css({
+                                width: Math.round(rx * boundx) + 'px',
+                                height: Math.round(ry * boundy) + 'px',
+                                marginLeft: '-' + Math.round(rx * c.x) + 'px',
+                                marginTop: '-' + Math.round(ry * c.y) + 'px'
+                            });
+                            
+                            document.getElementById('frmRendition:cropx').value = c.x;
+                            document.getElementById('frmRendition:cropy').value = c.y;
+                            document.getElementById('frmRendition:cropx2').value = c.x2;
+                            document.getElementById('frmRendition:cropy2').value = c.y2;
+                            document.getElementById('frmRendition:cropwidth').value = c.w;
+                            document.getElementById('frmRendition:cropheight').value = c.h;
+                            
+                            document.getElementById('frmRendition:targetWidth').value = jQuery('#original').width();
+                            document.getElementById('frmRendition:targetHeight').value = jQuery('#original').height();
+                            
+                            
+                        }
+                    };
+
+                });
+
+            </script>
+
+        </ui:define>
+
+
+        <ui:define name="body">
+            <a4j:keepAlive beanName="cropRendition" />
+            <h:inputHidden id="cropx" value="#{cropRendition.cropX}" />
+            <h:inputHidden id="cropy" value="#{cropRendition.cropY}" />
+            <h:inputHidden id="cropx2" value="#{cropRendition.cropX2}" />
+            <h:inputHidden id="cropy2" value="#{cropRendition.cropY2}" />
+            <h:inputHidden id="cropwidth" value="#{cropRendition.cropWidth}" />
+            <h:inputHidden id="cropheight" value="#{cropRendition.cropHeight}" />
+            <h:inputHidden id="targetWidth" value="#{cropRendition.targetWidth}" />
+            <h:inputHidden id="targetHeight" value="#{cropRendition.targetHeight}" />
+            <h:panelGroup layout="block" style="background: black; color: white">
+                <h:panelGrid columns="6">
+                    <h:outputText value="Height:" />
+                    <h:inputText value="#{cropRendition.generateRenditionHeight}" />
+                    <h:outputText value="Width:" />
+                    <h:inputText value="#{cropRendition.generateRenditionWidth}" />
+                    <h:commandButton  value="Refresh" />
+                    <a4j:commandButton  value="Accept" actionListener="#{cropRendition.onCrop}" oncomplete="window.opener.location.reload(); window.close();" />
+                </h:panelGrid>
+            </h:panelGroup>
+
+            <div id="splitter">
+                <div id="original" style="margin-right: 15px; width: 50%; float: left;">
+                    <div style="background: black; color: white; font-weight: bold;">ORIGINAL: #{cropRendition.sourceMediaItemRendition.rendition.label}</div>
+                    <img id="target" src="#{cropRendition.sourceMediaItemRendition.absoluteFilename}" style="float: left; width: 100%" />
+                </div>
+                <div id="new" style="float: left;">
+                    <div style="background: black; color: white; font-weight: bold;">NEW: #{cropRendition.targetRendition.label}</div>
+                    <div style="width:#{cropRendition.generateRenditionWidth}px;height:#{cropRendition.generateRenditionHeight}px;overflow:hidden;">
+                        <img src="#{cropRendition.sourceMediaItemRendition.absoluteFilename}" id="preview" alt="Preview" />
+                    </div>
+                </div>
+            </div>
+        </ui:define>
+    </ui:composition>
+</jsp:root>

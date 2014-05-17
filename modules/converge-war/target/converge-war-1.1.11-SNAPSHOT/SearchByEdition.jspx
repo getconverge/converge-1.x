@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jsp:root version="2.0" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:c="http://java.sun.com/jstl/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags" xmlns:v="http://converge.i2m.dk">
+
+    <ui:composition template="/WEB-INF/facelets/templates/search.xhtml">
+        <ui:define name="body">
+            <a4j:keepAlive beanName="searchByEdition" />
+
+            <a4j:outputPanel ajaxRendered="true">
+                <v:message />
+            </a4j:outputPanel>
+
+            <h:form id="frmQuery">
+                <a4j:status onstart="Richfaces.showModalPanel('mpLoading')" onstop="Richfaces.hideModalPanel('mpLoading')" />
+                <converge:moduleHeader moduleTitle="#{i18n.Search_BROWSE_BY_EDITION}"  />
+                <div class="moduleContent">
+                    <h:panelGroup>
+                        <h:outputText value="#{i18n.Search_BROWSE_BY_EDITION_OUTLET}" style="margin-right: 5px;" />
+                        <h:selectOneMenu value="#{searchByEdition.selectedOutlet}"  style="margin-right: 5px;" converter="#{converters.outletConverter}">
+                            <f:selectItems value="#{common.outlets}" />
+                        </h:selectOneMenu>
+
+                        <h:outputText value="#{i18n.Search_BROWSE_BY_EDITION_DATE}"  style="margin-right: 5px;" />
+                        <rich:calendar id="calDate" value="#{searchByEdition.selectedDate}"  style="margin-right: 5px;" popup="true" timeZone="#{common.systemTimeZone}" datePattern="#{i18n.Generic_FORMAT_DATE}">
+                        </rich:calendar>
+
+                        <a4j:commandButton type="submit" styleClass="button dynamicButton" value="#{i18n.Search_SHOW}" actionListener="#{searchByEdition.onSearch}" reRender="frmPage,frmQuery" />
+                    </h:panelGroup>
+                </div>
+            </h:form>
+
+            <converge:moduleSpacer />
+
+            <h:form id="frmPage">
+                <h:panelGroup rendered="#{searchByEdition.showResults}">
+                    <a4j:repeat value="#{searchByEdition.editions}" var="edition">
+                        <div style="clear: both; padding-bottom: 12px;"></div>
+
+                        <h2><h:outputText value="#{edition.publicationDate}" >
+                                <f:convertDateTime pattern="#{i18n.Generic_FORMAT_TIME}" timeZone="#{common.systemTimeZone}" />
+                            </h:outputText></h2>
+
+                        <rich:dataTable id="dtEditionAssignments" value="#{edition.assignments}" var="assignment" styleClass="table" headerClass="tableHeader" rowClasses="odd, even" sortPriority="#{converge:createList('colPosition,colPriority')}">
+                            <rich:column styleClass="columnIcon center #{rowStyle}" headerClass="subColumnIcon">
+                                <f:facet name="header">
+                                </f:facet>
+                                <h:outputLink value="#{facesContext.externalContext.request.contextPath}/NewsItemArchive.xhtml" target="_blank" rendered="#{assignment.endState}">
+                                    <f:param value="#{assignment.id}" name="id" />
+                                    <h:graphicImage value="#{res.NEWS_ITEM_ICON}" rendered="#{!assignment.locked}" title="#{assignment.status}" alt="#{assignment.status}"  />
+                                    <h:graphicImage value="#{res.LOCK_ICON}" rendered="#{assignment.locked}" />
+                                </h:outputLink>
+                                <h:graphicImage value="#{res.NEWS_ITEM_ICON}" title="#{assignment.status}" alt="#{assignment.status}" rendered="#{!assignment.endState}" />
+                                <rich:toolTip styleClass="lockTooltip" rendered="#{assignment.locked}">
+
+                                    <h:outputFormat value="#{i18n.Search_LOCKED_TOOLTIP}" escape="false">
+                                        <f:param value="#{assignment.checkedOutBy}" />
+                                        <f:param value="#{assignment.checkedOut}" />
+                                    </h:outputFormat>
+                                </rich:toolTip>
+                            </rich:column>
+
+                            <rich:column sortBy="#{assignment.id}" styleClass="right columnId" headerClass="columnId">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.SearchByEdition_NEWS_ITEM_ID}" title="#{i18n.Search_ARTICLE_ID_TOOLTIP}" />
+                                </f:facet>
+                                <h:outputLink value="#{facesContext.externalContext.request.contextPath}/NewsItemArchive.xhtml" target="_blank" rendered="#{assignment.endState}">
+                                    <f:param value="#{assignment.id}" name="id" />
+                                    <h:outputText value="#{assignment.id}">
+                                        <f:convertNumber integerOnly="true" type="number" pattern="#{i18n.Generic_FORMAT_ID}" />
+                                    </h:outputText>
+                                </h:outputLink>
+                                <h:outputText value="#{assignment.id}" rendered="#{!assignment.endState}">
+                                    <f:convertNumber integerOnly="true" type="number" pattern="#{i18n.Generic_FORMAT_ID}" />
+                                </h:outputText>
+                            </rich:column>
+
+                            <rich:column sortBy="#{assignment.title}" styleClass="left">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.Search_NEWSITEM_HEADLINE}" />
+                                </f:facet>
+                                <h:outputLink value="#{facesContext.externalContext.request.contextPath}/NewsItemArchive.xhtml" target="_blank" rendered="#{assignment.endState}">
+                                    <f:param value="#{assignment.id}" name="id" />
+                                    <h:outputText value="#{assignment.title}" />
+                                </h:outputLink>
+                                <h:outputText value="#{assignment.title}" rendered="#{!assignment.endState}" />
+                            </rich:column>
+
+                            <rich:column sortBy="#{assignment.section}" styleClass="left columnMediumNumber">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.Search_NEWSITEM_SECTION}" />
+                                </f:facet>
+                                <h:outputText value="#{assignment.section}" />
+                            </rich:column>
+
+                            <rich:column sortBy="#{assignment.wordCount}" styleClass="columnSmallNumber">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.Search_NEWSITEM_WORD_COUNT}" />
+                                </f:facet>
+                                <h:outputText value="#{assignment.wordCount} (#{assignment.targetWordCount})" rendered="#{assignment.targetWordCount != 0}" />
+                                <h:outputText value="#{assignment.wordCount}" rendered="#{assignment.targetWordCount == 0}" />
+                            </rich:column>
+
+                            <rich:column id="colPosition" sortBy="#{assignment.start}" sortOrder="ASCENDING" styleClass="columnSmallNumber">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.Search_NEWSITEM_START}" />
+                                </f:facet>
+                                <h:outputText value="#{assignment.start}" />
+                            </rich:column>
+
+                            <rich:column id="colPriority" sortBy="#{assignment.position}" sortOrder="ASCENDING" styleClass="columnSmallNumber">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.Search_NEWSITEM_POSITION}" />
+                                </f:facet>
+                                <h:outputText value="#{assignment.position}" />
+                            </rich:column>
+                        </rich:dataTable>
+                    </a4j:repeat>
+
+                </h:panelGroup>
+            </h:form>
+        </ui:define>
+
+    </ui:composition>
+</jsp:root>

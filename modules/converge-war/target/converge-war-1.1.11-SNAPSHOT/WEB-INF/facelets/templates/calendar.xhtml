@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:c="http://java.sun.com/jstl/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+    <ui:composition template="/WEB-INF/facelets/templates/default.xhtml">
+
+        <ui:define name="title">
+            <h:outputText value="#{i18n.menu_CALENDAR}" />
+        </ui:define>
+
+        <ui:define name="pageBody">
+            <div id="layout2">
+                <div id="leftColumn">
+                    <ui:insert name="leftColumnTop" />
+
+                    <h:form id="frmCalendar">
+                        <converge:moduleHeader moduleTitle="#{i18n.Calendar_Title_CALENDAR}" />
+                        <div class="moduleContent">
+                            <rich:calendar id="calDate"
+                                           value="#{calendar.selectedDate.time}"
+                                           popup="false"
+                                           timeZone="#{userSession.user.timeZone}"
+                                           firstWeekDay="1"
+                                           style="width: 100%">
+                                <a4j:support event="onchanged" actionListener="#{calendar.onSelectDate}" reRender="frmPage" />
+                            </rich:calendar>
+                        </div>
+                    </h:form>
+
+                    <div style="clear: both; padding-bottom: 12px;"></div>
+
+                    <h:form id="frmCalendarOptions">
+
+                        <converge:moduleHeader moduleTitle="#{i18n.Calendar_OPTIONS_Title}" />
+                        <div class="moduleContent">
+                            <h:panelGrid columns="2">
+
+                                <h:graphicImage value="#{i18n.resource_ICON_BULLET}" rendered="#{userSession.privileged['CALENDAR']}" />
+
+                                <a4j:commandLink id="lnkNewEvent" reRender="frmEventDetails" actionListener="#{calendar.onNewEvent}" rendered="#{userSession.privileged['CALENDAR']}">
+                                    <h:outputText value="#{i18n.Calendar_NEW_EVENT}" />
+                                    <rich:componentControl for="mpEventDetails"
+                                                           operation="show"
+                                                           event="oncomplete" />
+                                </a4j:commandLink>
+
+                                <h:graphicImage value="#{i18n.resource_ICON_BULLET}" />
+
+                                <a4j:commandLink reRender="dtSchedule" actionListener="#{calendar.onRefreshSchedule}">
+                                    <h:outputText value="#{i18n.Calendar_REFRESH}" />
+                                </a4j:commandLink>
+
+                                <h:graphicImage value="#{i18n.resource_ICON_BULLET}" />
+
+                                <a4j:commandLink id="lnkSubscribe" onclick="#{rich:component('mpCalendarSubscribe')}.show(); return false;">
+                                    <h:outputText value="#{i18n.Calendar_VCAL_SUBSCRIBE}" />
+                                </a4j:commandLink>
+
+                                <h:graphicImage value="#{i18n.resource_ICON_BULLET}" />
+                                <a4j:commandLink id="lnkShowYear" reRender="frmPage" actionListener="#{calendar.onShowYear}">
+                                    <h:outputText value="#{i18n.Calendar_SHOW_YEAR}" />
+                                </a4j:commandLink>
+
+                                <h:graphicImage value="#{i18n.resource_ICON_BULLET}" />
+                                <a4j:commandLink id="lnkShowMonth" reRender="frmPage" actionListener="#{calendar.onShowMonth}">
+                                    <h:outputText value="#{i18n.Calendar_SHOW_MONTH}" />
+                                </a4j:commandLink>
+
+                                <h:graphicImage value="#{i18n.resource_ICON_BULLET}" />
+                                <a4j:commandLink id="lnkShowWeek" reRender="frmPage" actionListener="#{calendar.onShowWeek}">
+                                    <h:outputText value="#{i18n.Calendar_SHOW_WEEK}" />
+                                </a4j:commandLink>
+
+                                <h:graphicImage value="#{i18n.resource_ICON_BULLET}" />
+                                <a4j:commandLink id="lnkShowDay" reRender="frmPage" actionListener="#{calendar.onShowDay}">
+                                    <h:outputText value="#{i18n.Calendar_SHOW_DAY}" />
+                                </a4j:commandLink>
+
+                                <h:graphicImage value="#{i18n.resource_ICON_BULLET}" />
+                                <a4j:commandLink id="lnkShowUpcoming" reRender="frmPage" actionListener="#{calendar.onShowUpcoming}">
+                                    <h:outputText value="#{i18n.Calendar_SHOW_UPCOMING}" />
+                                </a4j:commandLink>
+
+                            </h:panelGrid>
+                        </div>
+                    </h:form>
+                    <div style="clear: both; padding-bottom: 12px;"></div>
+
+                    <ui:insert name="leftColumnBottom" />
+                </div>
+                <div id="rightColumn">
+                    <ui:insert name="body" />
+                </div>
+            </div>
+        </ui:define>
+    </ui:composition>
+</html>

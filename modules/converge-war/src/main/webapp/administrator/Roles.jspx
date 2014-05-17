@@ -1,0 +1,155 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<jsp:root version="2.0" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+
+    <ui:composition template="/WEB-INF/facelets/templates/administration.xhtml">
+        <ui:define name="title">#{i18n.Roles_TITLE}</ui:define>
+
+        <ui:define name="body">
+            <a4j:keepAlive beanName="administrator_Roles" />
+            <a4j:region id="regMainContent">
+                <h:form id="frmPage">
+
+                    <converge:moduleHeader moduleTitle="#{i18n.Roles_TITLE}" />
+                    <div class="moduleContent">
+                        <h:panelGrid columns="2" columnClasses="left, right" style="width: 100%">
+                            <converge:message for="frmPage" />
+                            <a4j:commandButton id="btnNewRole" styleClass="button mediumButton" value="#{i18n.Roles_NEW}" title="#{i18n.Roles_NEW_TOOLTIP}" actionListener="#{administrator_Roles.onNew}" reRender="frmUserRole" ajaxSingle="true" oncomplete="#{rich:component('mpUserRoleForm')}.show()" />
+                        </h:panelGrid>
+
+                        <rich:dataTable id="dtRoles" value="#{administrator_Roles.roles}" var="role" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
+                            <rich:column id="colIcon" styleClass="center columnIcon">
+                                <f:facet name="header">
+                                    <a4j:status id="staRolesLoading">
+                                        <f:facet name="start">
+                                            <h:graphicImage value="#{i18n.resource_ICON_AJAX_LOADING}" />
+                                        </f:facet>
+                                        <f:facet name="stop">
+                                            <h:graphicImage value="#{i18n.resource_ICON_EMPTY}" width="16" height="16" />
+                                        </f:facet>
+                                    </a4j:status>
+                                </f:facet>
+                                <a4j:commandLink id="lnkDisplayUserRoleFromIcon" actionListener="#{administrator_Roles.onModify}" reRender="frmUserRole" ajaxSingle="true" oncomplete="#{rich:component('mpUserRoleForm')}.show()">
+                                    <f:param name="id" value="#{role.id}" />
+                                    <h:graphicImage alt="#{i18n.Roles_USER_ROLE}" title="#{i18n.Roles_USER_ROLE}" value="#{i18n.resource_ICON_USER_ROLE}" />
+                                </a4j:commandLink>
+                            </rich:column>
+
+                            <rich:column id="colName" sortBy="#{role.name}" sortOrder="ASCENDING">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.Roles_NAME}" />
+                                </f:facet>
+                                <a4j:commandLink id="lnkDisplayUserRole" actionListener="#{administrator_Roles.onModify}" reRender="frmUserRole" oncomplete="#{rich:component('mpUserRoleForm')}.show()">
+                                    <f:param name="id" value="#{role.id}" />
+                                    <h:outputText value="#{role.name}" />
+                                </a4j:commandLink>
+                            </rich:column>
+
+                            <rich:column id="colDescription" sortBy="#{role.description}">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.Roles_DESCRIPTION}" />
+                                </f:facet>
+                                <h:outputText value="#{role.description}" />
+                            </rich:column>
+
+                            <rich:column id="colType" sortBy="#{role.systemLevelRole}">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.Roles_TYPE}" />
+                                </f:facet>
+                                <h:outputText value="#{i18n.Roles_TYPE_OUTLET_LEVEL}" rendered="#{role.outletLevelRole}" />
+                                <h:outputText value="#{i18n.Roles_TYPE_SYSTEM_LEVEL}" rendered="#{role.systemLevelRole}" />
+                            </rich:column>
+                        </rich:dataTable>
+                    </div>
+                </h:form>
+
+
+                <h:form id="frmUserRole">
+                    <rich:modalPanel id="mpUserRoleForm" autosized="true" domElementAttachment="parent" >
+                        <f:facet name="header">
+                            <h:panelGroup>
+                                <h:outputText value="#{i18n.Roles_USER_ROLE}" />
+                            </h:panelGroup>
+                        </f:facet>
+                        <f:facet name="controls">
+                            <h:panelGroup>
+                                <h:graphicImage value="#{i18n.resource_ICON_DIALOGUE_CLOSE}">
+                                    <rich:componentControl for="mpUserRoleForm" operation="hide" event="onclick"/>
+                                </h:graphicImage>
+                            </h:panelGroup>
+                        </f:facet>
+                        <h:panelGrid>
+
+                            <rich:tabPanel selectedTab="#{administrator_Roles.selectedTab}"
+                                           switchType="client"
+                                           inactiveTabClass="tabInactive"
+                                           activeTabClass="tabActive">
+
+                                <rich:tab id="tabDetails" label="#{i18n.Roles_BASIC}">
+                                    <h:panelGrid columns="2" columnClasses="dialogueFieldLabel nowrap, dialogueFieldValue" styleClass="dialogue">
+                                        <h:outputText value="#{i18n.Roles_NAME}" />
+                                        <h:inputText value="#{administrator_Roles.selected.name}" styleClass="text mediumInput" />
+                                        <h:outputText value="#{i18n.Roles_DESCRIPTION}" />
+                                        <h:inputTextarea value="#{administrator_Roles.selected.description}" styleClass="mediumTextArea text" />
+                                    </h:panelGrid>
+
+                                </rich:tab>
+
+                                <rich:tab id="tabPrivileges" label="#{i18n.Roles_PRIVILEGES}">
+                                    <h:panelGrid columns="1" styleClass="dialogue">
+                                        <rich:pickList value="#{administrator_Roles.selected.privileges}"
+                                                       converter="#{converters.systemPrivilegeConverter}"
+                                                       copyAllControlLabel="#{i18n.Roles_PRIVILEGE_GRANT_ALL}"
+                                                       copyControlLabel="#{i18n.Roles_PRIVILEGE_GRANT}"
+                                                       removeAllControlLabel="#{i18n.Roles_PRIVILEGE_REVOKE_ALL}"
+                                                       removeControlLabel="#{i18n.Roles_PRIVILEGE_REVOKE}">
+                                            <f:selectItems value="#{common.privileges}" />
+                                        </rich:pickList>
+                                    </h:panelGrid>
+                                </rich:tab>
+
+                                <rich:tab id="tabUsers" label="#{i18n.Roles_USERS}">
+                                    <h:panelGrid columns="1" styleClass="dialogue">
+                                        <rich:pickList value="#{administrator_Roles.selected.userAccounts}"
+                                                       converter="#{converters.userAccountConverter}"
+                                                       copyAllControlLabel="Add all"
+                                                       copyControlLabel="#{i18n.Generic_ADD}"
+                                                       removeAllControlLabel="Remove all"
+                                                       removeControlLabel="Remove">
+                                            <f:selectItems value="#{common.users}" />
+                                        </rich:pickList>
+                                    </h:panelGrid>
+                                </rich:tab>
+
+                            </rich:tabPanel>
+                            <h:panelGroup styleClass="dialogueButtons">
+
+                                <a4j:commandLink id="lnkSave" actionListener="#{administrator_Roles.onSave}" styleClass="dialogButton" value="#{i18n.Generic_SAVE}" reRender="frmPage">
+                                    <rich:componentControl for="mpUserRoleForm" operation="hide" event="oncomplete" />
+                                </a4j:commandLink>
+
+                                <a4j:commandLink id="lnkDelete"
+                                                 rendered="#{administrator_Roles.update}"
+                                                 onclick="if (confirm('Are you sure that you want to delete this role?') != true){ return false; };"
+                                                 actionListener="#{administrator_Roles.onDelete}"
+                                                 styleClass="dialogButton"
+                                                 value="#{i18n.Generic_DELETE}"
+                                                 reRender="frmPage">
+                                    <rich:componentControl for="mpUserRoleForm"
+                                                           operation="hide"
+                                                           event="oncomplete" />
+                                </a4j:commandLink>
+
+                                <h:commandLink id="lnkCloseForm"
+                                               styleClass="dialogButton"
+                                               value="#{i18n.Generic_CANCEL}"
+                                               onclick="#{rich:component('mpUserRoleForm')}.hide(); return false;" />
+                            </h:panelGroup>
+
+                        </h:panelGrid>
+                    </rich:modalPanel>
+                </h:form>
+            </a4j:region>
+
+        </ui:define>
+    </ui:composition>
+</jsp:root>

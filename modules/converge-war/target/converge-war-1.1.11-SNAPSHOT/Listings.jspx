@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jsp:root version="2.0" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:c="http://java.sun.com/jstl/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags" xmlns:v="http://converge.i2m.dk">
+
+    <ui:composition template="/WEB-INF/facelets/templates/listings.xhtml">
+
+        <ui:define name="body">
+            <a4j:keepAlive beanName="listings" />
+            <a4j:outputPanel ajaxRendered="true"><v:message /></a4j:outputPanel>
+
+            <h:form id="frmPage">
+                <converge:moduleHeader moduleTitle="#{msgs.listing_LASTEST_UPDATES}" />
+                <div class="moduleContent">
+
+                    <h2>#{msgs.listing_FOREX_RATES}</h2>
+                    <rich:dataTable id="dtForexRates" value="#{listings.latestForexRates}" var="item" width="100%" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
+                        <rich:column styleClass="columnIcon center" headerClass="columnSubIcon">
+                            <h:graphicImage value="#{res.FOREX_VALUE_ICON}" />
+                        </rich:column>
+
+                        <rich:column sortBy="#{item.updated}" sortOrder="DESCENDING" style="width: 115px;">
+                            <f:facet name="header">
+                                <h:outputText value="#{msgs.UPDATED}" />
+                            </f:facet>
+                            <h:outputText value="#{item.updated.time}">
+                                <f:convertDateTime type="both" dateStyle="short" timeZone="#{userSession.user.timeZone}" />
+                            </h:outputText>
+                        </rich:column>
+
+                        <rich:column sortBy="#{item.currency.name}">
+                            <f:facet name="header">
+                                <h:outputText value="#{msgs.listing_CURRENCY}" />
+                            </f:facet>
+                            <h:outputText value="#{item.currency.name} (#{item.currency.shortName})" />
+                        </rich:column>
+
+                        <rich:column sortBy="#{item.value}">
+                            <f:facet name="header">
+                                <h:outputText value="#{msgs.listing_RATE}" />
+                            </f:facet>
+                            <h:outputText value="#{item.value}" />
+                        </rich:column>
+
+                        <rich:column sortBy="#{item.change}">
+                            <f:facet name="header">
+                                <h:outputText value="#{msgs.listing_CHANGE}" />
+                            </f:facet>
+                            <h:outputText value="#{item.change}" />
+                        </rich:column>
+
+                    </rich:dataTable>
+                    <div style="clear: both; padding-bottom: 12px;"></div>
+                    
+                    <h2>#{msgs.listing_FINANCIAL_MARKETS}</h2>
+                    <rich:dataTable id="dtMarketValues" value="#{listings.latestFinancialMarkets}" var="item" width="100%" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
+                        <rich:column styleClass="columnIcon center" headerClass="columnSubIcon">
+                            <h:graphicImage value="#{res.MARKET_VALUE_ICON}" />
+                        </rich:column>
+
+                        <rich:column sortBy="#{item.updated}" sortOrder="DESCENDING" style="width: 115px;">
+                            <f:facet name="header">
+                                <h:outputText value="#{msgs.UPDATED}" />
+                            </f:facet>
+                            <h:outputText value="#{item.updated.time}">
+                                <f:convertDateTime type="both" dateStyle="short" timeZone="#{userSession.user.timeZone}" />
+                            </h:outputText>
+                        </rich:column>
+
+                        <rich:column sortBy="#{item.financialMarket.name}">
+                            <f:facet name="header">
+                                <h:outputText value="#{msgs.listing_FINANCIAL_MARKET}" />
+                            </f:facet>
+                            <h:outputText value="#{item.financialMarket.name} (#{item.financialMarket.shortName})" />
+                        </rich:column>
+
+                        <rich:column sortBy="#{item.value}">
+                            <f:facet name="header">
+                                <h:outputText value="#{msgs.listing_VALUE}" />
+                            </f:facet>
+                            <h:outputText value="#{item.value}" />
+                        </rich:column>
+
+                        <rich:column sortBy="#{item.change}">
+                            <f:facet name="header">
+                                <h:outputText value="#{msgs.listing_CHANGE}" />
+                            </f:facet>
+                            <h:outputText value="#{item.change}" />
+                        </rich:column>
+                    </rich:dataTable>
+                    <div style="clear: both; padding-bottom: 12px;"></div>
+                    <h2>#{msgs.listing_WEATHER_FORECASTS}</h2>
+
+                    <rich:dataTable id="dtForecasts" value="#{listings.latestWeatherForecasts}" var="item" width="100%" styleClass="table" headerClass="tableHeader" rowClasses="odd, even" rows="30">
+                        <rich:column styleClass="columnIcon center" headerClass="columnSubIcon">
+                            <h:graphicImage value="#{res.WEATHER_FORECAST_ICON}" />
+                        </rich:column>
+
+                        <rich:column sortBy="#{item.updated}" sortOrder="DESCENDING" style="width: 115px;">
+                            <f:facet name="header">
+                                <h:outputText value="#{msgs.UPDATED}" />
+                            </f:facet>
+                            <h:outputText value="#{item.updated.time}">
+                                <f:convertDateTime type="both" dateStyle="short" timeZone="#{userSession.user.timeZone}" />
+                            </h:outputText>
+                        </rich:column>
+
+                        <rich:column sortBy="#{item.location.name}">
+                            <f:facet name="header">
+                                <h:outputText value="#{msgs.listing_LOCATION}" />
+                            </f:facet>
+                            <h:outputText value="#{item.location.name}" />
+                        </rich:column>
+
+                        <rich:column sortBy="#{item.situation.name}">
+                            <f:facet name="header">
+                                <h:outputText value="#{msgs.listing_SITUATION}" />
+                            </f:facet>
+                            <h:outputText value="#{item.situation.name}" />
+                        </rich:column>
+
+                        <rich:column sortBy="#{item.high}">
+                            <f:facet name="header">
+                                <h:outputText value="#{msgs.listing_HIGH}" />
+                            </f:facet>
+                            <h:outputText value="#{item.high}" />
+                        </rich:column>
+
+                        <rich:column sortBy="#{item.low}">
+                            <f:facet name="header">
+                                <h:outputText value="#{msgs.listing_LOW}" />
+                            </f:facet>
+                            <h:outputText value="#{item.low}" />
+                        </rich:column>
+
+                    </rich:dataTable>
+
+
+                </div>
+            </h:form>
+
+        </ui:define>
+    </ui:composition>
+</jsp:root>

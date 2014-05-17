@@ -1,0 +1,86 @@
+//Note: If you are installing Converge from the binary release you can skip this
+chapter and [[go straight to the next chapter about installation>>#installation]].//
+
+= Obtaining the Source Codes =
+
+To check out the source code you must use [[Git>>http://git-scm.com/]]
+
+For developers with read/write access to the repository (replace ##USERNAME## 
+with your [[SourceForge.net>>http://www.sourceforge.net]] username
+
+{{screen}}
+git clone ssh://USERNAME@convergeecms.git.sourceforge.net/gitroot/convergeecms/convergeecms
+{{/screen}}
+
+For developers with read access (anonymous) to the repository
+
+{{screen}}
+git clone git://convergeecms.git.sourceforge.net/gitroot/convergeecms/convergeecms
+{{/screen}}
+
+= Understanding the directory structure =
+
+The cloned repository contains two top-level directories:
+
+##converge-server## and ##extensions##
+
+== Converge Server ==
+
+##converge-server## is the Java Enterprise application constituting the backend
+of Converge as well as the web-based user interface. It is a Maven-based project
+containing multiple projects:
+
+* ##modules## (multi-pom project containing the core business logic, web user interface and web services of Converge)
+** ##converge-i18n## - Internationalisation (language files)
+** ##converge-core## - Core data model and structures
+** ##converge-ejb## - Business logic and system services (EJB3)
+** ##converge-war## - Web-user interface for using Converge (JSF 1.2)
+** ##converge-ws## - Web services for remote integration
+** ##converge-ear## - Enterprise Application assembling all the projects above for deploying on GlassFish
+* ##plugins## (multi-pom project containing core plug-ins of Converge)
+** ##core-decoders## - Core newswire decoders (including webfeeds, NewsML 1, Daily Mail)
+** ##core-validators## - Core news item validators
+** ##core-action## - Core workflow, edition and catalogue actions
+
+== Extensions ==
+
+##extensions## contains a collection of extensions that //does not// extend the 
+##converge-server##, but rather is an extension or plug-in to an existing 
+software application that must integrate with the ##converge-server## in one way
+or the other.
+
+Currently Adobe InDesign and OpenOffice.org extensions are under development.
+
+= Building Converge using Maven =
+
+To build ##converge-server## you must use Maven 3 available at http://maven.apache.org/. Once Maven 3 has been installed on your system follow the steps below:
+
+1. go the the ##converge-server## directory
+1. execute: ##mvn clean install##
+
+The Maven building should end with the following:
+
+{{screen}}
+[INFO] ------------------------------------------------------------------------ 
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] converge .......................................... SUCCESS [0.405s]
+[INFO] Converge Modules .................................. SUCCESS [0.170s]
+[INFO] Converge - I18N ................................... SUCCESS [1.112s]
+[INFO] Converge - Core ................................... SUCCESS [17.364s]
+[INFO] Converge Plug-ins ................................. SUCCESS [0.010s]
+[INFO] Plug-ins - Core Validators ........................ SUCCESS [1.273s]
+[INFO] Plug-ins - Core Decoders .......................... SUCCESS [2.124s]
+[INFO] Plug-ins - Core Actions ........................... SUCCESS [1.272s]
+[INFO] Converge - EJB .................................... SUCCESS [12.871s]
+[INFO] Converge - Web Services ........................... SUCCESS [1.440s]
+[INFO] Converge - Web Application ........................ SUCCESS [4.036s]
+[INFO] Converge - EAR .................................... SUCCESS [3.840s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 46.356s
+[INFO] Finished at: Sat Nov 26 23:16:57 EAT 2011
+[INFO] Final Memory: 28M/89M
+[INFO] ------------------------------------------------------------------------
+{{/screen}}

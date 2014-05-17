@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jstl/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+    <ui:composition template="/WEB-INF/facelets/templates/default.xhtml">
+
+        <ui:define name="title">
+            <h:outputText value="#{i18n.NewsItem_PAGE_TITLE}" />
+        </ui:define>
+
+        <ui:define name="pageBody">
+            <script type="text/javascript">
+                var formChanged = false;
+
+                jQuery(document).ready(function() {
+
+                    jQuery('#frmNewsItem input[type=text], #frmNewsItem textarea').each(function (i) {
+                        jQuery(this).data('initial_value', jQuery(this).val());
+                    });
+
+                    jQuery('#frmNewsItem input[type=text], #frmNewsItem textarea').keyup(function() {
+                        if (jQuery(this).val() != jQuery(this).data('initial_value')) {
+                            handleFormChanged();
+                        }
+                    });
+
+                    jQuery('#frmNewsItem').bind('change paste', function() {
+                        handleFormChanged();
+                    });
+
+                });
+
+                function handleFormChanged() {
+                    formChanged = true;
+                }
+
+                function resetFormChanged() {
+                    formChanged = false;
+                }
+
+                function confirmNavigation() {
+                    if (formChanged) {
+                        return confirm('#{i18n.NewsItem_CLOSE_WITHOUT_SAVING}');
+                    } else {
+                        return true;
+                    }
+                }
+
+                //jQuery(window).bind("beforeunload", function(){return confirmNavigation(); })
+
+            </script>
+
+            <h:form id="frmNewsItem">
+                <c:if test="#{newsItem.currentActor &amp;&amp; !newsItem.readOnly &amp;&amp; newsItem.autoSaveEnabled}">
+                    <a4j:poll actionListener="#{newsItem.onAutoSave}" ignoreDupResponses="true" interval="#{newsItem.autoSaveInterval}" />
+                </c:if>
+                <a4j:status id="staNewsItemLoading" for="regNewsItem" onstart="Richfaces.showModalPanel('mpLoading')" onstop="Richfaces.hideModalPanel('mpLoading')" />
+                <a4j:region id="regNewsItem">
+                    <div id="layout2">
+                        <div id="leftColumn">
+                            <ui:insert name="leftTop" />
+                            <ui:insert name="leftBottom" />
+                        </div>
+                        <div id="rightColumn">
+                            <ui:insert name="body" />
+                        </div>
+                    </div>
+                </a4j:region>
+            </h:form>
+
+            <ui:insert name="footer" />
+
+        </ui:define>
+
+    </ui:composition>
+</html>

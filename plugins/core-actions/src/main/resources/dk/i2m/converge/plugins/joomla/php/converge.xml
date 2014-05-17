@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE install SYSTEM "http://dev.joomla.org/xml/1.5/plugin-install.dtd">
+<install version="1.5" type="plugin" group="xmlrpc">
+    <name>XML-RPC - Converge API</name>
+    <creationDate>2010-07-08</creationDate>
+    <author>Interactive Media Management</author>
+    <authorEmail>welcome@i2m.dk</authorEmail>
+    <authorUrl>http://www.i2m.dk</authorUrl>
+    <copyright>(C) 2010 Interactive Media Management</copyright>
+    <license>http://www.gnu.org/licenses/gpl-3.0.html GNU/GPL</license>
+    <version>1.0.0</version>
+    <description>XML-RPC plug-in for Converge</description>
+    <files>
+        <filename plugin="converge">converge.php</filename>
+    </files>
+    <params>
+        <param name="img_storage_path" type="text" default="images/stories/" label="Image path" description="Path to store article images relative to the website home directory" />
+    </params>
+</install>

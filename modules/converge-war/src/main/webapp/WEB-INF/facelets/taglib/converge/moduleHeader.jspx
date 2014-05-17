@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<jsp:root version="2.0"
+          xmlns:html="http://www.w3.org/1999/xhtml"
+          xmlns:jsp="http://java.sun.com/JSP/Page"
+          xmlns:ui="http://java.sun.com/jsf/facelets"
+          xmlns:h="http://java.sun.com/jsf/html"
+          xmlns:f="http://java.sun.com/jsf/core"
+          xmlns:a4j="http://richfaces.org/a4j"
+          xmlns:c="http://java.sun.com/jstl/core"
+          xmlns:rich="http://richfaces.org/rich">
+    <ui:composition>
+
+        <c:if test="#{id != null}">
+            <h:panelGroup id="#{id}">
+                <ui:insert name="module_options" />
+                <table class="body_heading">
+                    <tr>
+                        <td class="left"></td>
+                        <td class="middle"><h:outputText value="#{moduleTitle}" escape="false" /></td>
+                        <td class="right"></td>
+                    </tr>
+                </table>
+            </h:panelGroup>
+        </c:if>
+
+        <c:if test="#{id == null}">
+            <h:panelGroup>
+                <ui:insert name="module_options" />
+                <table class="body_heading">
+                    <tr>
+                        <td class="left"></td>
+                        <td class="middle"><h:outputText value="#{moduleTitle}" escape="false" /></td>
+                        <td class="right"></td>
+                    </tr>
+                </table>
+            </h:panelGroup>
+        </c:if>
+
+    </ui:composition>
+</jsp:root>

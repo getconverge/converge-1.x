@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE NewsML SYSTEM "http://idsdat06.reuters.com/newsml/NewsMLv1.0.dtd" [
+  <!ENTITY % xhtml SYSTEM "http://idsdat06.reuters.com/newsml/xhtml1-strict.dtd">
+  %xhtml;
+]>
+<!--src: rtr2newsml0.995-->
+<NewsML Duid="MTFH04533_2011-03-10_13-46-30_LDE7291AQ_NEWSML">
+    <Catalog Href="http://idsdat06.reuters.com/newsml/catalog/catalog-reuters-master_catalog_1.xml"/>
+    <NewsEnvelope>
+        <DateAndTime>20110310T134630+0000</DateAndTime>
+        <NewsService FormalName="RTR_TNS"/>
+        <NewsProduct FormalName="TXT"/>
+        <Priority FormalName="3"/>
+    </NewsEnvelope>
+    <NewsItem Duid="MTFH04533_2011-03-10_13-46-30_LDE7291AQ_NEWSITEM">
+        <Identification>
+            <NewsIdentifier>
+                <ProviderId>reuters.com</ProviderId>
+                <DateId>20110310</DateId>
+                <NewsItemId>MTFH04533_2011-03-10_13-46-30_LDE7291AQ</NewsItemId>
+                <RevisionId Update="N" PreviousRevision="0">1</RevisionId>
+                <PublicIdentifier>urn:newsml:reuters.com:20110310:MTFH04533_2011-03-10_13-46-30_LDE7291AQ:1</PublicIdentifier>
+            </NewsIdentifier>
+            <DateLabel>2011-03-10 13:46:30 GMT (Reuters)</DateLabel>
+        </Identification>
+        <NewsManagement>
+            <NewsItemType FormalName="News"/>
+            <FirstCreated>20110310T134630+0000</FirstCreated>
+            <ThisRevisionCreated>20110310T134630+0000</ThisRevisionCreated>
+            <Status FormalName="Usable"/>
+            <Urgency FormalName="3"/>
+            <Property FormalName="USN" Value="LDE7291AQ"/>
+            <Property FormalName="CID" Value="LDE7291AQ" Scheme="USN"/>
+        </NewsManagement>
+        <NewsComponent EquivalentsList="no" Essential="no" Duid="MTFH04533_2011-03-10_13-46-30_LDE7291AQ_MAIN_NC" xml:lang="en">
+            <TopicSet FormalName="HighImportance">
+                <Topic Duid="ts_1">
+                    <TopicType FormalName="Geography"/>
+                    <FormalName Scheme="N2000">GB</FormalName>
+                    <Description xml:lang="en">United Kingdom</Description>
+                    <Property FormalName="WhyPresent" Value="Classifier"/>
+                </Topic>
+                <Topic Duid="ts_2">
+                    <TopicType FormalName="Geography"/>
+                    <FormalName Scheme="N2000">WEU</FormalName>
+                    <Description xml:lang="en">Western Europe</Description>
+                    <Property FormalName="WhyPresent" Value="Ancestor"/>
+                </Topic>
+                <Topic Duid="ts_3">
+                    <TopicType FormalName="Geography"/>
+                    <FormalName Scheme="N2000">EUROP</FormalName>
+                    <Description xml:lang="en">Europe</Description>
+                    <Property FormalName="WhyPresent" Value="Ancestor"/>
+                </Topic>
+                <Topic Duid="ts_4">
+                    <TopicType FormalName="Geography"/>
+                    <FormalName Scheme="N2000">US</FormalName>
+                    <Description xml:lang="en">United States</Description>
+                    <Property FormalName="WhyPresent" Value="Classifier"/>
+                </Topic>
+                <Topic Duid="ts_5">
+                    <TopicType FormalName="Geography"/>
+                    <FormalName Scheme="N2000">CA</FormalName>
+                    <Description xml:lang="en">Canada</Description>
+                    <Property FormalName="WhyPresent" Value="Classifier"/>
+                </Topic>
+                <Topic Duid="ts_6">
+                    <TopicType FormalName="Arts / Culture / Entertainment"/>
+                    <FormalName Scheme="N2000">ENT</FormalName>
+                    <FormalName Scheme="IPTCSubjectCodes">01000000</FormalName>
+                    <Description xml:lang="en">Arts / Culture / Entertainment</Description>
+                    <Property FormalName="WhyPresent" Value="Classifier"/>
+                </Topic>
+                <Topic Duid="ts_7">
+                    <TopicType FormalName="Living / Lifestyle"/>
+                    <FormalName Scheme="N2000">LIF</FormalName>
+                    <FormalName Scheme="IPTCSubjectCodes">10000000</FormalName>
+                    <Description xml:lang="en">Living / Lifestyle</Description>
+                    <Property FormalName="WhyPresent" Value="Classifier"/>
+                </Topic>
+                <Topic Duid="ts_8">
+                    <TopicType FormalName="Hotels and Entertainment Services"/>
+                    <FormalName Scheme="N2000">LEI</FormalName>
+                    <FormalName Scheme="IPTCSubjectCodes">04014000</FormalName>
+                    <Description xml:lang="en">Hotels and Entertainment Services</Description>
+                    <Property FormalName="WhyPresent" Value="Classifier"/>
+                </Topic>
+                <Topic Duid="ts_9">
+                    <TopicType FormalName="Genre"/>
+                    <FormalName Scheme="N2000">PRO</FormalName>
+                    <Description xml:lang="en">Biographies / Personalities / People</Description>
+                    <Property FormalName="WhyPresent" Value="Classifier"/>
+                </Topic>
+                <Topic Duid="ts_10">
+                    <TopicType FormalName="Geography"/>
+                    <FormalName Scheme="N2000">EUROPE</FormalName>
+                    <Description xml:lang="en">Europe</Description>
+                    <Property FormalName="WhyPresent" Value="Classifier"/>
+                </Topic>
+                <Topic Duid="ts_11">
+                    <TopicType FormalName="Genre"/>
+                    <FormalName Scheme="N2000">GEN</FormalName>
+                    <Description xml:lang="en">General News</Description>
+                    <Property FormalName="WhyPresent" Value="Classifier"/>
+                </Topic>
+                <Topic Duid="ts_12">
+                    <TopicType FormalName="Society / Science / Nature"/>
+                    <FormalName Scheme="N2000">NSS</FormalName>
+                    <FormalName Scheme="IPTCSubjectCodes">13000000</FormalName>
+                    <Description xml:lang="en">Society / Science / Nature</Description>
+                    <Property FormalName="WhyPresent" Value="Classifier"/>
+                </Topic>
+                <Topic Duid="ts_13">
+                    <TopicType FormalName="Genre"/>
+                    <FormalName Scheme="N2000">CMPNY</FormalName>
+                    <Description xml:lang="en">Company News</Description>
+                    <Property FormalName="WhyPresent" Value="Classifier"/>
+                </Topic>
+                <Topic Duid="ts_14">
+                    <TopicType FormalName="CategoryCode"/>
+                    <FormalName Scheme="MediaCategory">OVR</FormalName>
+                    <Description xml:lang="en">General news stories</Description>
+                    <Property FormalName="WhyPresent" Value="Classifier"/>
+                </Topic>
+            </TopicSet>
+            <Role FormalName="Main"/>
+            <AdministrativeMetadata>
+                <FileName>2011-03-10T134630Z_01_LDE7291AQ_RTRIDST_0_BRITAIN-ROYALWEDDING-PRESS.XML</FileName>
+                <Provider>
+                    <Party FormalName="Reuters"/>
+                </Provider>
+                <Creator>
+                    <Party FormalName="Reuters"/>
+                </Creator>
+                <Source>
+                    <Party FormalName="Reuters"/>
+                </Source>
+                <Property FormalName="SourceFeed" Value="IDS"/>
+                <Property FormalName="IDSPublisher" Value="http://www.reuters.com/ids"/>
+            </AdministrativeMetadata>
+            <!--Single "Main Text" inner NewsComponent-->
+            <NewsComponent EquivalentsList="no" Essential="no" Duid="MTFH04533_2011-03-10_13-46-30_LDE7291AQ_MAIN_TEXT_NC" xml:lang="en">
+                <Role FormalName="Main Text"/>
+                <NewsLines>
+                    <HeadLine>FACTBOX-Dressmaker and doll in royal wedding focus</HeadLine>
+                    <ByLine/>
+                    <DateLine>March 10, 2011</DateLine>
+                    <CreditLine>REUTERS</CreditLine>
+                    <CopyrightLine>(c) Copyright Thomson Reuters 2011. Click For Restrictions. http://about.reuters.com/fulllegal.asp</CopyrightLine>
+                    <SlugLine>BRITAIN-ROYALWEDDING/PRESS</SlugLine>
+                    <NewsLine>
+                        <NewsLineType FormalName="Caption"/>
+                        <NewsLineText>BRITAIN-ROYALWEDDING/PRESS:FACTBOX-Dressmaker and doll in royal wedding focus</NewsLineText>
+                    </NewsLine>
+                </NewsLines>
+                <DescriptiveMetadata>
+                    <Language FormalName="en"/>
+                    <OfInterestTo FormalName="RLF"/>
+                    <OfInterestTo FormalName="G"/>
+                    <OfInterestTo FormalName="RBN"/>
+                    <OfInterestTo FormalName="AFA"/>
+                    <OfInterestTo FormalName="CSA"/>
+                    <OfInterestTo FormalName="LBY"/>
+                    <OfInterestTo FormalName="RWSA"/>
+                    <OfInterestTo FormalName="RWS"/>
+                    <OfInterestTo FormalName="REULB"/>
+                    <OfInterestTo FormalName="GNS"/>
+                    <OfInterestTo FormalName="UKI"/>
+                    <OfInterestTo FormalName="RNP"/>
+                    <OfInterestTo FormalName="DNP"/>
+                    <OfInterestTo FormalName="PGE"/>
+                    <OfInterestTo FormalName="SXNA"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_1"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_2"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_3"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_4"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_5"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_6"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_7"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_8"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_9"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_10"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_11"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_12"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_13"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_14"/>
+                </DescriptiveMetadata>
+                <ContentItem Duid="MTFH04533_2011-03-10_13-46-30_LDE7291AQ_MAIN1_TEXT_CI">
+                    <MediaType FormalName="Text"/>
+                    <Format FormalName="XHTML"/>
+                    <Characteristics>
+                        <Property FormalName="ContentID" Value="urn:newsml:reuters.com:20110310:MTFH04533_2011-03-10_13-46-30_LDE7291AQ_TXT:1"/>
+                        <Property FormalName="ContentCreationDateAndTime" Value="20110310T134630+0000"/>
+                        <Property FormalName="USN" Value="LDE7291AQ"/>
+                        <Property FormalName="Creator" Value="RTR_JANUS 4.170"/>
+                    </Characteristics>
+                    <DataContent>
+                        <html xmlns="http://www.w3.org/1999/xhtml">
+                            <head>
+                                <title/>
+                            </head>
+                            <body>
+                                <p> March 10 (Reuters Life!) - Following is a selection of
+stories on the royal wedding that have appeared in newspapers
+and on websites in the last week.
+                                </p>
+                                <p> (Reuters does not vouch for the accuracy of other
+publications' reports.)
+                                </p>
+                                <p> -- Move over Barbie! Kate doll surfs royal memorabilia wave</p>
+                                <p> She's got the glossy, chestnut hair, the blue silk dress,
+the jewels -- and she could be yours, for a princely $195.
+                                </p>
+                                <p> The pint-sized Kate Middleton Doll, by the Franklin Mint, is
+no cheap date. But she's the latest in royal wedding
+memorabilia.
+                                </p>
+                                <p> One of a two-doll Kate set (the bridal version will be
+released after Britain's Royal Wedding takes place), the 16-inch
+doll's release is announced this week, in anticipation of the
+royal couple's big day.
+                                </p>
+                                <p> (Source: CNN)</p>
+                                <p> -- Hillary Clinton gives royal wedding advice</p>
+                                <p> Don't get stressed and enjoy your big day is U.S. Secretary
+of State Hillary Clinton's advice to Prince William, fiancee
+Kate Middleton and their families ahead of the royal wedding.
+                                </p>
+                                <p> Clinton, whose daughter Chelsea got married last year in a
+ceremony dubbed "America's royal wedding", said organizing an
+event that also attracts global interest could be taxing.
+                                </p>
+                                <p> "I can only tell you that the wedding itself was wonderful
+but the preparations, and I'm sure that they're feeling some of
+the same, can be stressful," she told Sky News in an interview.
+                                </p>
+                                <p> (Source: Reuters)</p>
+                                <p> -- Security high as Prince William and Kate in Belfast</p>
+                                <p> Northern Ireland took Kate Middleton to their hearts on
+Tuesday when Prince William flew in to show off his bride-to-be
+amid the tightest security.
+                                </p>
+                                <p> Cheering crowds hundreds-strong greeted the young couple in
+Belfast and Hillsborough, Co Down during a day-long series of
+engagements carried out with armed police ever-present.
+                                </p>
+                                <p> Attacks by nationalist splinter groups trying to end British
+control are at their highest level since a 1998 peace agreement
+largely ended three decades of conflict that cost more than
+3,600 lives.
+                                </p>
+                                <p> The area around their first port of call, Belfast City Hall,
+was ringed by police and police marksmen kept watch from
+surrounding rooftops.
+                                </p>
+                                <p> (Source: Reuters)</p>
+                                <p> -- Watch out Wills and Kate, here comes royal wedding no. 2!</p>
+                                <p> It can't be much fun following in the royal wedding
+footsteps of Kate Middleton and Prince William.
+                                </p>
+                                <p> But that's exactly what Zara Phillips and Mike Tindall have
+done after announcing the date of the second royal wedding of
+the year.
+                                </p>
+                                <p> Granddaughter of the queen Zara and rugby playing fiance
+Mike have confirmed today they will be getting married on July
+30 -- exactly three months after Kate and William.
+                                </p>
+                                <p> The couple, who got engaged in December last year -- just
+five weeks after the other royal wedding couple -- will hold a
+reception at the Palace of Holyroodhouse following the ceremony.
+                                </p>
+                                <p> (Source: OK!)</p>
+                                <p> -- Prince Andrew pilloried over paedophile friend</p>
+                                <p> The royal family is supposed to burnish Britain's image, but
+Prince Andrew has generated quite a different buzz by consorting
+with a convicted U.S. paedophile and having contacts with the
+Libyan leader's son.
+                                </p>
+                                <p> "Prince of Sleaze" ran a headline in Monday's Daily Mirror
+over a story about the 50-year-old Duke of York, who is fourth
+in line to the throne and is Britain's roving trade ambassador.
+                                </p>
+                                <p> "Andrew: I won't quit over my pervert pal," the Sun added.</p>
+                                <p> The stories were a long way from the gushing coverage the
+British media have reserved for Andrew's nephew Prince William
+and fiancee Kate Middleton ahead of their wedding next month.
+                                </p>
+                                <p> (Source: Reuters)</p>
+                                <p> -- Alexander McQueen label denies wedding dress reports</p>
+                                <p> The Alexander McQueen label has categorically denied a claim
+in the Sunday Times that creative director Sarah Burton is
+making the dress Kate Middleton will wear when she marries
+Prince William next month.
+                                </p>
+                                <p> The royal wedding dress is the most prestigious commission
+in British fashion for decades, and will guarantee global
+publicity for its designer. The design and designer have been
+kept a fiercely guarded secret.
+                                </p>
+                                <p> Clarence House responded to the story on Sunday with a
+statement saying: "We're not commenting on the specific designer
+for the dress because Catherine Middleton wishes to keep the
+designer a secret until the wedding day."
+  (Source: Guardian)
+ (Compiled by Mike Collett-White, editing by Paul Casciato)
+
+
+                                </p>
+                            </body>
+                        </html>
+                    </DataContent>
+                </ContentItem>
+            </NewsComponent>
+        </NewsComponent>
+    </NewsItem>
+</NewsML>

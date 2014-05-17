@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <artifactId>modules</artifactId>
+        <groupId>dk.i2m.converge</groupId>
+        <version>1.1.11-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>converge-ear</artifactId>
+    <name>Converge - EAR</name>
+    <description>Enterprise archive containing the system</description>
+    <packaging>ear</packaging>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>converge-ejb</artifactId>
+            <version>${project.version}</version>
+            <type>ejb</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>converge-war</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+                <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>converge-ws</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+    </dependencies>
+    <build>
+        <finalName>converge</finalName>
+        <plugins>
+            <plugin>
+                <artifactId>maven-ear-plugin</artifactId>
+                <version>2.4.2</version>
+                <configuration>
+                    <displayName>Converge</displayName>
+                    <description>Editorial Content Management System</description>
+                    <version>5</version>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                        </manifest>
+                    </archive>
+                    <defaultLibBundleDir>lib</defaultLibBundleDir>
+                    <modules>
+                        <webModule>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>converge-war</artifactId>
+                            <contextRoot>/converge</contextRoot>
+                            <bundleFileName>converge-war.war</bundleFileName>
+                        </webModule>
+                        <webModule>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>converge-ws</artifactId>
+                            <contextRoot>/converge-ws</contextRoot>
+                            <bundleFileName>converge-ws.war</bundleFileName>
+                        </webModule>
+                        <ejbModule>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>converge-ejb</artifactId>
+                            <bundleFileName>converge-ejb.jar</bundleFileName>
+                        </ejbModule>
+                    </modules>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+    <properties>
+        <netbeans.hint.deploy.server>J2EE</netbeans.hint.deploy.server>
+    </properties>
+</project>

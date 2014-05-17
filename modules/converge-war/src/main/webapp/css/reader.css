@@ -1,0 +1,64 @@
+body, p, h1, h2, h3, span, td {
+    font-family: Palatino, Georgia, Times, 'Times New Roman', serif; 
+    line-height: 25px;
+}
+
+body {
+    margin-left: 15%;
+    margin-right: 15%;
+    background: #888888;
+}
+
+h1 {
+    font-size: 24px; font-style: normal; font-variant: normal; font-weight: bold;
+}
+
+h2 {
+    font-size: 18px; font-style: normal; font-variant: normal; font-weight: normal;
+}
+
+h3 {
+    font-size: 17px; font-style: normal; font-variant: normal; font-weight: bold;
+}
+
+
+p {
+    
+    margin-bottom: 18px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 18px;
+}
+
+div#story {
+    background: white;
+    padding: 10px;
+    border: 2px outset #aaaaaa;
+}
+
+div#controls {
+    float: right; padding: 5px;
+}
+
+div#controls img {
+    padding: 3px;
+}
+
+.contentTag { background: #00AA00; color:white; font-size: 0.8em; padding: 4px; text-transform: uppercase; }
+.contentTags { margin-top: 0px; margin-bottom: 2px; line-height: 1.6em; }
+
+.imgAttachment { float: left; padding: 5px; }
+
+.rich-table-cell { font-size: 12px; }
+
+.table { width: 100%; }
+
+.mediaItemHeld { text-align: center; padding: 10px; margin-bottom: 10px; background-color: #ff0000; color: white; font-size: 18px; font-weight: bold; text-transform: uppercase; border: 1px solid #aaa; }
+
+.newswireServiceCopyright {
+    font-weight: bold;
+    color: black;
+    border: 1px solid black;
+    background: #FFCC66;
+    padding: 5px;
+}

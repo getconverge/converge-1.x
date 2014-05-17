@@ -1,0 +1,22 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://java.sun.com/jstl/core" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+    <c:if test="#{common.announcementsAvailable}">
+        <converge:moduleHeader moduleTitle="#{i18n.announcementsModule_TITLE}" />
+        <div class="moduleContent">
+            <rich:dataTable value="#{common.publishedAnnouncements}" var="announcement" styleClass="dashboardAnnouncementTable">
+                <rich:column styleClass="dashboardAnnouncementColumn">
+                    <h:panelGrid columns="2" styleClass="dashboardAnnouncementTitleTable" columnClasses="left, right">
+                        <h:outputText styleClass="dashboardAnnouncementTitle" value="#{announcement.title}" />
+                        <h:outputText styleClass="dashboardAnnouncementDate" value="#{announcement.date.time}">
+                            <f:converter converterId="com.ocpsoft.PrettyTimeConverter" />
+                        </h:outputText>
+                    </h:panelGrid>
+                    <h:panelGroup layout="block">
+                        <h:graphicImage value="#{announcement.thumb}" styleClass="dashboardAnnouncementThumb" rendered="#{announcement.thumb != ''}" />
+                        <h:outputText value="#{announcement.description}" styleClass="dashboardAnnouncementDescription"  escape="false" />
+                    </h:panelGroup>
+                </rich:column>
+            </rich:dataTable>
+        </div>
+        <converge:moduleSpacer />
+    </c:if>
+</ui:composition>

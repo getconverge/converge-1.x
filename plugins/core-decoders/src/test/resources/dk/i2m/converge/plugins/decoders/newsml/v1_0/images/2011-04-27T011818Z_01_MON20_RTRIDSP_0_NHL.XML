@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE NewsML SYSTEM "http://idsdat06.reuters.com/newsml/NewsMLv1.0.dtd" [
+  <!ENTITY % xhtml SYSTEM "http://idsdat06.reuters.com/newsml/xhtml1-strict.dtd">
+  %xhtml;
+]>
+<!--src: rtr2newsml0.995-->
+<NewsML Duid="MTFH71930_2011-04-27_01-18-18_MON20_NEWSML">
+    <Catalog Href="http://idsdat06.reuters.com/newsml/catalog/catalog-reuters-master_catalog_1.xml"/>
+    <NewsEnvelope>
+        <DateAndTime>20110427T011818+0000</DateAndTime>
+        <NewsService FormalName="RTRPIX"/>
+        <NewsProduct FormalName="PIX"/>
+        <Priority FormalName="4"/>
+    </NewsEnvelope>
+    <NewsItem Duid="MTFH71930_2011-04-27_01-18-18_MON20_NEWSITEM">
+        <Identification>
+            <NewsIdentifier>
+                <ProviderId>reuters.com</ProviderId>
+                <DateId>20110427</DateId>
+                <NewsItemId>MTFH71930_2011-04-27_01-18-18_MON20</NewsItemId>
+                <RevisionId Update="N" PreviousRevision="0">1</RevisionId>
+                <PublicIdentifier>urn:newsml:reuters.com:20110427:MTFH71930_2011-04-27_01-18-18_MON20:1</PublicIdentifier>
+            </NewsIdentifier>
+        </Identification>
+        <NewsManagement>
+            <NewsItemType FormalName="News"/>
+            <FirstCreated>20110427T011818+0000</FirstCreated>
+            <ThisRevisionCreated>20110427T011818+0000</ThisRevisionCreated>
+            <Status FormalName="Usable"/>
+            <Urgency FormalName="4"/>
+            <Property FormalName="USN" Value="GM1E74R0PZL01"/>
+            <Property FormalName="CID" Value="GM1E74R0PZL01" Scheme="IID"/>
+            <Property FormalName="OTR" Value="MON20"/>
+            <Property FormalName="REL:DERIVATION-BINMOD" Value="IID:GF2E74R03PP01"/>
+        </NewsManagement>
+        <!--Outer "MAIN" NewsComponent-->
+        <NewsComponent EquivalentsList="no" Essential="no" Duid="MTFH71930_2011-04-27_01-18-18_MON20_NC" xml:lang="en">
+            <TopicSet FormalName="HighImportance">
+<Topic Duid="ts_1">
+<TopicType FormalName="Ice Hockey"/>
+<FormalName Scheme="N2000">HKN</FormalName>
+<FormalName Scheme="IPTCSubjectCodes">15031001</FormalName>
+<Description xml:lang="en">National Hockey League (North American)</Description>
+<Property FormalName="WhyPresent" Value="Classifier"/>
+</Topic>
+<Topic Duid="ts_2">
+<TopicType FormalName="Sport"/>
+<FormalName Scheme="N2000">SPO</FormalName>
+<FormalName Scheme="IPTCSubjectCodes">15000000</FormalName>
+<Description xml:lang="en">Sport</Description>
+<Property FormalName="WhyPresent" Value="Classifier"/>
+</Topic>
+<Topic Duid="ts_3">
+<TopicType FormalName="Recurring Report"/>
+<FormalName Scheme="Reuters Recurring Report">GM1E74R0PZL01</FormalName>
+<Property FormalName="WhyPresent" Value="Classifier"/>
+</Topic>
+<Topic Duid="ts_4">
+<TopicType FormalName="CategoryCode"/>
+<FormalName Scheme="MediaCategory">S</FormalName>
+<Description xml:lang="en">Sport</Description>
+<Property FormalName="WhyPresent" Value="Classifier"/>
+</Topic>
+</TopicSet>
+            <TopicSet FormalName="AdminRights" Scheme="reuters_TopicType">
+                <Topic Duid="ats_1">
+                    <TopicType FormalName="Geography"/>
+                    <FormalName Scheme="N2000Cities">MONTREAL</FormalName>
+                </Topic>
+                <Topic Duid="ats_2">
+                    <TopicType FormalName="Geography"/>
+                    <FormalName Scheme="N2000">CA</FormalName>
+                    <Description xml:lang="en">Canada</Description>
+                </Topic>
+            </TopicSet>
+            <Role FormalName="Main"/>
+            <AdministrativeMetadata>
+                <FileName>2011-04-27T011818Z_01_MON20_RTRIDSP_0_NHL.XML</FileName>
+                <Provider>
+                    <Party FormalName="Reuters"/>
+                </Provider>
+                <Creator>
+                    <Party FormalName="REUTERS"/>
+                </Creator>
+                <Source>
+                    <Party FormalName="Reuters"/>
+                </Source>
+                <Property FormalName="SourceFeed" Value="IDS"/>
+                <Property FormalName="IDSPublisher" Value="http://www.reuters.com/ids"/>
+            </AdministrativeMetadata>
+            <!--Single "Main Picture" inner NewsComponent-->
+            <NewsComponent EquivalentsList="no" Essential="no" Duid="MTFH71930_2011-04-27_01-18-18_MON20_PICTURE_NC" xml:lang="en">
+                <Role FormalName="Main Picture"/>
+                <NewsLines>
+                    <HeadLine>Montreal Canadiens' Gionta scores a goal against Boston Bruins goaltender Thomas and Bruins' Seidenberg during their NHL Eastern Conference quarter-final hockey series in Montreal</HeadLine>
+                    <ByLine>CHRISTINNE MUSCHI</ByLine>
+                    <DateLine>
+                        <Origin Href="#ats_1">MONTREAL</Origin>
+                        <Origin Href="#ats_2">Canada</Origin>April 27, 2011</DateLine>
+                    <CreditLine>REUTERS</CreditLine>
+                    <CopyrightLine>(c) Copyright Thomson Reuters 2011. Click For Restrictions. http://about.reuters.com/fulllegal.asp</CopyrightLine>
+                    <SlugLine>NHL/</SlugLine>
+                    <KeywordLine>:rel:d:bm:GF2E74R03PP01</KeywordLine>
+                </NewsLines>
+                <DescriptiveMetadata>
+                    <Language FormalName="en"/>
+                    <OfInterestTo FormalName="MEDWAS"/>
+                    <OfInterestTo FormalName="MEDLON"/>
+                    <OfInterestTo FormalName="RONL"/>
+                    <OfInterestTo FormalName="AONL"/>
+                    <OfInterestTo FormalName="APC"/>
+                    <OfInterestTo FormalName="USA"/>
+                    <OfInterestTo FormalName="CAN"/>
+                    <OfInterestTo FormalName="SAM"/>
+                    <OfInterestTo FormalName="ASIA"/>
+                    <OfInterestTo FormalName="SPTS"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_1"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_2"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_3"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_4"/>
+                </DescriptiveMetadata>
+                <!--"Picture Caption" NewsComponent used solely for the picture's caption-->
+                <NewsComponent EquivalentsList="no" Essential="no" Duid="MTFH71930_2011-04-27_01-18-18_MON20_CAPTION_NC" xml:lang="en">
+                    <Role FormalName="Picture Caption"/>
+                    <ContentItem Duid="MTFH71930_2011-04-27_01-18-18_MON20_CAPTION_CI">
+                        <MediaType FormalName="Text"/>
+                        <Format FormalName="XHTML"/>
+                        <Characteristics>
+                            <Property FormalName="ContentID" Value="urn:newsml:reuters.com:20110427:MTFH71930_2011-04-27_01-18-18_MON20_CAPTION:1"/>
+                            <Property FormalName="ContentCreationDateAndTime" Value="20110427T011818+0000"/>
+                            <Property FormalName="Creator" Value="Paneikon/MED 3.01"/>
+                        </Characteristics>
+                        <DataContent>
+                            <html xmlns="http://www.w3.org/1999/xhtml">
+                                <head>
+                                    <title/>
+                                </head>
+                                <body>
+                                    <p>Montreal Canadiens right wing Brian Gionta (21) scores a goal against Boston Bruins goaltender Tim Thomas and Bruins defenseman Dennis Seidenberg (44) during the second period in Game 6 of their NHL Eastern Conference quarter-final hockey series in Montreal, April 26, 2011. REUTERS/Christinne Muschi (CANADA - Tags: SPORT ICE HOCKEY)</p>
+                                </body>
+                            </html>
+                        </DataContent>
+                    </ContentItem>
+                </NewsComponent>
+                <!--NewsComponent that wraps the ContentItems-->
+                <NewsComponent EquivalentsList="yes" Essential="no" Duid="MTFH71930_2011-04-27_01-18-18_MON20_PICTURE_WRAPPER_NC" xml:lang="en">
+                    <Role FormalName="Image Wrapper"/>
+                    <BasisForChoice>./ContentItem/Characteristics/Property[@FormalName="PicType"]/@Value</BasisForChoice>
+                    <!--ContentItem for the THUMBNAIL-->
+                    <ContentItem Duid="MTFH71930_2011-04-27_01-18-18_MON20_THUMBNAIL_CI" Href="2011-04-27T011818Z_01_MON20_RTRIDSP_1_NHL.jpg">
+                        <MediaType FormalName="Photo"/>
+                        <Format FormalName="JPEG Baseline"/>
+                        <Characteristics>
+                            <Property Value="Thumbnail" FormalName="PicType"/>
+                            <Property FormalName="ContentID" Value="urn:newsml:reuters.com:20110427:MTFH71930_2011-04-27_01-18-18_MON20_THUMBNAIL:1"/>
+                            <Property FormalName="ContentCreationDateAndTime" Value="20110427T011818+0000"/>
+                            <Property FormalName="Creator" Value="Paneikon/MED 3.01"/>
+                        </Characteristics>
+                    </ContentItem>
+                    <!--ContentItem for the VIEW IMAGE-->
+                    <ContentItem Duid="MTFH71930_2011-04-27_01-18-18_MON20_VIEWIMAGE_CI" Href="2011-04-27T011818Z_01_MON20_RTRIDSP_2_NHL.jpg">
+                        <MediaType FormalName="Photo"/>
+                        <Format FormalName="JPEG Baseline"/>
+                        <Characteristics>
+                            <Property Value="ViewImage" FormalName="PicType"/>
+                            <Property FormalName="ContentID" Value="urn:newsml:reuters.com:20110427:MTFH71930_2011-04-27_01-18-18_MON20_VIEWIMAGE:1"/>
+                            <Property FormalName="ContentCreationDateAndTime" Value="20110427T011818+0000"/>
+                            <Property FormalName="Creator" Value="Paneikon/MED 3.01"/>
+                        </Characteristics>
+                    </ContentItem>
+                    <!--ContentItem for the BASE IMAGE-->
+                    <ContentItem Duid="MTFH71930_2011-04-27_01-18-18_MON20_BASEIMAGE_CI" Href="2011-04-27T011818Z_01_MON20_RTRIDSP_3_NHL.jpg">
+                        <MediaType FormalName="Photo"/>
+                        <Format FormalName="JPEG Baseline"/>
+                        <Characteristics>
+                            <Property Value="BaseImage" FormalName="PicType"/>
+                            <Property FormalName="ContentID" Value="urn:newsml:reuters.com:20110427:MTFH71930_2011-04-27_01-18-18_MON20_BASEIMAGE:1"/>
+                            <Property FormalName="ContentCreationDateAndTime" Value="20110427T011818+0000"/>
+                            <Property FormalName="Creator" Value="Paneikon/MED 3.01"/>
+                        </Characteristics>
+                    </ContentItem>
+                </NewsComponent>
+            </NewsComponent>
+        </NewsComponent>
+    </NewsItem>
+</NewsML>

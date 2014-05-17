@@ -1,0 +1,139 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<jsp:root version="2.0"
+          xmlns:html="http://www.w3.org/1999/xhtml"
+          xmlns:jsp="http://java.sun.com/JSP/Page"
+          xmlns:c="http://java.sun.com/jstl/core"
+          xmlns:ui="http://java.sun.com/jsf/facelets"
+          xmlns:h="http://java.sun.com/jsf/html"
+          xmlns:f="http://java.sun.com/jsf/core"
+          xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+          xmlns:ecms="http://www.webparation.net/ecms/tags"
+          xmlns:t="http://myfaces.apache.org/tomahawk"
+          xmlns:ba="http://com.googlecode.benevolentact/tags"
+          xmlns:a4j="http://richfaces.org/a4j"
+          xmlns:rich="http://richfaces.org/rich">
+    <ui:composition>
+
+        <rich:dataTable styleClass="table" headerClass="tableHeader" id="articles" value="#{articles}" var="article"
+                        columnClasses="center columnArticleIcon, center columnArticleIcon, center columnArticleIcon, right columnArticleId, left, columnCount left, left, left, left, left columnArticleTime, left columnArticleTime"
+                        rowClasses="odd, even" style="width: 100%" rendered="#{display &amp;&amp; articles.rowCount > 0}">
+
+            <rich:column>
+                <h:outputLink onclick="openDialogue('#{facesContext.externalContext.request.contextPath}/DisplayArticle.xhtml?ARTICLE_ID=#{article.id}', '_blank', 600, 510); return false;">
+                    <h:graphicImage title="#{article.currentState.name}" alt="#{article.currentState.name}" value="/images/template/icons/article_#{article.currentState.id}.gif" />
+                </h:outputLink>
+            </rich:column>
+
+            <rich:column sortBy="#{article.coAuthored}">
+                <h:graphicImage value="/images/template/icons/coauthored.gif" rendered="#{article.coAuthored}" alt="#{msgs.CO_AUTHORED_TOOLTIP}" title="#{msgs.CO_AUTHORED_TOOLTIP}" />
+                <h:graphicImage value="/images/template/icons/singleauthor.gif" rendered="#{!article.coAuthored}" alt="#{msgs.SINGLE_AUTHOR_TOOLTIP}" title="#{msgs.SINGLE_AUTHOR_TOOLTIP}" />
+            </rich:column>
+
+            <rich:column>
+                <h:graphicImage id="exportArticle" value="/images/template/icons/export.png" alt="#{msgs.EXPORT}" title="#{msgs.EXPORT}" />
+
+                <rich:toolTip showEvent="onclick" direction="bottom-left" layout="block" style="width: 120px; padding: 0px; margin: 0px; background: white;" >
+                    <rich:dataTable value="#{common.articleExporters}" var="exporter" styleClass="table" columnClasses="left">
+                        <rich:column>
+                            <h:outputLink value="#{facesContext.externalContext.request.contextPath}/export/article?id=#{article.id}&amp;exporter=#{exporter.class.canonicalName}">
+                                <h:outputText value="#{exporter.name}" />
+                            </h:outputLink>
+                        </rich:column>
+                    </rich:dataTable>
+                </rich:toolTip>
+            </rich:column>
+
+            <rich:column sortBy="#{article.id}">
+                <f:facet name="header">
+                    <h:outputText value="#{msgs.ID}" title="#{msgs.ARTICLE_ID_TOOLTIP}" alt="#{msgs.ARTICLE_ID_TOOLTIP}" />
+                </f:facet>
+                <h:outputLink onclick="openDialogue('#{facesContext.externalContext.request.contextPath}/DisplayArticle.xhtml?ARTICLE_ID=#{article.id}', '_blank', 600, 510); return false;">
+                    <h:outputText value="#{article.id}">
+                        <f:convertNumber integerOnly="true" type="number" pattern="#{msgs.FORMAT_ID}" />
+                    </h:outputText>
+                </h:outputLink>
+            </rich:column>
+
+            <rich:column sortBy="#{article.title}">
+                <f:facet name="header">
+                    <h:outputText value="#{msgs.TITLE}" title="#{msgs.ARTICLE_TITLE_TOOLTIP}" />
+                </f:facet>
+                <t:popup styleClass="popup">
+                    <h:outputText value="#{article.title}" title="" />
+                    <f:facet name="popup">
+                        <h:panelGrid rowClasses="heading, text">
+                            <h:outputText value="#{msgs.BRIEF}" style="font-weight: bold;" />
+                            <h:outputText value="#{article.brief}&#160;" escape="false" />
+
+                            <h:outputText value="#{msgs.SUBJECTS}" style="font-weight: bold;" />
+                            <t:dataList value="#{article.subjects}" var="subject" rendered="#{not empty article.subjects}">
+                                <h:outputLink value="/search/BrowseBySubject.xhtml?ID=#{subject.id}&amp;CONTENT_TYPE=ARTICLE">#{subject.fullTitle}</h:outputLink>
+                            </t:dataList>
+                            <h:outputText value="&#160;" rendered="#{empty article.subjects}" />
+
+                            <h:outputText value="#{msgs.PERSONS}" style="font-weight: bold;" />
+                            <t:dataList value="#{article.persons}" var="person" rendered="#{not empty article.persons}">
+                                <h:outputLink value="/search/BrowseByPerson.xhtml?ID=#{person.id}&amp;CONTENT_TYPE=ARTICLE">#{person.firstName} #{person.lastName}</h:outputLink>
+                            </t:dataList>
+                            <h:outputText value="&#160;" rendered="#{empty article.persons}" />
+
+                            <h:outputText value="#{msgs.ORGANISATIONS}" style="font-weight: bold;" />
+                            <t:dataList value="#{article.organisations}" var="organisation" rendered="#{not empty article.organisations}">
+                                <h:outputLink value="/search/BrowseByOrganisation.xhtml?ID=#{organisation.id}&amp;CONTENT_TYPE=ARTICLE">#{organisation.name}</h:outputLink>
+                            </t:dataList>
+                            <h:outputText value="&#160;" rendered="#{empty article.organisations}" />
+
+                            <h:outputText value="#{msgs.LOCATIONS}" style="font-weight: bold;" />
+                            <t:dataList value="#{article.locations}" var="location" rendered="#{not empty article.locations}">
+                                <h:outputLink value="/search/BrowseByLocation.xhtml?ID=#{location.id}&amp;CONTENT_TYPE=ARTICLE">#{location.name}</h:outputLink>
+                            </t:dataList>
+                            <h:outputText value="&#160;" rendered="#{empty article.locations}" />
+                        </h:panelGrid>
+                    </f:facet>
+                </t:popup>
+            </rich:column>
+
+            <rich:column sortBy="#{article.wordCount}">
+                <f:facet name="header">
+                    <h:outputText value="#{msgs.ARTICLE_WORD_COUNT}" title="#{msgs.ARTICLE_WORD_COUNT_TOOLTIP}" alt="#{msgs.ARTICLE_WORD_COUNT_TOOLTIP}" />
+                </f:facet>
+                <h:outputText value="#{article.wordCount}" />
+            </rich:column>
+
+            <rich:column sortBy="#{article.publication.title}">
+                <f:facet name="header">
+                    <h:outputText value="#{msgs.PUBLICATION}" title="#{msgs.ARTICLE_PUBLICATION_TOOLTIP}" />
+                </f:facet>
+                <h:outputText value="#{article.publication.title}&#160;&#187;&#160;#{article.section.name}"  rendered="#{article.publication != null}" />
+            </rich:column>
+
+            <rich:column sortBy="#{article.authorsAsString}}">
+                <f:facet name="header">
+                    <h:outputText value="#{msgs.AUTHORS}" />
+                </f:facet>
+                <t:dataList value="#{article.authors}" var="author" rendered="#{!article.undisclosedAuthor}">
+                    <h:outputText value="#{author.fullName}"  />&#160;
+                </t:dataList>
+                <h:outputText value="#{msgs.UNDISCLOSED}" rendered="#{article.undisclosedAuthor}" />
+            </rich:column>
+
+
+            <rich:column sortBy="#{article.editor.fullName}">
+                <f:facet name="header">
+                    <h:outputText value="#{msgs.EDITOR}" title="#{msgs.ARTICLE_EDITOR_TOOLTIP}" />
+                </f:facet>
+                <h:outputText value="#{article.editor.fullName}"  />
+            </rich:column>
+
+            <rich:column sortBy="#{article.updated.time}">
+                <f:facet name="header">
+                    <h:outputText value="#{msgs.UPDATED}"  title="#{msgs.ARTICLE_UPDATED_TOOLTIP}" />
+                </f:facet>
+                <h:outputText value="#{article.updated.time}">
+                    <f:convertDateTime type="both" pattern="#{msgs.FORMAT_DATE_AND_TIME}" timeZone="#{userSession.user.timeZone}" />
+                </h:outputText>
+            </rich:column>
+
+        </rich:dataTable>
+    </ui:composition>
+</jsp:root>

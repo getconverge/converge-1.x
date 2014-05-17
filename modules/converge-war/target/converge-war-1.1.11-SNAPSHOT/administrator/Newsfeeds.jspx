@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jsp:root version="2.0" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:c="http://java.sun.com/jstl/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+    <ui:composition template="/WEB-INF/facelets/templates/administration.xhtml">
+        <ui:define name="title">#{i18n.administrator_Newsfeeds_PAGE_TITLE}</ui:define>
+
+        <ui:define name="body">
+
+            <a4j:keepAlive beanName="administrator_Newsfeeds" />
+
+            <a4j:outputPanel ajaxRendered="true">
+                <converge:message for="frmPage" />
+            </a4j:outputPanel>
+
+            <h:form id="frmPage">
+
+                <converge:moduleHeader moduleTitle="#{i18n.administrator_Newsfeeds_PAGE_TITLE}" />
+                <div class="moduleContent">
+                    <h:panelGrid columns="1" columnClasses="right" style="width: 100%">
+                        <h:column>
+                            <a4j:commandButton id="btnNew" styleClass="button mediumButton" value="#{i18n.Generic_NEW}" actionListener="#{administrator_Newsfeeds.onNew}" reRender="frmNewsfeedDetails" limitToList="true">
+                                <rich:componentControl for="mpNewsfeedDetails" operation="show" event="oncomplete" />
+                            </a4j:commandButton>
+                        </h:column>
+                    </h:panelGrid>
+
+                    <rich:dataTable id="dtNewsfeeds" value="#{administrator_Newsfeeds.newsFeeds}" var="newsfeed" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
+
+                        <rich:column styleClass="center columnIcon">
+                            <f:facet name="header">
+                                <a4j:status id="staNewsfeed">
+                                    <f:facet name="start">
+                                        <h:graphicImage value="#{i18n.resource_ICON_AJAX_LOADING}" />
+                                    </f:facet>
+                                </a4j:status>
+                            </f:facet>
+
+                            <a4j:commandLink reRender="frmNewsfeedDetails">
+                                <rich:componentControl event="oncomplete" operation="show" for="mpNewsfeedDetails" />
+                                <f:setPropertyActionListener value="#{newsfeed}" target="#{administrator_Newsfeeds.selectedNewsfeed}" />
+                                <f:setPropertyActionListener value="tabDetails" target="#{administrator_Newsfeeds.selectedTab}" />
+                                <h:graphicImage alt="#{i18n.administrator_Newsfeeds_NEWSWIRE}" title="#{i18n.administrator_Newsfeeds_NEWSWIRE}" value="#{i18n.resource_ICON_NEWSWIRE}" />
+                            </a4j:commandLink>
+
+                        </rich:column>
+
+                        <rich:column id="colId" styleClass="right columnId" sortBy="#{newsfeed.id}">
+                            <f:facet name="header">
+                                <h:outputText value="#{i18n.administrator_Newsfeeds_NEWSWIRE_ID}" />
+                            </f:facet>
+                            <a4j:commandLink reRender="frmNewsfeedDetails">
+                                <rich:componentControl event="oncomplete" operation="show" for="mpNewsfeedDetails" />
+                                <f:setPropertyActionListener value="#{newsfeed}" target="#{administrator_Newsfeeds.selectedNewsfeed}" />
+                                <f:setPropertyActionListener value="tabDetails" target="#{administrator_Newsfeeds.selectedTab}" />
+                                <h:outputText value="#{newsfeed.id}">
+                                    <f:convertNumber integerOnly="true" type="number" pattern="#{msgs.FORMAT_ID}" />
+                                </h:outputText>
+                            </a4j:commandLink>
+                        </rich:column>
+
+                        <rich:column id="colSource" sortBy="#{newsfeed.source}" sortOrder="ASCENDING">
+                            <f:facet name="header">
+                                <h:outputText value="#{i18n.NewsFeeds_SOURCE}" />
+                            </f:facet>
+                            <h:outputText value="#{newsfeed.source}" />
+                        </rich:column>
+
+                        <rich:column sortBy="#{newsfeed.numberOfSubscribers}">
+                            <f:facet name="header">
+                                <h:outputText value="#{i18n.NewsFeeds_SUBSCRIBERS}" />
+                            </f:facet>
+                            <h:outputText value="#{newsfeed.numberOfSubscribers}" />
+                        </rich:column>
+
+                        <rich:column sortBy="#{newsfeed.numberOfItems}">
+                            <f:facet name="header">
+                                <h:outputText value="#{i18n.NewsFeeds_ITEMS}" />
+                            </f:facet>
+                            <h:outputText value="#{newsfeed.numberOfItems}" />
+                        </rich:column>
+
+                        <rich:column sortBy="#{newsfeed.decoderClass}">
+                            <f:facet name="header">
+                                <h:outputText value="#{i18n.NewsFeeds_DECODER_TYPE}" />
+                            </f:facet>
+                            <h:outputText value="#{newsfeed.decoder.name}" title="#{newsfeed.decoder.description}" />
+                        </rich:column>
+                       
+                        <rich:column sortBy="#{newsfeed.lastFetch}">
+                            <f:facet name="header">
+                                <h:outputText value="#{i18n.NewsFeeds_ACTIVE}" />
+                            </f:facet>
+                            <h:outputText value="#{newsfeed.lastFetch.time}" rendered="#{newsfeed.lastFetch != null}">
+                                <f:convertDateTime pattern="#{msgs.FORMAT_DATE_AND_TIME}" timeZone="#{userSession.user.timeZone}" />
+                            </h:outputText>
+                            <h:outputText value="#{msgs.newswire_NEVER_UPDATED}" rendered="#{newsfeed.lastFetch == null}"/>
+                        </rich:column>
+                        
+                        <rich:column styleClass="subColumnIcon">
+                            <f:facet name="header"></f:facet>
+
+                            <a4j:commandLink ajaxSingle="true" >
+                                <h:graphicImage alt="#{i18n.NewsFeeds_ACTIVE_TRUE}" title="#{i18n.NewsFeeds_ACTIVE_TRUE}" value="#{res.PUBLISHED_ICON}" rendered="#{newsfeed.active}" />
+                                <h:graphicImage alt="#{i18n.NewsFeeds_ACTIVE_FALSE}" title="#{i18n.NewsFeeds_ACTIVE_FALSE}" value="#{res.UNPUBLISHED_ICON}" rendered="#{!newsfeed.active}" />
+                                <f:setPropertyActionListener value="#{newsfeed}" target="#{administrator_Newsfeeds.selectedNewsfeed}" />
+                                <a4j:support event="oncomplete" actionListener="#{administrator_Newsfeeds.onUpdateStatus}" reRender="dtNewsfeeds" />
+                            </a4j:commandLink>
+
+                        </rich:column>
+
+                        <rich:column styleClass="subColumnIcon">
+                            <f:facet name="header">
+                                <a4j:commandLink ajaxSingle="true" reRender="dtNewsfeeds" actionListener="#{administrator_Newsfeeds.onEmptyNewswireServices}">
+                                    <h:graphicImage alt="#{i18n.NewsFeeds_SERVICES_EMPTIED_TOOLTIP}" title="#{i18n.NewsFeeds_SERVICES_EMPTIED_TOOLTIP}" value="#{res.TRASH_ICON}" />
+                                </a4j:commandLink>
+                            </f:facet>
+                            <a4j:commandLink ajaxSingle="true" >
+                                <h:graphicImage alt="#{i18n.NewsFeeds_EMPTY}" title="#{i18n.NewsFeeds_EMPTY}" value="#{res.TRASH_ICON}" />
+                                <f:setPropertyActionListener value="#{newsfeed}" target="#{administrator_Newsfeeds.selectedNewsfeed}" />
+                                <a4j:support event="oncomplete" actionListener="#{administrator_Newsfeeds.onEmptyNewswireService}" reRender="dtNewsfeeds" />
+                            </a4j:commandLink>
+                        </rich:column>
+
+                        <rich:column styleClass="subColumnIcon">
+                            <f:facet name="header">                                
+                                <a4j:commandLink ajaxSingle="true" reRender="dtNewsfeeds" actionListener="#{administrator_Newsfeeds.onDownloadFeeds}">
+                                    <h:graphicImage alt="#{i18n.NewsFeeds_SERVICE_DOWNLOAD_ALL}" title="#{i18n.NewsFeeds_SERVICE_DOWNLOAD_ALL}" value="#{res.DOWNLOAD_ICON}" />
+                                </a4j:commandLink>
+                            </f:facet>
+                            <a4j:commandLink ajaxSingle="true">
+                                <h:graphicImage alt="#{i18n.NewsFeeds_SERVICE_DOWNLOAD}" title="#{i18n.NewsFeeds_SERVICE_DOWNLOAD}" value="#{res.DOWNLOAD_ICON}" />
+                                <f:setPropertyActionListener value="#{newsfeed}" target="#{administrator_Newsfeeds.selectedNewsfeed}" />
+                                <a4j:support event="oncomplete" actionListener="#{administrator_Newsfeeds.onDownloadNewswireService}" reRender="dtNewsfeeds" />
+                            </a4j:commandLink>
+                        </rich:column>
+                    </rich:dataTable>
+                </div>
+            </h:form>
+
+            <h:form id="frmNewsfeedDetails">
+                <rich:modalPanel id="mpNewsfeedDetails" autosized="true" domElementAttachment="parent" rendered="#{administrator_Newsfeeds.selectedNewsfeed != null}">
+                    <f:facet name="header">
+                        <h:panelGroup>
+                            <h:outputText value="#{i18n.NewsFeeds_NEWSWIRE}" />
+                        </h:panelGroup>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:panelGroup>
+                            <h:graphicImage value="#{i18n.resource_ICON_DIALOGUE_CLOSE}" style="link">
+                                <rich:componentControl for="mpNewsfeedDetails" operation="hide" event="onclick"/>
+                            </h:graphicImage>
+                        </h:panelGroup>
+                    </f:facet>
+                    <h:panelGrid>
+
+                        <rich:tabPanel switchType="client" inactiveTabClass="tabInactive" activeTabClass="tabActive" selectedTab="#{administrator_Newsfeeds.selectedTab}">
+
+                            <rich:tab id="tabDetails" label="#{i18n.NewsFeeds_BASIC}">
+                                <h:panelGrid columns="2" columnClasses="dialogueFieldLabel nowrap, dialogueFieldValue" styleClass="dialogue">
+                                    <h:outputText value="#{i18n.NewsFeeds_SOURCE}:" />
+                                    <h:inputText styleClass="text mediumInput" value="#{administrator_Newsfeeds.selectedNewsfeed.source}" />
+
+                                    <h:outputText value="#{i18n.NewsFeeds_ACTIVE}:" />
+                                    <h:selectBooleanCheckbox value="#{administrator_Newsfeeds.selectedNewsfeed.active}" />
+
+                                    <h:outputText value="#{i18n.administrator_Newsfeeds_NEWSWIRE_DAYS_TO_KEEP}:" />
+                                    <h:inputText styleClass="text shortInput" value="#{administrator_Newsfeeds.selectedNewsfeed.daysToKeep}">
+                                        <f:convertNumber />
+                                    </h:inputText>
+
+                                    <h:outputText value="#{i18n.administrator_Newsfeeds_NEWSWIRE_RESTRICT_TO}" />
+                                    <h:selectManyListbox id="somUserRole" value="#{administrator_Newsfeeds.selectedNewsfeed.restrictedTo}" converter="#{converters.userRoleConverter}" size="8">
+                                        <f:selectItems value="#{common.userRoles}" />
+                                    </h:selectManyListbox>
+
+                                    <h:outputText value="#{i18n.NewsFeeds_DECODER}:" />
+                                    <h:selectOneMenu id="somDecoders" value="#{administrator_Newsfeeds.selectedNewsfeed.decoderClass}">
+                                        <f:selectItems value="#{common.newswireDecoders}" />
+                                        <a4j:support event="onchange" reRender="pgProperties, aboutDecoder" />
+                                    </h:selectOneMenu>
+
+                                    <h:outputText value="#{i18n.administrator_Newsfeeds_NEWSWIRE_ABOUT}" />
+                                    <h:panelGroup id="aboutDecoder" styleClass="pluginInstanceAbout mediumInput" layout="block">
+                                        <h:outputText value="#{administrator_Newsfeeds.selectedNewsfeed.decoder.about}" escape="false" />
+                                    </h:panelGroup>
+                                </h:panelGrid>
+                            </rich:tab>
+                            
+                            <rich:tab id="tabCopyright" label="#{i18n.administrator_Newsfeeds_COPYRIGHTS}">
+                                <h:panelGrid columns="2" columnClasses="dialogueFieldLabel nowrap, dialogueFieldValue" styleClass="dialogue">
+                                    <h:inputTextarea styleClass="text mediumTextArea" value="#{administrator_Newsfeeds.selectedNewsfeed.copyright}"/>
+                                </h:panelGrid>
+                            </rich:tab>
+
+                            <rich:tab id="tabProperties" label="#{i18n.NewsFeeds_PROPERTIES}">
+                                <h:panelGrid id="pgProperties" columns="1" styleClass="dialogue">
+                                    <h:column>
+                                        <h:panelGrid columns="3">
+                                            <h:outputText value="#{i18n.NewsFeeds_PROPERTY}:" />
+                                            <h:selectOneMenu id="somDecoderProperties" value="#{administrator_Newsfeeds.selectedNewswireProperty.key}" styleClass="text mediumInput">
+                                                <f:selectItem itemLabel="#{i18n.administrator_Newsfeeds_NEWSWIRE_SELECT_PROPERTY}" />
+                                                <f:selectItems value="#{administrator_Newsfeeds.selectedNewsfeed.decoder.availableProperties}" />
+                                                <a4j:support event="onchange" reRender="colHelp" ajaxSingle="true" />
+                                            </h:selectOneMenu>
+                                            <h:panelGroup id="colHelp">
+                                                <c:set var="help_key" value="#{administrator_Newsfeeds.selectedNewswireProperty.key}_HELP" />
+                                                <c:set var="help_text" value="#{converge:message(administrator_Newsfeeds.selectedNewsfeed.decoder.bundle, help_key)}" />
+                                                <h:graphicImage url="#{res.HELP_ICON}" title="#{help_text}" rendered="#{help_text != ''}" />
+                                                <h:outputText value="&#160;" rendered="#{help_text == ''}" />
+                                            </h:panelGroup>
+
+                                            <h:outputText value="#{i18n.NewsFeeds_PROPERTY_VALUE}:" />
+                                            <h:inputText styleClass="text mediumInput" value="#{administrator_Newsfeeds.selectedNewswireProperty.value}" />
+                                            <a4j:commandButton id="btnAdd" value="#{i18n.NewsFeeds_PROPERTY_ADD}" actionListener="#{administrator_Newsfeeds.onAddProperty}" reRender="pgProperties" styleClass="button dynamicButton" />
+                                        </h:panelGrid>
+                                    </h:column>
+
+                                    <rich:dataTable value="#{administrator_Newsfeeds.selectedNewsfeed.properties}" var="newswireProperty" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{i18n.NewsFeeds_PROPERTY}" />
+                                            </f:facet>
+                                            <c:set var="help_key" value="#{newswireProperty.key}_HELP" />
+                                            <h:outputText value="#{converge:message(administrator_Newsfeeds.selectedNewsfeed.decoder.bundle, newswireProperty.key)}" title="#{converge:message(administrator_Newsfeeds.selectedNewsfeed.decoder.bundle, help_key)}" />
+                                        </rich:column>
+
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{i18n.NewsFeeds_PROPERTY_VALUE}" />
+                                            </f:facet>
+                                            <rich:inplaceInput required="true" value="#{newswireProperty.value}" viewClass="propertyInplace" viewHoverClass="propertyInplaceHover" />
+                                        </rich:column>
+
+                                        <rich:column styleClass="center columnIcon">
+                                            <a4j:commandLink id="btnRemove" reRender="pgProperties" ajaxSingle="true">
+                                                <f:setPropertyActionListener target="#{administrator_Newsfeeds.deletedProperty}" value="#{newswireProperty}" />
+                                                <h:graphicImage value="#{i18n.resource_ICON_DELETE}" alt="#{i18n.Generic_DELETE}" title="#{i18n.Generic_DELETE}" />
+                                            </a4j:commandLink>
+                                        </rich:column>
+
+                                    </rich:dataTable>
+
+                                </h:panelGrid>
+                            </rich:tab>
+
+                            <rich:tab id="tabLog" label="#{i18n.administrator_Newsfeeds_NEWSWIRE_LOG}">
+                                <h:panelGrid columnClasses="tabSheet" style="padding: 10px; width: 100%">
+                                    <h:panelGroup layout="block" class="logEntryList"> 
+                                        <rich:dataTable id="dtLogEntries" value="#{administrator_Newsfeeds.log}" var="logEntry" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
+                                            <rich:column styleClass="columnIcon center" headerClass="columnIconHeader">
+                                                <f:facet name="header">
+                                                    <a4j:commandLink ajaxSingle="true" reRender="dtLogEntries" actionListener="#{administrator_Newsfeeds.onRefreshLog}">  
+                                                        <h:graphicImage value="#{i18n.resource_ICON_REFRESH}" />
+                                                    </a4j:commandLink>
+                                                </f:facet>
+                                                <h:graphicImage value="#{i18n.resource_ICON_LOG_ENTRY}" />
+                                            </rich:column>
+
+                                            <rich:column styleClass="columnDateTime logEntrySeverity#{logEntry.severity}" headerClass="columnDateTime">
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{i18n.administrator_Newsfeeds_NEWSWIRE_LOG_DATE}" />
+                                                </f:facet>
+                                                <h:outputText value="#{logEntry.date}">
+                                                    <f:convertDateTime pattern="#{i18n.Generic_FORMAT_SHORT_DATE_AND_TIME}" timeZone="#{common.systemTimeZone}" />
+                                                </h:outputText>
+                                            </rich:column>
+
+                                            <rich:column styleClass="columnSeverity logEntrySeverity#{logEntry.severity}" headerClass="columnSeverity">
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{i18n.administrator_Newsfeeds_NEWSWIRE_LOG_SEVERITY}" />
+                                                </f:facet>
+                                                <c:set var="severity_key" value="LogEntry_SEVERITY_#{logEntry.severity}" />
+                                                <h:outputText value="#{i18n[severity_key]}" />
+                                            </rich:column>
+
+                                            <rich:column styleClass="logEntrySeverity#{logEntry.severity}">
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{i18n.administrator_Newsfeeds_NEWSWIRE_LOG_LOG}" />
+                                                </f:facet>
+                                                <h:outputText value="#{logEntry.description}"  />
+                                            </rich:column>
+                                        </rich:dataTable>
+                                    </h:panelGroup>
+                                    <rich:spacer width="900" height="1" />
+                                </h:panelGrid>    
+                            </rich:tab>
+
+                        </rich:tabPanel>
+                        <h:panelGroup styleClass="dialogueButtons">
+                            <a4j:commandLink id="lnkSave" actionListener="#{administrator_Newsfeeds.onSave}" styleClass="dialogButton" value="#{i18n.Generic_SAVE}" reRender="dtNewsfeeds">
+                                <rich:componentControl for="mpNewsfeedDetails" operation="hide" event="oncomplete" />
+                            </a4j:commandLink>
+
+                            <a4j:commandLink id="lnkApply" actionListener="#{administrator_Newsfeeds.onSave}" styleClass="dialogButton" value="#{i18n.Generic_APPLY}" reRender="dtNewsfeeds" />
+
+                            <a4j:commandLink id="lnkClearLog" actionListener="#{administrator_Newsfeeds.onClearLog}" styleClass="dialogButton" value="#{i18n.administrator_Newsfeeds_NEWSWIRE_LOG_CLEAR}" reRender="dtLogEntries" />
+
+                            <a4j:commandLink id="lnkDelete" ajaxSingle="true" rendered="#{administrator_Newsfeeds.editMode}" onclick="if (confirm('#{i18n.NewsFeeds_NEWSWIRE_PROMPT_DELETE}') != true){ return false; };" actionListener="#{administrator_Newsfeeds.onDelete}" styleClass="dialogButton" value="#{msgs.DELETE}" reRender="dtNewsfeeds">
+                                <rich:componentControl for="mpNewsfeedDetails" operation="hide" event="oncomplete" />
+                            </a4j:commandLink>
+
+                            <h:commandLink id="lnkCloseForm" styleClass="dialogButton" value="#{i18n.Generic_CLOSE}" onclick="#{rich:component('mpNewsfeedDetails')}.hide(); return false;" />
+                        </h:panelGroup>
+
+                    </h:panelGrid>
+                </rich:modalPanel>
+            </h:form>
+
+        </ui:define>
+
+    </ui:composition>
+</jsp:root>

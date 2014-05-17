@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jsp:root version="2.0" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:c="http://java.sun.com/jstl/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags" xmlns:v="http://converge.i2m.dk">
+
+    <ui:composition template="/WEB-INF/facelets/templates/myprofile.xhtml">
+
+        <ui:define name="left">
+
+            <h:form id="frmProfilePhoto">
+                <converge:moduleHeader moduleTitle="#{i18n.MyProfile_PHOTO}" />
+                <div class="moduleContent">
+                    <h:panelGrid columns="2">
+                        <h:graphicImage id="imgProfilePhoto" styleClass="profilePhoto"
+                                        value="#{userSession.photoUrl}"
+                                        alt="#{userSession.user.fullName}"
+                                        title="#{userSession.user.fullName}"
+                                        height="48" width="48" />
+
+                        <rich:fileUpload listWidth="0" id="fuProfilePhoto"
+                                         allowFlash="false"
+                                         listHeight="0"
+                                         maxFilesQuantity="1"
+                                         immediateUpload="true"
+                                         immediate="true"
+                                         autoclear="true"
+                                         fileUploadListener="#{userSession.onUploadProfilePhoto}"
+                                         ajaxSingle="true"
+                                         addControlLabel="#{i18n.MyProfile_CHANGE_PHOTO}">
+                            <a4j:support event="onuploadcomplete"  reRender="frmProfilePhoto"/>
+                        </rich:fileUpload>
+
+                    </h:panelGrid>
+                    <h:outputText value="#{i18n.MyProfile_PHOTO_SPECIFICATION}" styleClass="small"/>
+                </div>
+            </h:form>
+
+            <converge:moduleSpacer />
+
+            <converge:moduleHeader moduleTitle="#{i18n.MyProfile_DETAILS}"  />
+            <div class="moduleContent">
+                <h:panelGrid>
+                    <h:outputText value="#{i18n.MyProfile_USERNAME}" styleClass="bold" />
+                    <h:outputText value="#{userSession.user.username}" />
+                    <h:outputText value="#{i18n.MyProfile_GIVEN_NAME}" styleClass="bold" />
+                    <h:outputText value="#{userSession.user.givenName}" rendered="#{userSession.user.givenName != ''}" />
+                    <h:outputText value="#{i18n.MyProfile_NOT_SET}" rendered="#{userSession.user.givenName == ''}" />
+                    <h:outputText value="#{i18n.MyProfile_SURNAME}" styleClass="bold" />
+                    <h:outputText value="#{userSession.user.surname}" rendered="#{userSession.user.surname != ''}"   />
+                    <h:outputText value="#{i18n.MyProfile_NOT_SET}" rendered="#{userSession.user.surname == ''}" />
+                    <h:outputText value="#{i18n.MyProfile_FULL_NAME}" styleClass="bold" />
+                    <h:outputText value="#{userSession.user.fullName}" rendered="#{userSession.user.fullName != ''}"  />
+                    <h:outputText value="#{i18n.MyProfile_NOT_SET}" rendered="#{userSession.user.fullName == ''}" />
+                    <h:outputText value="#{i18n.MyProfile_JOB_TITLE}" styleClass="bold" />
+                    <h:outputText value="#{userSession.user.jobTitle}" rendered="#{userSession.user.jobTitle != ''}" />
+                    <h:outputText value="#{i18n.MyProfile_NOT_SET}" rendered="#{userSession.user.jobTitle == ''}" />
+                    <h:outputText value="#{i18n.MyProfile_ORGANISATION}" styleClass="bold" />
+                    <h:outputText value="#{userSession.user.organisation}" rendered="#{userSession.user.organisation != ''}" />
+                    <h:outputText value="#{i18n.MyProfile_NOT_SET}" rendered="#{userSession.user.organisation == ''}" />
+                    <h:outputText value="#{i18n.MyProfile_EMAIL}" styleClass="bold" />
+                    <h:outputText value="#{userSession.user.email}" rendered="#{userSession.user.email != ''}" />
+                    <h:outputText value="#{i18n.MyProfile_NOT_SET}" rendered="#{userSession.user.email == ''}" />
+                    <h:outputText value="#{i18n.MyProfile_PHONE}" styleClass="bold" />
+                    <h:outputText value="#{userSession.user.phone}" rendered="#{userSession.user.phone != ''}" />
+                    <h:outputText value="#{i18n.MyProfile_NOT_SET}" rendered="#{userSession.user.phone == ''}" />
+                    <h:outputText value="#{i18n.MyProfile_MOBILE}" styleClass="bold" />
+                    <h:outputText value="#{userSession.user.mobile}" rendered="#{userSession.user.mobile != ''}" />
+                    <h:outputText value="#{i18n.MyProfile_NOT_SET}" rendered="#{userSession.user.mobile == ''}" />
+                </h:panelGrid>
+            </div>
+
+        </ui:define>
+
+        <ui:define name="body">
+            <a4j:outputPanel ajaxRendered="true">
+                <v:message />
+            </a4j:outputPanel>
+
+            <h:form id="frmProfileSettings">
+                <converge:moduleHeader moduleTitle="#{i18n.MyProfile_SETTINGS}"  />
+                <div class="moduleContent">
+                    <h:panelGrid columns="2">
+                        <h:outputText value="#{i18n.MyProfile_LOCALISATION}" styleClass="bold"/>
+                        <h:outputText value="&#160;" />
+                        <h:outputText value="#{i18n.MyProfile_TIME_ZONE}"/>
+                        <h:selectOneMenu value="#{userSession.user.timeZoneAsString}" style="width: 100%;">
+                            <f:selectItems value="#{common.timeZones}" />
+                        </h:selectOneMenu>
+
+                        <h:outputText value="#{i18n.MyProfile_LANGUAGE}" />
+                        <h:selectOneMenu  value="#{userSession.user.preferredLanguage}" style="width: 100%;">
+                            <f:selectItems value="#{common.availableLanguages}" />
+                        </h:selectOneMenu>
+                        <h:outputText value="&#160;" />
+                        <h:outputText value="&#160;" />
+                        <h:outputText value="#{i18n.MyProfile_SEARCH_ENGINE}" styleClass="bold"/>
+                        <h:outputText value="&#160;" />
+
+                        <h:outputText value="#{i18n.MyProfile_SHOW_TAGS}"/>
+                        <h:selectBooleanCheckbox value="#{userSession.user.defaultSearchEngineTags}" />
+
+                        <h:outputText value="#{i18n.MyProfile_SEARCH_ENGINE_SORT_BY}"/>
+                        <h:selectOneMenu value="#{userSession.user.defaultSearchResultsSortBy}">
+                            <f:selectItem  itemLabel="#{i18n.Search_SORT_BY_SCORE}" itemValue="score" />
+                            <f:selectItem  itemLabel="#{i18n.Search_SORT_BY_DATE}" itemValue="date" />
+                        </h:selectOneMenu>
+
+                        <h:outputText value="#{i18n.MyProfile_SORT_ASCENDING}"/>
+                        <h:selectOneMenu id="somSearchSortOrder" value="#{userSession.user.defaultSearchResultsOrder}">
+                            <f:selectItem  itemLabel="#{i18n.Search_SORT_ORDER_ASCENDING}" itemValue="true" />
+                            <f:selectItem  itemLabel="#{i18n.Search_SORT_ORDER_DESCENDING}" itemValue="false" />
+                        </h:selectOneMenu>
+
+                        <h:outputText value="&#160;" />
+                        <h:outputText value="&#160;" />
+                        <h:outputText value="#{i18n.MyProfile_ASSIGNMENTS}" styleClass="bold"/>
+                        <h:outputText value="&#160;" />
+                        <h:outputText value="#{i18n.MyProfile_DEFAULT_ASSIGNMENT_TYPE}" />
+                        <h:selectOneMenu id="somDefaultAssignmentType" value="#{userSession.user.defaultAssignmentType}" style="width: 100%;" converter="#{converters.enumTypeConverter}">
+                            <f:selectItem itemLabel="" />
+                            <f:selectItems value="#{common.assignmentTypes}" />
+                        </h:selectOneMenu>
+
+                        <h:outputText value="#{i18n.MyProfile_DEFAULT_ADD_TO_NEXT_EDITION}" />
+                        <h:selectBooleanCheckbox value="#{userSession.user.defaultAddNextEdition}" />
+                        
+                        <h:outputText value="#{i18n.MyProfile_DEFAULT_WORK_DAY}" />
+                        <rich:inputNumberSpinner value="#{userSession.user.defaultWorkDay}" enableManualInput="true" minValue="-100" maxValue="100" required="true" requiredMessage="#{i18n.MyProfile_DEFAULT_WORK_DAY_REQUIRED}" />
+
+                        <h:outputText value="#{i18n.MyProfile_OUTLET}" />
+                        <h:selectOneMenu value="#{userSession.user.defaultOutlet}" style="width: 100%;" converter="#{converters.outletConverter}">
+                            <f:selectItem itemLabel="" />
+                            <f:selectItems value="#{userSession.myNewsItemsOutlets}" />
+                            <a4j:support event="onchange" reRender="somDefaultSection" />
+                        </h:selectOneMenu>
+
+                        <h:outputText value="#{i18n.MyProfile_SECTION}" />
+                        <h:selectOneMenu id="somDefaultSection" value="#{userSession.user.defaultSection}" style="width: 100%;" converter="#{converters.sectionConverter}">
+                            <f:selectItem itemLabel="" />
+                            <f:selectItems value="#{userSession.myNewsItemsOutletSections}" />
+                        </h:selectOneMenu>
+
+                        <h:outputText value="#{i18n.MyProfile_DEFAULT_CATALGUE}" />
+                        <h:selectOneMenu value="#{userSession.user.defaultMediaRepository}" style="width: 100%;" converter="#{converters.mediaRepositoryConverter}">
+                            <f:selectItem itemLabel="" />
+                            <f:selectItems value="#{userSession.myCatalogues}" />
+                        </h:selectOneMenu>
+                        <h:outputText value="&#160;" />
+                        <h:outputText value="&#160;" />
+                        <h:outputText value="&#160;" />
+                        <a4j:commandButton styleClass="button dynamicButton" value="#{i18n.Generic_SAVE}" actionListener="#{userSession.onUpdateProfile}" reRender="frmPage" />
+                    </h:panelGrid>
+                </div>
+            </h:form>
+
+            <converge:moduleSpacer />
+
+            <h:form id="frmPage">
+                <converge:moduleHeader moduleTitle="#{i18n.MyProfile_PRIVILEGES}" />
+                <div class="moduleContent">
+                    <rich:dataTable id="dtPrivileges" value="#{userSession.user.userRoles}" var="userRole" width="100%" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
+                        <rich:column styleClass="columnIcon center">
+                            <h:graphicImage value="#{i18n.resource_ICON_USER_ROLE}" />
+                        </rich:column>
+                        <rich:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{i18n.MyProfile_PRIVILEGES_ROLE}" />
+                            </f:facet>
+                            <h:outputText value="#{userRole.name}" />
+                        </rich:column>
+                        <rich:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{i18n.MyProfile_PRIVILEGES_OUTLET}" />
+                            </f:facet>
+                            <rich:dataList value="#{userRole.outlets}" var="outlet">
+                                <h:outputText value="#{outlet.title}" />&#160;
+                            </rich:dataList>
+                        </rich:column>
+                    </rich:dataTable>
+                </div>
+
+            </h:form>
+
+        </ui:define>
+
+    </ui:composition>
+</jsp:root>

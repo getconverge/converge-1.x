@@ -1,0 +1,14 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://java.sun.com/jstl/core" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+
+    <c:if test="#{value.selectedNewsItem.latestTransition != null &amp;&amp; value.selectedNewsItem.latestTransition.comment != ''}">
+        <converge:moduleHeader moduleTitle="Message" />
+        <div class="moduleContent">
+            <h:panelGroup>
+                <br/><h:outputText value="#{value.selectedNewsItem.latestTransition.user.fullName}: " style="font-weight: bold;" />
+                <h:outputText value="#{value.selectedNewsItem.latestTransition.comment}" /><br/><br/>
+            </h:panelGroup>
+        </div>
+        <div style="clear: both; padding-bottom: 12px;"></div>
+    </c:if>
+
+</ui:composition>

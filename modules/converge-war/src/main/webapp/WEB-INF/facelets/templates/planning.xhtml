@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:c="http://java.sun.com/jstl/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:v="http://converge.i2m.dk"
+      xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+    <ui:composition template="/WEB-INF/facelets/templates/default.xhtml">
+
+        <ui:define name="title">
+            <h:outputText value="#{i18n.Planning_PLANNING}" />
+        </ui:define>
+
+        <ui:define name="pageBody">
+            <h:panelGroup layout="block" rendered="#{userSession.privileged['OUTLET_PLANNING'] &amp;&amp; planning.selectedOutlet == null}">
+                <div id="layout4" style="text-align: center">
+                    <h:outputFormat value="#{i18n.Editions_PRIVILEGE_NO_OUTLET}" escape="false">
+                        <f:param value="#{facesContext.externalContext.request.contextPath}" />
+                    </h:outputFormat>
+                </div>
+            </h:panelGroup>
+
+            <div id="layout2">
+                <div id="leftColumn">
+                    <h:panelGroup layout="block" rendered="#{userSession.privileged['OUTLET_PLANNING'] &amp;&amp; planning.selectedOutlet != null}">
+                        <ui:insert name="leftColumnTop" />
+
+                        <h:form id="frmAssignmentStyle">
+                            <converge:moduleHeader moduleTitle="#{i18n.Planning_ASSIGNMENT_MANAGE}" />
+                            <div class="moduleContent">
+                                <h:panelGrid columns="2">
+                                    <h:graphicImage value="#{res.BULLET_ICON}" alt="#{i18n.Planning_ASSIGNMENT_MANAGE_DIARY}" title="#{i18n.Planning_ASSIGNMENT_MANAGE_DIARY}" />
+                                    <h:commandLink action="/planning/assignments">
+                                        <h:outputText value="#{i18n.Planning_ASSIGNMENT_MANAGE_DIARY}" />
+                                    </h:commandLink>
+
+                                    <h:graphicImage value="#{res.BULLET_ICON}" alt="#{i18n.Planning_ASSIGNMENT_MANAGE_EDITIONS}" title="#{i18n.Planning_ASSIGNMENT_MANAGE_EDITIONS}" />
+                                    <h:commandLink action="/planning/editions">
+                                        <h:outputText value="#{i18n.Planning_ASSIGNMENT_MANAGE_EDITIONS}" />
+                                    </h:commandLink>
+
+                                    <h:graphicImage value="#{res.BULLET_ICON}" alt="#{i18n.Planning_ASSIGNMENT_MANAGE_PIPELINE}" title="#{i18n.Planning_ASSIGNMENT_MANAGE_PIPELINE}" />
+                                    <h:commandLink action="/planning/pipeline">
+                                        <h:outputText value="#{i18n.Planning_ASSIGNMENT_MANAGE_PIPELINE}" />
+                                    </h:commandLink>
+                                </h:panelGrid>
+                            </div>
+                        </h:form>
+                        <converge:moduleSpacer />
+
+                        <h:form id="frmOutlets">
+                            <converge:moduleHeader moduleTitle="#{i18n.Outlets_TITLE}" />
+                            <div class="moduleContent">
+                                <h:dataTable value="#{planning.outlets}" var="outlet">
+                                    <h:column>
+                                        <h:graphicImage value="#{i18n.resource_ICON_BULLET}" alt="#{outlet.title}" title="#{outlet.title}" />
+                                    </h:column>
+                                    <h:column>
+                                        <a4j:commandLink reRender="frmPage, frmOutlets, lnkNewEdition" styleClass="#{planning.selectedOutlet.id == outlet.id ? 'bold' : ''}">
+                                            <f:setPropertyActionListener value="#{outlet}" target="#{planning.selectedOutlet}" />
+                                            <h:outputText value="#{outlet.title}" />
+                                        </a4j:commandLink>
+                                    </h:column>
+                                </h:dataTable>
+                            </div>
+                        </h:form>
+                        <converge:moduleSpacer />
+
+                        <ui:insert name="leftColumnBottom" />
+                    </h:panelGroup>
+                </div>
+                <div id="rightColumn">
+                    <h:panelGroup layout="block" rendered="#{userSession.privileged['OUTLET_PLANNING'] &amp;&amp; planning.selectedOutlet != null}">
+                        <ui:insert name="body" />
+                    </h:panelGroup>
+                </div>
+            </div>
+        </ui:define>
+    </ui:composition>
+</html>

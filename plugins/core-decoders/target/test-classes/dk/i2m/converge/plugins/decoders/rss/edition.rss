@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" media="screen" href="/~d/styles/rss2full.xsl"?><?xml-stylesheet type="text/css" media="screen" href="http://rss.cnn.com/~d/styles/itemcontent.css"?><rss xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel>
+<title>CNN.com</title>
+<link>http://edition.cnn.com/?eref=edition</link>
+<description>CNN.com delivers up-to-the-minute news and information on the latest top stories, weather, entertainment, politics and more.</description>
+<language>en-us</language>
+<copyright>© 2011 Cable News Network LP, LLLP.</copyright>
+<pubDate>Sat, 15 Jan 2011 07:52:03 EST</pubDate>
+<ttl>10</ttl>
+<image>
+<title>CNN.com</title>
+<link>http://edition.cnn.com/?eref=edition</link>
+<url>http://i2.cdn.turner.com/cnn/.element/img/1.0/logo/cnn.logo.rss.gif</url>
+<width>144</width>
+<height>33</height>
+<description>CNN.com delivers up-to-the-minute news and information on the latest top stories, weather, entertainment, politics and more.</description>
+</image>
+<atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" rel="self" type="application/rss+xml" href="http://rss.cnn.com/rss/edition" /><feedburner:info xmlns:feedburner="http://rssnamespace.org/feedburner/ext/1.0" uri="rss/edition" /><atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" rel="hub" href="http://pubsubhubbub.appspot.com/" /><item>
+<title>Tunisia: Parliament speaker becomes acting president</title>
+<guid>http://edition.cnn.com/2011/WORLD/africa/01/15/tunisia.protests/index.html?eref=edition</guid>
+<link>http://edition.cnn.com/2011/WORLD/africa/01/15/tunisia.protests/index.html?eref=edition</link>
+<description>Tunisian state TV has reported that Fouad Mebazaa is the country's acting leader, with presidential elections to be held in 60 days. The moves follow unrest that forced former president Zine El Abidine Ben Ali to flee to Saudi Arabia.</description>
+<pubDate>Sat, 15 Jan 2011 07:31:35 EST</pubDate>
+</item>
+<item>
+<title>More than 500 dead in Brazil flooding</title>
+<guid>http://edition.cnn.com/2011/WORLD/americas/01/14/brazil.flooding/index.html?eref=edition</guid>
+<link>http://edition.cnn.com/2011/WORLD/americas/01/14/brazil.flooding/index.html?eref=edition</link>
+<description>It was like a tsunami from the sky in Brazil's Rio de Janeiro state as flood water gushed through hill towns and giant boulders catapulted from hillsides instantly crushing cars and houses.</description>
+<pubDate>Fri, 14 Jan 2011 19:42:12 EST</pubDate>
+</item>
+<item>
+<title>Stampede kills 100 in southern India</title>
+<guid>http://edition.cnn.com/2011/WORLD/asiapcf/01/14/india.stampede/index.html?eref=edition</guid>
+<link>http://edition.cnn.com/2011/WORLD/asiapcf/01/14/india.stampede/index.html?eref=edition</link>
+<description>One-hundred people died and 14 were injured during a stampede near a religious temple in southern India, the home secretary of Kerala state said.</description>
+<pubDate>Sat, 15 Jan 2011 03:00:54 EST</pubDate>
+</item>
+<item>
+<title>Obama meets with Pakistani president</title>
+<guid>http://edition.cnn.com/2011/POLITICS/01/14/obama.pakistan.zardari/index.html?eref=edition</guid>
+<link>http://edition.cnn.com/2011/POLITICS/01/14/obama.pakistan.zardari/index.html?eref=edition</link>
+<description>U.S. President Barack Obama will meet with Pakistani President Asif Zardari at the White House on Friday.</description>
+<pubDate>Fri, 14 Jan 2011 13:30:24 EST</pubDate>
+</item>
+<item>
+<title>Militants kill policewoman, relatives</title>
+<guid>http://edition.cnn.com/2011/WORLD/asiapcf/01/14/pakistan.violence/index.html?eref=edition</guid>
+<link>http://edition.cnn.com/2011/WORLD/asiapcf/01/14/pakistan.violence/index.html?eref=edition</link>
+<description>Militants stormed the house of a female police officer in northwest Pakistan on Friday morning, killing her and four relatives, authorities said.</description>
+<pubDate>Fri, 14 Jan 2011 04:13:58 EST</pubDate>
+</item>
+<item>
+<title>India to cut troops in Kashmir in 2011</title>
+<guid>http://edition.cnn.com/2011/WORLD/asiapcf/01/14/india.kashmir.troop.reduction/index.html?eref=edition</guid>
+<link>http://edition.cnn.com/2011/WORLD/asiapcf/01/14/india.kashmir.troop.reduction/index.html?eref=edition</link>
+<description>India plans to cut a fourth of its security forces in the Kashmir region under its control over the next 12 months, the country's home secretary said Friday.</description>
+<pubDate>Fri, 14 Jan 2011 08:52:47 EST</pubDate>
+</item>
+<item>
+<title>Police: 8 dead, 17 injured in Bolivia crash</title>
+<guid>http://edition.cnn.com/2011/WORLD/americas/01/15/bolivia.vehicle.crash/index.html?eref=edition</guid>
+<link>http://edition.cnn.com/2011/WORLD/americas/01/15/bolivia.vehicle.crash/index.html?eref=edition</link>
+<description>A traffic crash in Bolivia has killed eight people, police said Saturday.</description>
+<pubDate>Sat, 15 Jan 2011 01:53:52 EST</pubDate>
+</item>
+<item>
+<title>Bangladesh: Corporal punishment illegal</title>
+<guid>http://edition.cnn.com/2011/WORLD/asiapcf/01/14/bangladesh.schools.punishment/index.html?eref=edition</guid>
+<link>http://edition.cnn.com/2011/WORLD/asiapcf/01/14/bangladesh.schools.punishment/index.html?eref=edition</link>
+<description>A top court has banned any corporal punishment in schools in Bangladesh, a country where millions of children are exposed to physical abuse, officials said Thursday.</description>
+<pubDate>Fri, 14 Jan 2011 12:25:29 EST</pubDate>
+</item>
+<item>
+<title>Moscow raps UK limits on spy suspect</title>
+<guid>http://edition.cnn.com/2011/WORLD/europe/01/14/russia.britain.spy/index.html?eref=edition</guid>
+<link>http://edition.cnn.com/2011/WORLD/europe/01/14/russia.britain.spy/index.html?eref=edition</link>
+<description>Russia expressed concern Friday over restrictions by British authorities on Russian national Yekaterina Zatuliveter, who was arrested in Britain several weeks ago on suspicion of spying and faces possible deportation.</description>
+<pubDate>Fri, 14 Jan 2011 15:50:20 EST</pubDate>
+</item>
+<item>
+<title>Makeshift bomb kills 7 in Afghanistan</title>
+<guid>http://edition.cnn.com/2011/WORLD/asiapcf/01/14/afghanistan.violence/index.html?eref=edition</guid>
+<link>http://edition.cnn.com/2011/WORLD/asiapcf/01/14/afghanistan.violence/index.html?eref=edition</link>
+<description>A makeshift bomb exploded Friday in southeastern Afghanistan, killing seven Afghans, NATO said.</description>
+<pubDate>Fri, 14 Jan 2011 14:59:52 EST</pubDate>
+</item>
+</channel></rss>

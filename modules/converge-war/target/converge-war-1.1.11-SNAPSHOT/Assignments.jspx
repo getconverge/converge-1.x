@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jsp:root version="2.0" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:c="http://java.sun.com/jstl/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:v="http://converge.i2m.dk" xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+
+    <ui:composition template="/WEB-INF/facelets/templates/planning.xhtml">
+
+        <ui:define name="body">
+            <a4j:keepAlive beanName="planning" />
+
+            <a4j:outputPanel ajaxRendered="true">
+                <v:message />
+            </a4j:outputPanel>
+
+            <converge:loading for="regMainPage" />
+            <a4j:region id="regMainPage">
+                <h:form id="frmPage" rendered="#{userSession.privileged['OUTLET_PLANNING']}">
+                    <converge:moduleHeader moduleTitle="#{i18n.Assignments_PLANNING_ASSIGNMENTS} : #{planning.selectedOutlet.title}" />
+                    <div class="moduleContent">
+
+                        <h:panelGrid columns="1" columnClasses="right" style="width: 100%">
+                            <h:column>
+                                <a4j:commandButton id="btnRefresh" styleClass="button dynamicButton" value="#{i18n.Assingnments_REFRESH}" actionListener="#{planning.onRefreshOpenAssignments}" reRender="dtAssignments" ajaxSingle="true" />
+                                <a4j:commandButton id="btnNewAssignment" styleClass="button dynamicButton" style="margin-left: 5px;" value="#{i18n.Assignments_PLANNING_NEW_BUTTON}" actionListener="#{planning.onNewAssignment}" reRender="frmAssignmentDetails" ajaxSingle="true" oncomplete="#{rich:component('mpAssignmentDetails')}.show();#{rich:element('frmAssignmentDetails:txtStoryTitle')}.focus()" />
+                            </h:column>
+                        </h:panelGrid>
+
+                        <rich:dataTable id="dtAssignments" value="#{planning.openAssignments}" var="ni" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
+
+                            <rich:column styleClass="center columnIcon">
+                                <f:facet name="header"></f:facet>
+
+                                <a4j:commandLink ajaxSingle="true" reRender="frmAssignmentDetails">
+                                    <f:setPropertyActionListener target="#{planning.selectedAssignment}" value="#{ni}" />
+                                    <rich:componentControl for="mpAssignmentDetails" operation="show" event="oncomplete" />
+                                    <h:graphicImage value="#{i18n.resource_ICON_NEWS_ITEM}" rendered="#{!ni.locked}" title="#{ni.currentState.name}" alt="#{ni.currentState.name}"  />
+                                    <h:graphicImage value="#{i18n.resource_ICON_LOCK}" rendered="#{ni.locked}" title="This item was checked-out by #{ni.checkedOutBy.fullName} on #{ni.checkedOut.time}" />
+                                </a4j:commandLink>
+                                
+                            </rich:column>
+
+                            <rich:column styleClass="left" sortBy="#{ni.title}">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.Generic_TITLE}" />
+                                </f:facet>
+                                <a4j:commandLink ajaxSingle="true" reRender="frmAssignmentDetails">
+                                    <f:setPropertyActionListener value="#{ni}" target="#{planning.selectedAssignment}" />
+                                    <rich:componentControl for="mpAssignmentDetails" operation="show" event="oncomplete" />
+                                    <h:outputText value="#{ni.title}" />
+                                </a4j:commandLink>
+                                <rich:toolTip styleClass="tooltip" style="width: 400px;">
+                                    <h:panelGrid>
+                                        <h:outputText value="#{ni.story}" escape="false" />
+                                    </h:panelGrid>
+                                </rich:toolTip>
+                            </rich:column>
+
+                            <rich:column styleClass="left" sortBy="#{ni.currentActor}">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.Assingments_NEWSITEM_ACTOR}" />
+                                </f:facet>
+                                <h:outputText value="#{ni.currentActor}" />
+                                <converge:actorsToolTip value="#{ni.actors}" />
+                            </rich:column>
+
+                            <rich:column styleClass="left" sortBy="#{ni.event.summary}">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.Assignments_EVENT}" />
+                                </f:facet>
+
+                                <h:outputText value="#{ni.event.summary}" />
+                                <converge:eventToolTip value="#{ni.event}" />
+                            </rich:column>
+
+                            <rich:column styleClass="left" sortBy="#{ni.wordCount}">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.Assignments_WORD_COUNT}" />
+                                </f:facet>
+                                <h:outputText value="#{ni.wordCount}" rendered="#{ni.targetWordCount &lt;= 0}" />
+                                <h:outputText value="#{ni.wordCount} (#{ni.targetWordCount})" rendered="#{ni.targetWordCount &gt; 0}" />
+                            </rich:column>
+
+                            <rich:column styleClass="left" sortBy="#{ni.currentState.name}">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.Assignments_STATUS}" />
+                                </f:facet>
+                                <h:outputText value="#{ni.currentState.name}" />
+                            </rich:column>
+
+                            <rich:column styleClass="left" sortBy="#{ni.deadline}">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.Assignments_NEWSITEM_DEADLINE}" />
+                                </f:facet>
+                                <h:outputText value="#{ni.deadline.time}">
+                                    <f:convertDateTime pattern="#{i18n.Generic_FORMAT_DATE_AND_TIME}" timeZone="#{userSession.user.timeZone}" />
+                                </h:outputText>
+                            </rich:column>
+
+                            <rich:column styleClass="center columnIcon">
+                                <f:facet name="header"></f:facet>
+                                <a4j:commandLink id="lnkBriefing" ajaxSingle="true">
+                                    <f:setPropertyActionListener value="#{ni}" target="#{planning.selectedAssignment}" />
+                                    <a4j:support event="oncomplete" reRender="frmAssignmentDetails" actionListener="#{planning.onShowBriefing}">
+                                        <rich:componentControl for="mpAssignmentDetails" operation="show" event="oncomplete" />
+                                    </a4j:support>
+
+                                    <h:graphicImage value="#{i18n.resource_ICON_BRIEFING_EXIST}" alt="#{i18n.Assignments_BRIEFING_EXIST}" title="#{i18n.Assignments_BRIEFING_EXIST}" rendered="#{ni.assignmentBriefing != ''}" />
+                                    <h:graphicImage value="#{i18n.resource_ICON_BRIEFING_NOT_EXIST}" alt="#{i18n.Assignments_BRIEFING_NOT_EXIST}" title="#{i18n.Assignments_BRIEFING_NOT_EXIST}" rendered="#{ni.assignmentBriefing == ''}" />
+                                </a4j:commandLink>
+                            </rich:column>
+
+                            <rich:column styleClass="center columnIcon">
+                                <f:facet name="header"></f:facet>
+                                <a4j:commandLink id="lnkUpdateAssignment" ajaxSingle="true" reRender="frmAssignmentDetails">
+                                    <f:setPropertyActionListener value="#{ni}" target="#{planning.selectedAssignment}" />
+                                    <rich:componentControl for="mpAssignmentDetails" operation="show" event="oncomplete" />
+                                    <h:graphicImage value="#{i18n.resource_ICON_EDIT}" alt="#{i18n.Generic_UPDATE}" title="#{i18n.Generic_UPDATE}" />
+                                </a4j:commandLink>
+                            </rich:column>
+
+                            <rich:column styleClass="center columnIcon">
+                                <f:facet name="header"></f:facet>
+                                <a4j:commandLink onclick="if (confirm('#{i18n.Assignments_PROMPT_DELETE}') != true){ return false; };" ajaxSingle="true" rendered="#{!ni.locked}">
+                                    <f:setPropertyActionListener value="#{ni}" target="#{planning.selectedAssignment}" />
+                                    <a4j:support event="oncomplete" actionListener="#{planning.onDeleteAssignment}" reRender="frmPage" />
+                                    <h:graphicImage value="#{i18n.resource_ICON_DELETE}" alt="#{i18n.Generic_DELETE}" title="#{i18n.Generic_DELETE}" />
+                                </a4j:commandLink>
+                            </rich:column>
+                        </rich:dataTable>
+                    </div>
+                </h:form>
+            </a4j:region>
+
+            <converge:dialogAssignment bean="#{planning.dialogAssignment}" enableRemoveEvent="#{true}" />
+            <converge:dialogEventSelection bean="#{planning.dialogEventSelection}" reRenderOnSelect="txtStoryTitle, pgEvent, grpAssignmentDetailsButtons" />
+
+        </ui:define>
+    </ui:composition>
+</jsp:root>

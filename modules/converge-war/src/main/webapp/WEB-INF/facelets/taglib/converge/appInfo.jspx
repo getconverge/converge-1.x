@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<jsp:root version="2.0" xmlns:h="http://java.sun.com/jsf/html" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:ui="http://java.sun.com/jsf/facelets">
+    <ui:composition>
+        <h:panelGrid style="width: 100%" columnClasses="center">
+            <h:outputText value="#{i18n.Generic_APPLICATION_TITLE}" style="font-weight: bold;" />
+            <h:outputText value="#{common.applicationVersion}" />
+            <h:outputText value="#{i18n.Generic_COPYRIGHT}" escape="false" />
+            <h:outputText value="&#160;" />
+        </h:panelGrid>
+        <h:panelGrid style="width: 100%" columnClasses="left">
+            <h:outputText escape="false" value="#{i18n.Generic_LICENSE}" />
+            <h:outputText value="&#160;" />
+        </h:panelGrid>
+    </ui:composition>
+</jsp:root>

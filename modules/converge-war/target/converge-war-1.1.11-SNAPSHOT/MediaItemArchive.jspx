@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jsp:root version="2.0" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:c="http://java.sun.com/jstl/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags" xmlns:v="http://converge.i2m.dk">
+
+    <ui:composition template="/WEB-INF/facelets/templates/mediaitem_archive.xhtml">
+        <ui:define name="title">#{mediaItemArchive.selectedMediaItem.title}</ui:define>
+        <ui:define name="body">
+            <a4j:keepAlive beanName="mediaItemArchive" />
+
+            <div id="story">
+                <div id="controls">
+                    <h:outputLink value="#{facesContext.externalContext.request.contextPath}/MediaItemDetails.xhtml?id=#{mediaItemArchive.selectedMediaItem.id}" rendered="#{mediaItemArchive.editor}">
+                        <h:graphicImage url="/images/icons/edit-media-item.png" alt="#{i18n.MediaItemArchive_CONTROL_EDIT}" title="#{i18n.MediaItemArchive_CONTROL_EDIT}" />
+                    </h:outputLink>
+                    <h:graphicImage url="#{i18n.resource_ICON_PRINT}" title="#{i18n.MediaItemArchive_CONTROL_PRINT}" alt="#{i18n.MediaItemArchive_CONTROL_PRINT}" onclick="javascript:window.print();" />
+                    <h:graphicImage url="#{i18n.resource_ICON_REMOVE}" title="#{i18n.MediaItemArchive_CONTROL_CLOSE}" alt="#{i18n.MediaItemArchive_CONTROL_CLOSE}" onclick="javascript:window.close();" />
+                </div>
+
+                <h1 style="margin-bottom: 5px; padding-bottom: 0px;">#{mediaItemArchive.selectedMediaItem.title}</h1>
+                <h2 style="margin-top: 0px; padding-top: 0px;">#{mediaItemArchive.selectedMediaItem.byLine == '' ? mediaItemArchive.selectedMediaItem.owner.fullName : mediaItemArchive.selectedMediaItem.byLine}</h2>
+
+                
+                <h:panelGroup rendered="#{mediaItemArchive.selectedMediaItem.held}" layout="block" styleClass="mediaItemHeld">
+                    <h:outputText value="#{i18n.MediaItemArchive_MEDIA_ITEM_HELD}" />
+                </h:panelGroup>
+                
+                <h:graphicImage styleClass="searchResultThumb" url="#{mediaItemArchive.selectedMediaItem.preview.absoluteFilename}" style="float: left; padding-right: 10px; padding-bottom: 5px;" rendered="#{mediaItemArchive.selectedMediaItem.previewAvailable}" />
+                <h:outputText value="#{mediaItemArchive.selectedMediaItem.description}" escape="false" style="float: left;" />
+
+                <div style="clear: both; padding-bottom: 12px;"></div>
+
+                <h3>#{i18n.MediaItemArchive_RENDITIONS}</h3>
+
+                <rich:dataList id="dtRenditions" var="rendition" value="#{mediaItemArchive.availableRenditions}" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
+                    <h:outputLink target="_blank" value="#{rendition.mediaItemRendition.absoluteFilename}" rendered="#{rendition.available}">
+                        <h:outputText value="#{rendition.rendition.label}"  title="#{rendition.rendition.description}" />
+                    </h:outputLink>
+                    <h:outputText value="&#160;" />
+                    <h:outputText value="#{converge:displaySize(rendition.mediaItemRendition.size)}" rendered="#{rendition.available}" />
+                </rich:dataList>
+
+                <h3>#{i18n.MediaItemArchive_USAGE} (#{mediaItemDetails.usage.rowCount })</h3>
+
+                <h:panelGroup rendered="#{mediaItemArchive.usage.rowCount &lt; 1}" layout="block">
+                    <h:outputText value="#{i18n.MediaItemArchive_USAGE_NO_USAGE}" />
+                </h:panelGroup>
+
+                <rich:dataTable id="dtUsage" var="usage" value="#{mediaItemArchive.usage}" styleClass="table" headerClass="tableHeader" rowClasses="odd, even" rendered="#{mediaItemArchive.usage.rowCount &gt; 0}">
+                    <rich:column styleClass="center columnIcon">
+                        <f:facet name="header">
+                            <h:graphicImage value="#{i18n.resource_ICON_EMPTY}" width="16" height="16" />
+                        </f:facet>
+                        <h:outputLink value="#{facesContext.externalContext.request.contextPath}/NewsItemArchive.xhtml?id=#{usage.newsItemId}">
+                            <h:graphicImage value="#{res.NEWS_ITEM_ICON}" />
+                        </h:outputLink>
+                    </rich:column>
+
+                    <rich:column styleClass="right columnId">
+                        <f:facet name="header">
+                            <h:outputText value="#{i18n.MediaItemArchive_USAGE_ID}" />
+                        </f:facet>
+                        <h:outputLink value="#{facesContext.externalContext.request.contextPath}/NewsItemArchive.xhtml?id=#{usage.newsItemId}">
+                            <h:outputText value="#{usage.newsItemId}">
+                                <f:convertNumber integerOnly="true" type="number" pattern="#{i18n.Generic_FORMAT_ID}" />
+                            </h:outputText>
+                        </h:outputLink>
+                    </rich:column>
+
+                    <rich:column styleClass="left">
+                        <f:facet name="header">
+                            <h:outputText value="#{i18n.MediaItemArchive_USAGE_TITLE}" />
+                        </f:facet>
+                        <h:panelGrid>
+                            <h:outputText value="#{usage.title}" title="" />
+                        </h:panelGrid>
+                    </rich:column>
+
+                    <rich:column styleClass="left">
+                        <f:facet name="header">
+                            <h:outputText value="#{i18n.MediaItemArchive_USAGE_CAPTION}" />
+                        </f:facet>
+                        <h:panelGrid>
+                            <h:outputText value="#{usage.caption}" title="" />
+                        </h:panelGrid>
+                    </rich:column>
+
+                    <rich:column styleClass="left">
+                        <f:facet name="header">
+                            <h:outputText value="#{i18n.MediaItemArchive_USAGE_DATE}" />
+                        </f:facet>
+                        <h:panelGrid>
+                            <h:outputText value="#{usage.date}" title="" />
+                        </h:panelGrid>
+                    </rich:column>
+
+                    <rich:column styleClass="left">
+                        <f:facet name="header">
+                            <h:outputText value="#{i18n.MediaItemArchive_USAGE_OUTLET}" />
+                        </f:facet>
+                        <h:panelGrid>
+                            <h:outputText value="#{usage.outlet}" title="" />
+                        </h:panelGrid>
+                    </rich:column>
+
+                    <rich:column styleClass="left">
+                        <f:facet name="header">
+                            <h:outputText value="#{i18n.MediaItemArchive_USAGE_SECTION}" />
+                        </f:facet>
+                        <h:panelGrid>
+                            <h:outputText value="#{usage.section}" title="" />
+                        </h:panelGrid>
+                    </rich:column>
+
+                    <rich:column styleClass="left">
+                        <f:facet name="header">
+                            <h:outputText value="#{i18n.MediaItemArchive_USAGE_START}" />
+                        </f:facet>
+                        <h:panelGrid>
+                            <h:outputText value="#{usage.start}" title="" />
+                        </h:panelGrid>
+                    </rich:column>
+
+                    <rich:column styleClass="left">
+                        <f:facet name="header">
+                            <h:outputText value="#{i18n.MediaItemArchive_USAGE_POSITION}" />
+                        </f:facet>
+                        <h:panelGrid>
+                            <h:outputText value="#{usage.position}" title="" />
+                        </h:panelGrid>
+                    </rich:column>
+                </rich:dataTable>
+
+                <c:if test="#{!empty mediaItemArchive.selectedMediaItem.concepts}">
+                    <h3>#{i18n.MediaItemArchive_CLASSIFICATION}</h3>
+
+                    <ul>
+                        <ui:repeat var="concept" value="#{mediaItemArchive.selectedMediaItem.concepts}">
+                            <c:set var="key" value="#{concept.type}_NAME" />
+                            <li><h:outputText value="#{concept.fullTitle} (#{msgs[key]})" /></li>
+                        </ui:repeat>
+                    </ul>
+                </c:if>
+
+                <c:if test="#{mediaItemArchive.selectedMediaItem.editorialNote != ''}">
+                    <h3>#{i18n.MediaItemArchive_EDITORIAL_NOTE}</h3>
+                    <h:outputText value="#{mediaItemArchive.selectedMediaItem.editorialNote}" escape="false" />
+                </c:if>
+            </div>
+        </ui:define>
+    </ui:composition>
+</jsp:root>

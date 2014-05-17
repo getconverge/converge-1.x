@@ -1,0 +1,7 @@
+html, body#login { background-image: url(../images/background.gif); background-repeat: repeat; }
+#body { width: 300px; margin-right: auto; margin-left: auto; position: relative; top: 50px; background-color: #eceff4; border: 2px outset #cccccc; }
+.loginHeader { background: url(../images/header_bg.gif); color: black; height: 54px; border-bottom: 2px ridge #cccccc; }
+.loginBody { padding: 10px; background-color: rgb(236, 236, 236); }
+.loginStatusTable { width: 100%; }
+.loginErrorColumn { width: auto; text-align: left; }
+.loginButtonColumn { text-align: right; width: 70px; }

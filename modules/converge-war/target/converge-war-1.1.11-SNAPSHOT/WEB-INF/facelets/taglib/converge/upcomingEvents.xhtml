@@ -1,0 +1,31 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://java.sun.com/jstl/core" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+    <h:form id="frmTodaysEvents">
+        <converge:moduleHeader moduleTitle="#{i18n.upcomingEventsModule_TITLE}" />
+        <div class="moduleContent">
+            <rich:dataTable id="dtEvents"
+                            var="event"
+                            value="#{dashboard.events}"
+                            style="width: 185px; border: 0px;">
+                <rich:column style="text-align: center; width: 40px; padding: 0px; margin: 0px; vertical-align: top; border: 0px;">
+                    <span class="#{event.assigned ? 'upcomingEventsMonth' : 'upcomingUnassignedEventsMonth'}">
+                        <h:outputText value="#{event.startDate.time}">
+                            <f:convertDateTime timeZone="#{userSession.user.timeZone}" pattern="MMM" />
+                        </h:outputText>
+                    </span>
+                    <span class="upcomingEventsDay">
+                        <h:outputText value="#{event.startDate.time}">
+                            <f:convertDateTime timeZone="#{userSession.user.timeZone}" pattern="d" />
+                        </h:outputText>
+                    </span>
+                </rich:column>
+                <rich:column style="border: 0px; padding: 0px; padding-left: 5px;">
+                    <h:outputText value="#{event.summary}" styleClass="upcomingEventsSummary" /><br/>
+                    <h:outputText value="#{event.location}" styleClass="upcomingEventsLocation" />
+                    <converge:eventToolTip value="#{event}" />
+                </rich:column>
+
+            </rich:dataTable>
+        </div>
+    </h:form>
+    <converge:moduleSpacer />
+</ui:composition>

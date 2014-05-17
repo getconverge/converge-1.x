@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<jsp:root version="2.0"
+          xmlns:jsp="http://java.sun.com/JSP/Page"
+          xmlns:ui="http://java.sun.com/jsf/facelets"
+          xmlns:v="http://converge.i2m.dk">
+    <ui:composition>
+        <v:message for="#{for}" />
+    </ui:composition>
+</jsp:root>

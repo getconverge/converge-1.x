@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE NewsML SYSTEM "http://idsdat06.reuters.com/newsml/NewsMLv1.0.dtd" [
+  <!ENTITY % xhtml SYSTEM "http://idsdat06.reuters.com/newsml/xhtml1-strict.dtd">
+  %xhtml;
+]>
+<!--src: rtr2newsml0.995-->
+<NewsML Duid="MTFH04569_2011-03-10_13-49-32_LDE72912N_NEWSML">
+    <Catalog Href="http://idsdat06.reuters.com/newsml/catalog/catalog-reuters-master_catalog_1.xml"/>
+    <NewsEnvelope>
+        <DateAndTime>20110310T134932+0000</DateAndTime>
+        <NewsService FormalName="RTR_TNS"/>
+        <NewsProduct FormalName="TXT"/>
+        <Priority FormalName="3"/>
+    </NewsEnvelope>
+    <NewsItem Duid="MTFH04569_2011-03-10_13-49-32_LDE72912N_NEWSITEM">
+        <Identification>
+            <NewsIdentifier>
+                <ProviderId>reuters.com</ProviderId>
+                <DateId>20110310</DateId>
+                <NewsItemId>MTFH04569_2011-03-10_13-49-32_LDE72912N</NewsItemId>
+                <RevisionId Update="N" PreviousRevision="0">1</RevisionId>
+                <PublicIdentifier>urn:newsml:reuters.com:20110310:MTFH04569_2011-03-10_13-49-32_LDE72912N:1</PublicIdentifier>
+            </NewsIdentifier>
+            <DateLabel>2011-03-10 13:49:32 GMT (Reuters)</DateLabel>
+        </Identification>
+        <NewsManagement>
+            <NewsItemType FormalName="News"/>
+            <FirstCreated>20110310T134932+0000</FirstCreated>
+            <ThisRevisionCreated>20110310T134932+0000</ThisRevisionCreated>
+            <Status FormalName="Usable"/>
+            <Urgency FormalName="3"/>
+            <Property FormalName="USN" Value="LDE72912N"/>
+            <Property FormalName="CID" Value="LDE72912N" Scheme="USN"/>
+        </NewsManagement>
+        <NewsComponent EquivalentsList="no" Essential="no" Duid="MTFH04569_2011-03-10_13-49-32_LDE72912N_MAIN_NC" xml:lang="en">
+            <TopicSet FormalName="HighImportance">
+<Topic Duid="ts_1">
+<TopicType FormalName="Geography"/>
+<FormalName Scheme="N2000">KE</FormalName>
+<Description xml:lang="en">Kenya</Description>
+<Property FormalName="CountryGrouping" Value="EMRG"/>
+<Property FormalName="WhyPresent" Value="Classifier"/>
+</Topic>
+<Topic Duid="ts_2">
+<TopicType FormalName="Geography"/>
+<FormalName Scheme="N2000">AFR</FormalName>
+<Description xml:lang="en">Africa</Description>
+<Property FormalName="WhyPresent" Value="Ancestor"/>
+</Topic>
+<Topic Duid="ts_3">
+<TopicType FormalName="Country Grouping"/>
+<FormalName Scheme="N2000">EMRG</FormalName>
+<FormalName Scheme="IPTCSubjectCodes">04000000</FormalName>
+<Description xml:lang="en">Emerging Market Countries</Description>
+<Property FormalName="WhyPresent" Value="Classifier"/>
+</Topic>
+<Topic Duid="ts_4">
+<TopicType FormalName="Geography"/>
+<FormalName Scheme="N2000">TZ</FormalName>
+<Description xml:lang="en">Tanzania</Description>
+<Property FormalName="CountryGrouping" Value="EMRG"/>
+<Property FormalName="WhyPresent" Value="Classifier"/>
+</Topic>
+<Topic Duid="ts_5">
+<TopicType FormalName="Geography"/>
+<FormalName Scheme="N2000">UG</FormalName>
+<Description xml:lang="en">Uganda</Description>
+<Property FormalName="CountryGrouping" Value="EMRG"/>
+<Property FormalName="WhyPresent" Value="Classifier"/>
+</Topic>
+<Topic Duid="ts_6">
+<TopicType FormalName="Currencies / Foreign Exchange Markets"/>
+<FormalName Scheme="N2000">FRX</FormalName>
+<FormalName Scheme="IPTCSubjectCodes">04008006</FormalName>
+<Description xml:lang="en">Currencies / Foreign Exchange Markets</Description>
+<Property FormalName="WhyPresent" Value="Classifier"/>
+</Topic>
+<Topic Duid="ts_7">
+<TopicType FormalName="Geography"/>
+<FormalName Scheme="N2000">NG</FormalName>
+<Description xml:lang="en">Nigeria</Description>
+<Property FormalName="CountryGrouping" Value="EMRG"/>
+<Property FormalName="WhyPresent" Value="Classifier"/>
+</Topic>
+<Topic Duid="ts_8">
+<TopicType FormalName="Geography"/>
+<FormalName Scheme="N2000">GH</FormalName>
+<Description xml:lang="en">Ghana</Description>
+<Property FormalName="CountryGrouping" Value="EMRG"/>
+<Property FormalName="WhyPresent" Value="Classifier"/>
+</Topic>
+<Topic Duid="ts_9">
+<TopicType FormalName="Geography"/>
+<FormalName Scheme="N2000">ZM</FormalName>
+<Description xml:lang="en">Zambia</Description>
+<Property FormalName="CountryGrouping" Value="EMRG"/>
+<Property FormalName="WhyPresent" Value="Classifier"/>
+</Topic>
+<Topic Duid="ts_10">
+<TopicType FormalName="Recurring Report"/>
+<FormalName Scheme="Reuters Recurring Report">AFR/FRX</FormalName>
+<Property FormalName="WhyPresent" Value="Classifier"/>
+</Topic>
+<Topic Duid="ts_11">
+<TopicType FormalName="CategoryCode"/>
+<FormalName Scheme="MediaCategory">OEC</FormalName>
+<Description xml:lang="en">Economic news, EC, business/financial pages</Description>
+<Property FormalName="WhyPresent" Value="Classifier"/>
+</Topic>
+</TopicSet>
+            <Role FormalName="Main"/>
+            <AdministrativeMetadata>
+                <FileName>2011-03-10T134932Z_01_LDE72912N_RTRIDST_0_AFRICA-CURRENCY.XML</FileName>
+                <Provider>
+                    <Party FormalName="Reuters"/>
+                </Provider>
+                <Creator>
+                    <Party FormalName="Reuters"/>
+                </Creator>
+                <Source>
+                    <Party FormalName="Reuters"/>
+                </Source>
+                <Property FormalName="SourceFeed" Value="IDS"/>
+                <Property FormalName="IDSPublisher" Value="http://www.reuters.com/ids"/>
+            </AdministrativeMetadata>
+            <!--Single "Main Text" inner NewsComponent-->
+            <NewsComponent EquivalentsList="no" Essential="no" Duid="MTFH04569_2011-03-10_13-49-32_LDE72912N_MAIN_TEXT_NC" xml:lang="en">
+                <Role FormalName="Main Text"/>
+                <NewsLines>
+                    <HeadLine>AFRICA FX WEEKAHEAD-Kenya shilling set to slide further</HeadLine>
+                    <ByLine/>
+                    <DateLine>March 10, 2011</DateLine>
+                    <CreditLine>REUTERS</CreditLine>
+                    <CopyrightLine>(c) Copyright Thomson Reuters 2011. Click For Restrictions. http://about.reuters.com/fulllegal.asp</CopyrightLine>
+                    <SlugLine>AFRICA-CURRENCY/</SlugLine>
+                    <NewsLine>
+                        <NewsLineType FormalName="Caption"/>
+                        <NewsLineText>AFRICA-CURRENCY/:AFRICA FX WEEKAHEAD-Kenya shilling set to slide further</NewsLineText>
+                    </NewsLine>
+                </NewsLines>
+                <DescriptiveMetadata>
+                    <Language FormalName="en"/>
+                    <Genre FormalName="Table"/>
+                    <OfInterestTo FormalName="ABN"/>
+                    <OfInterestTo FormalName="M"/>
+                    <OfInterestTo FormalName="D"/>
+                    <OfInterestTo FormalName="AFN"/>
+                    <OfInterestTo FormalName="RBN"/>
+                    <OfInterestTo FormalName="AFA"/>
+                    <OfInterestTo FormalName="CSA"/>
+                    <OfInterestTo FormalName="LBY"/>
+                    <OfInterestTo FormalName="RWSA"/>
+                    <OfInterestTo FormalName="RWS"/>
+                    <OfInterestTo FormalName="REULB"/>
+                    <OfInterestTo FormalName="GNS"/>
+                    <OfInterestTo FormalName="RNP"/>
+                    <OfInterestTo FormalName="DNP"/>
+                    <OfInterestTo FormalName="PTD"/>
+                    <OfInterestTo FormalName="PMF"/>
+                    <OfInterestTo FormalName="SXNA"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_1"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_2"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_3"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_4"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_5"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_6"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_7"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_8"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_9"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_10"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_11"/>
+                </DescriptiveMetadata>
+                <ContentItem Duid="MTFH04569_2011-03-10_13-49-32_LDE72912N_MAIN1_TEXT_CI">
+                    <MediaType FormalName="Text"/>
+                    <Format FormalName="XHTML"/>
+                    <Characteristics>
+                        <Property FormalName="ContentID" Value="urn:newsml:reuters.com:20110310:MTFH04569_2011-03-10_13-49-32_LDE72912N_TXT:1"/>
+                        <Property FormalName="ContentCreationDateAndTime" Value="20110310T134932+0000"/>
+                        <Property FormalName="USN" Value="LDE72912N"/>
+                        <Property FormalName="Creator" Value="RTR_JANUS 4.170"/>
+                    </Characteristics>
+                    <DataContent>
+                        <html xmlns="http://www.w3.org/1999/xhtml">
+                            <head>
+                                <title/>
+                            </head>
+                            <body>
+                                <p> NAIROBI, March 10 (Reuters) - Kenya's shilling is likely to
+fall even further into record territory next week unless the
+central bank decides to halt its dramatic slide by selling
+dollars. Uganda's shilling is also seen under pressure.</p>
+                                <p> </p>
+                                <p> KENYA</p>
+                                <p> The shilling &lt;KES=&gt; is likely to fall further after hitting
+an all-time low due to the rising cost of fuel imports and a
+stated policy of non-intervention from the central bank.</p>
+                                <p> Commercial banks quoted the currency of east Africa's
+biggest economy at 84.15/25 to the dollar -- its lifetime low --
+compared with last Thursday's close of 83.05/15.</p>
+                                <p> "We are in uncharted waters. Anything is possible. If demand
+remains unabated and the sentiments for a weaker shilling
+remain, nothing will stop it from hitting 85.00," said Chris
+Muiga, senior trader at Kenya Commercial Bank.</p>
+                                <p> The central bank stayed out of the foreign exchange market
+on Thursday. Its stated policy throughout the shilling's
+dramatic six-week slide is not to intervene unless it sees
+speculation driving the currency in either direction.</p>
+                                <p> "The feeling is that central bank does not have enough
+reserves to intervene, but what are the reserves for? According
+to me, they are to stabilise exchange rates," Muiga said.</p>
+                                <p> Central bank Governor Njuguna Ndung'u said on Wednesday
+intervention was not an option.</p>
+                                <p> "Intervention always signals uncertainty which, on one hand,
+leads to speculation or on the other hand puts true investors
+into a wait-and-see mode," he said in a statement.</p>
+                                <p> Traders said rising global oil prices due to turmoil in
+Middle East and North Africa had made Kenyan oil importers
+jittery.</p>
+                                <p> "Oil importers are forward covering on fear that oil prices
+in the international market would keep rising. This has
+pressured the shilling further," said Sameer Lagadia, head of
+trading at Diamond Trust Bank.</p>
+                                <p> Traders said they expect the shilling to trade in the
+84.00-84.80 range against the dollar into next week.</p>
+                                <p> The shilling has dropped 10 percent against the dollar over
+the last 12 months and 3 percent over the last 12 sessions.
+Charts put it in a long-term downtrend. [ID:nLDE71R0ZE]</p>
+                                <p> </p>
+                                <p> UGANDA</p>
+                                <p> Uganda's shilling &lt;UGX=&gt; is expected to weaken towards a
+record low, hurt by dropping dollar supplies from aid
+organisations. Central bank dollar sales are not expected to
+have much effect on the foreign currency squeeze.</p>
+                                <p> Commercial banks quoted the unit at 2,380/2,385 to the
+dollar versus last Thursday's close of 2,369/2,374.</p>
+                                <p> "Most inflows that I monitor come from non-governmental
+organisations but lately there's been a significant drop from
+that source," said Faisal Bukenya, head of market making at
+Barclays Bank Uganda.</p>
+                                <p> He forecast the shilling would trade in a narrow range of
+2,380 - 2,400 in the week ahead. The unit hit a record low of
+2,395/2,400 in late January amid jitters about a February
+presidential election that passed off largely without incident.</p>
+                                <p> Analysts said falling dollar proceeds arose from diminishing
+export earnings from food and coffee exports.</p>
+                                <p> The Bank of Uganda sold an undisclosed amount of foreign
+exchange on Thursday, but does not appear to have a target level
+in mind.</p>
+                                <p> "Bank of Uganda doesn't wait for any particular level to
+intervene. What it doesn't want is extreme volatility which
+happened between yesterday evening and today morning," Bukenya
+said. "In that short period the shilling lost 10 shillings."</p>
+                                <p> The currency's 14-day and 50-day simple moving averages show
+the shilling staying on a weakening trend in the short run.</p>
+                                <p> In the last 12 months, it has lost more than 15 percent
+against the dollar.</p>
+                                <p> </p>
+                                <p> TANZANIA</p>
+                                <p> Tanzania's shilling &lt;TZS=&gt; may ease slightly due to foreign
+investors wishing to repatriate dividend payments.</p>
+                                <p> Commercial banks quoted the local currency at 1,510/1,515
+compared with 1,513/1,518 a week ago, and traders said it should
+trade in a 1,510-1,520 trade in the days ahead.</p>
+                                <p> "We are heading towards the end of the first quarter. Most
+of the corporates are more concerned about making their first
+quarter tax payments at the moment," said Bruno Ngooh, a trader
+at Standard Chartered Bank Tanzania.</p>
+                                <p> Traders said the central bank had been active, selling an
+average of $8.7 million each day.</p>
+                                <p> "The shilling should remain in the same levels until the end
+of the month, but it could weaken next month when some companies
+start to pay dividends to offshore shareholders," Ngooh added.</p>
+                                <p> The shilling is down nearly 12 percent against the dollar
+over the last 12 months, but is trading off a four-month low of
+1,518 hit in late February.</p>
+                                <p> Between last Thursday and Wednesday, the central bank traded
+$42.8 million on its Interbank Foreign Exchange Market, its
+website said.</p>
+                                <p> </p>
+                                <p> NIGERIA</p>
+                                <p> The naira &lt;NGN=D1&gt; could weaken further towards 155.00 to
+the U.S. dollar amid strong demand for the greenback from
+bureaux de change outlets and dwindling inflows from energy
+multinationals.</p>
+                                <p> The naira was at 154.67 early on Thursday, compared to
+154.36 at Wednesday's close, with more demand coming from some
+lenders funding bureaux de change outlets and covering unmet
+demand at the central bank's bi-weekly forex auction.</p>
+                                <p> At the official window on Wednesday, demand outstripped
+supply, with the central bank coming up $70 million short,
+putting further pressure on dollars at the interbank market.</p>
+                                <p> "The naira should depreciate further in the next couple of
+weeks until there are inflows from the energy companies," one
+dealer said.</p>
+                                <p> Increased demand for dollars at the official auction came
+from gasoline importers placing orders for their next shipments
+of fuel into the country, traders said.</p>
+                                <p> Nigeria's foreign reserves rose 8.6 percent to $36.38
+billion from the end of February to March 8, increasing the
+ability of Africa's top energy producer to support its currency.</p>
+                                <p> Dealers said the bureaux de change pressure could mean some
+individuals building up a stock of dollars in case of political
+trouble in the run-up to an April election.</p>
+                                <p> "Most corporate institutions are not buying dollars at the
+present level because they prefer to pass their bids through the
+official window. It's the informal sector that is driving the
+current high demand," another dealer said.</p>
+                                <p> "The naira should trade around 155 to the dollar by next
+week unless there is a large inflow of dollars."</p>
+                                <p> The naira spiked to a record low of 158 against the dollar
+in early 2009 after a sharp depreciation from around 118 caused
+by the global financial crisis.</p>
+                                <p> </p>
+                                <p> GHANA</p>
+                                <p> The cedi &lt;GHS=&gt; is likely to stay range-bound, but with a
+slight weakening bias.</p>
+                                <p> The unit was at 1.5205/30 to the dollar on Thursday,
+stronger than its record lows beyond 1.57 but weaker than the
+mid 1.40s it enjoyed for much of last year.</p>
+                                <p> "I expect the trend to continue. We see very firm corporate
+demand in the coming week and the supply side is weak," said
+Jacob Brobbey from Barclays Ghana's treasury department. "The
+rate is gradual so it won't cause too much alarm for
+policymakers."</p>
+                                <p> Access Bank's Biggles Amponsah said the cedi should ease
+slightly as companies in manufacturing and consumer import
+sector bought dollars to pay for bills fall due at the end of
+the first quarter.</p>
+                                <p> "I expect the cedi to trade at around 1.5240 next week," he
+said.</p>
+                                <p> ZAMBIA</p>
+                                <p> The kwacha &lt;ZMK=&gt; may come under pressure due to resurfacing
+concerns about European debt souring sentiment to riskier
+emerging market securities.</p>
+                                <p> Commercial banks on Thursday quoted the currency of Africa's
+top copper producer at 4,740 versus 4,715 a week ago.</p>
+                                <p> "We expect the kwacha to be under pressure around
+4,740-4,800 mainly because of the debt crisis in Europe," one
+trader said.</p>
+                                <p> Standard Chartered said the kwacha would stick around 4,750
+for the first of half of the year before pushing towards a key
+support resistance level of 4,650 in the second half.</p>
+                                <p> The kwacha should benefit from buoyant copper prices, a
+trade surplus, rising foreign direct investment, low inflation,
+low interest rates and high foreign exchange reserves, the bank
+added.</p>
+                                <p> Zambia's currency met firm resistance around 4,600 during
+2010. On the few occasions it breached that level, it went on to
+test but failed to breach 4,550. </p>
+                                <p> (Reporting by Oludare Mayowa, Kevin Mwanza, George Obulutsa,
+Elias Biryabarema, Fumbuka Ng'wanakilala, Chris Mfula and
+Hereward Holland, Compiled by Ed Cropley; Editing by Ron Askew)
+
+
+
+</p>
+                            </body>
+                        </html>
+                    </DataContent>
+                </ContentItem>
+            </NewsComponent>
+        </NewsComponent>
+    </NewsItem>
+</NewsML>

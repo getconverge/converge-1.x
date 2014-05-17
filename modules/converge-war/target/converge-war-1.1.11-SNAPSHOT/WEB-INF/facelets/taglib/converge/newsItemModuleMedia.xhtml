@@ -1,0 +1,297 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://java.sun.com/jstl/core" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+
+    <c:if test="#{newsItem.fieldVisible['MEDIA']}">
+
+        <converge:moduleHeader moduleTitle="#{i18n.NewsItem_MEDIA_FILES}" />
+        <div class="moduleContent">
+
+            <h:panelGrid columns="2" columnClasses="left, right" style="width: 100%" rendered="#{newsItem.currentActor &amp;&amp; !newsItem.readOnly}">
+                <h:outputText value="" />
+                <a4j:commandButton styleClass="button mediumButton" value="#{i18n.NewsItem_MEDIA_ATTACH}" ajaxSingle="true" actionListener="#{newsItem.onPreAttachMediaFile}"
+                                   oncomplete="#{rich:component('mpMediaFileUpload')}.show();#{rich:element('frmNewsItem:txtSearchKeyword')}.focus()" />
+            </h:panelGrid>
+
+            <rich:dataGrid id="dtMediaFiles" value="#{newsItem.selectedNewsItem.mediaAttachments}" var="attachment" columns="#{newsItem.numberOfMediaAttachmentsColumns}" columnClasses="colMediaAttachment"> 
+                <h:panelGrid style="width:100%;">
+                    <h:panelGroup layout="block">
+                        <h:panelGroup layout="block" style="float: left; font-size: smaller; padding: 4px; margin:4px; font-weight: bold; background: #dddddd; text-align: center; width: 15px; border: 1px solid #ccc;">
+                            <rich:inplaceInput required="true" value="#{attachment.displayOrder}"  viewClass="placementPositionInplace" viewHoverClass="placementPositionInplaceHover">
+                                <a4j:support ajaxSingle="true" event="onviewactivated" reRender="dtMediaFiles">
+                                    <f:setPropertyActionListener target="#{newsItem.updateAttachment}" value="#{attachment}" />
+                                </a4j:support>
+                            </rich:inplaceInput>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block" style="float: right; width: 20px; padding: 4px; margin:4px;">
+                            <a4j:commandLink onclick="if (confirm('#{i18n.NewsItem_MEDIA_ATTACHMENT_REMOVE_CONFIRM}') != true){ return false; };" ajaxSingle="true" reRender="dtMediaFiles">
+                                <f:setPropertyActionListener target="#{newsItem.deleteMediaItem}" value="#{attachment}" />
+                                <h:graphicImage url="#{i18n.resource_ICON_REMOVE}"  />
+                            </a4j:commandLink>
+                        </h:panelGroup>
+                    </h:panelGroup>
+
+                    <h:outputLink value="#{attachment.mediaItem.original.absoluteFilename}" target="_blank" rendered="#{!attachment.mediaItem.original.video &amp;&amp; !attachment.mediaItem.original.audio}">
+                        <h:graphicImage url="#{attachment.mediaItem.preview.absoluteFilename}" rendered="#{attachment.mediaItem.previewAvailable}" />
+                        <h:graphicImage url="/images/unknown-media-item.png" rendered="#{!attachment.mediaItem.previewAvailable}" />
+                    </h:outputLink>
+
+                    <h:panelGroup rendered="#{attachment.mediaItem.original.audio}" layout="block">
+                        <div id="container#{attachment.id}">#{i18n.jwplayer_LOADING_PLAYER}</div>
+                        <script type="text/javascript"> 
+                            jwplayer("container#{attachment.id}").setup({
+                                flashplayer: "#{facesContext.externalContext.request.contextPath}/scripts/jwplayer/player.swf", 
+                                file: "#{attachment.mediaItem.original.absoluteFilename}", 
+                                plugins: {},
+                                height: 60, 
+                                width: 250,
+                                volume: 100
+                            });
+                        </script>
+                    </h:panelGroup>
+
+                    <h:panelGroup rendered="#{attachment.mediaItem.original.video}" layout="block">
+                        <div id="container#{attachment.id}">#{i18n.jwplayer_LOADING_PLAYER}</div>
+                        <script type="text/javascript"> 
+                            jwplayer("container#{attachment.id}").setup({
+                                flashplayer: "#{facesContext.externalContext.request.contextPath}/scripts/jwplayer/player.swf", 
+                                file: "#{attachment.mediaItem.original.absoluteFilename}", 
+                                image: "#{attachment.mediaItem.preview.absoluteFilename}",
+                                plugins: {},
+                                width: 250,
+                                volume: 100
+                            });
+                        </script>
+                    </h:panelGroup>
+
+                    <h:panelGrid id="pgMediaInfo" columns="2" columnClasses="newsItemAttachmentLabel, newsItemAttachmentInput" styleClass="newsItemAttachmentInfo">
+
+                        <h:outputText value="#{i18n.NewsItem_MEDIA_ATTACHMENT_CAPTION}" />
+                        <rich:inplaceInput required="true" requiredMessage="#{i18n.NewsItem_MEDIA_ATTACHMENT_CAPTION_REQUIRED}" value="#{attachment.caption}" viewClass="newsItemAttachmentCaptionInplace" viewHoverClass="newsItemAttachmentCaptionInplaceHover">
+                            <a4j:support ajaxSingle="true" event="onviewactivated" reRender="dtMediaFiles">
+                                <f:setPropertyActionListener target="#{newsItem.updateAttachment}" value="#{attachment}" />
+                            </a4j:support>
+                        </rich:inplaceInput>
+
+                        <h:outputText value="#{i18n.NewsItem_MEDIA_ATTACHMENT_CREDIT}" />
+                        <h:outputText value="#{attachment.mediaItem.byLine}" rendered="#{attachment.mediaItem.byLine != ''}" />
+                        <h:outputText value="#{attachment.mediaItem.owner.fullName}" rendered="#{attachment.mediaItem.byLine == ''}" />
+
+                        <h:outputText value="#{i18n.NewsItem_MEDIA_ATTACHMENT_RENDITIONS}" rendered="#{userSession.catalogueEditorRole[attachment.mediaItem.catalogue.id]}" />
+                        <rich:dataGrid value="#{attachment.mediaItem.renditions}" var="rendition" style="background: #33aa33; width: 100%; font-weight: bold;" rendered="#{userSession.catalogueEditorRole[attachment.mediaItem.catalogue.id]}">
+                            <h:outputLink value="#{rendition.absoluteFilename}" style=" font-size: 0.9em; color: white; text-transform: uppercase;" target="_blank">
+                                <h:outputText value="#{rendition.rendition.label}" />
+                            </h:outputLink>
+                        </rich:dataGrid>
+
+                        <h:outputText value="#{i18n.NewsItem_MEDIA_ATTACHMENT_RENDITIONS_MISSING}" rendered="#{userSession.catalogueEditorRole[attachment.mediaItem.catalogue.id] &amp;&amp; !empty attachment.mediaItem.missingRenditions}" />
+                        <rich:dataGrid value="#{attachment.mediaItem.missingRenditions}" style="background: #aa3333; width: 100%; font-weight: bold;" var="rendition" rendered="#{userSession.catalogueEditorRole[attachment.mediaItem.catalogue.id] &amp;&amp; !empty attachment.mediaItem.missingRenditions}">
+                            <h:outputLink value="#{facesContext.externalContext.request.contextPath}/CropRendition.xhtml" target="_blank">
+                                <f:param name="mid" value="#{attachment.mediaItem.id}" />
+                                <f:param name="tid" value="#{rendition.id}" />
+                                <f:param name="sid" value="#{attachment.mediaItem.original.rendition.id}" />
+                                <h:outputText style=" font-size: 0.9em; color: white; text-transform: uppercase;" value="#{rendition.label}" />
+                            </h:outputLink>
+                        </rich:dataGrid>
+
+                        <h:outputText value="#{i18n.NewsItem_MEDIA_ATTACHMENT_ID}" />
+                        <h:outputLink value="#{facesContext.externalContext.request.contextPath}/MediaItemDetails.xhtml?id=#{attachment.mediaItem.id}">
+                            <h:outputText value="#{attachment.mediaItem.id}">
+                                <f:convertNumber integerOnly="true" type="number" pattern="#{i18n.Generic_FORMAT_ID}" />
+                            </h:outputText>
+                        </h:outputLink>
+
+                    </h:panelGrid>
+
+                </h:panelGrid>
+            </rich:dataGrid>
+        </div>
+        <converge:moduleSpacer />
+
+
+        <a4j:region id="regMediaFileUpload">
+            <rich:modalPanel id="mpMediaFileUpload" autosized="true" domElementAttachment="parent">
+                <f:facet name="header">
+                    <h:panelGroup>
+                        <h:outputText value="#{i18n.NewsItem_MEDIA_FILE_SELECT_TITLE}"></h:outputText>
+                    </h:panelGroup>
+                </f:facet>
+                <f:facet name="controls">
+                    <h:panelGroup>
+                        <h:graphicImage id="imgCloseMediaAttachmentDetails" value="#{i18n.resource_ICON_DIALOGUE_CLOSE}" styleClass="link" />
+                        <rich:componentControl for="mpMediaFileUpload" attachTo="imgCloseMediaAttachmentDetails" operation="hide" event="onclick" />
+                    </h:panelGroup>
+                </f:facet>
+
+                <h:panelGrid style="width: 480px;">
+                    <rich:tabPanel id="tpMediaFileUpload" switchType="client" activeTabClass="tabActive" inactiveTabClass="tabInactive">
+
+                        <rich:tab label="#{i18n.NewsItem_MEDIA_ITEM_SEARCH}">
+                            <h:panelGrid columnClasses="tabSheet" styleClass="tabSheetGrid">
+                                <h:panelGroup>
+                                    <h:inputText id="txtSearchKeyword" styleClass="text" value="#{newsItem.keyword}" title="" style="width: 350px;" />
+                                    <a4j:commandButton type="submit" styleClass="button dynamicButton" style="margin-left: 10px;" value="#{i18n.NewsItem_MEDIA_ITEM_SEARCH_BUTTON_LABEL}" actionListener="#{newsItem.onSearch}" reRender="pgResults" />
+                                </h:panelGroup>
+
+                                <h:panelGroup id="pgResults" layout="block" styleClass="scrollableContent">
+                                    <h:outputFormat value="#{i18n.NewsItem_MEDIA_ITEM_SEARCH_X_RESULTS_FOUND}" rendered="#{newsItem.searchResults.rowCount &gt; -1}">
+                                        <f:param value="#{newsItem.lastSearch.numberOfResults}" />
+                                        <f:param value="#{newsItem.lastSearch.searchTimeInSeconds}" />
+                                        <f:param value="#{newsItem.lastSearch.numberOfPages}" />
+                                    </h:outputFormat>
+
+                                    <rich:dataTable id="searchResults" rows="50" value="#{newsItem.searchResults}" var="item">
+
+                                        <rich:column>
+                                            <h:panelGrid>
+                                                <h:outputText value="#{item.title}" escape="false" styleClass="bold" />
+                                                <h:column>
+                                                    <h:graphicImage url="#{item.previewLink}" rendered="#{item.preview &amp;&amp; !item.previewVideo &amp;&amp; !item.previewAudio}" styleClass="searchResultThumb" />
+                                                    <h:panelGroup rendered="#{item.previewVideo || item.previewAudio}" styleClass="searchResultThumb">
+                                                        <converge:mediaPlayer id="searchResult#{item.id}" value="#{item.directLink}" height="150" width="150" controlbar="none" />
+                                                    </h:panelGroup>
+
+                                                    <h:outputText value="#{item.description}" escape="false" /><br/>
+                                                    <span class="searchResultDescription">#{item.note}</span><br/>
+                                                    <span class="searchResultDate">#{i18n.NewsItem_MEDIA_ITEM_SEARCH_RESULT_DATE}:&#160;
+                                                        <h:outputText value="#{item.earliestDate}" rendered="#{item.earliestDate != null}">
+                                                            <f:convertDateTime pattern="#{i18n.Generic_FORMAT_DATE}" timeZone="#{userSession.user.timeZone}" />
+                                                        </h:outputText>
+                                                        <h:outputText value="#{i18n.NewsItem_MEDIA_ITEM_SEARCH_RESULT_DATE_UNKNOWN}" rendered="#{item.earliestDate == null}" />
+                                                    </span>
+                                                </h:column>
+                                            </h:panelGrid>
+                                        </rich:column>
+
+                                        <rich:column>
+                                            <a4j:commandButton styleClass="button dynamicButton" value="#{i18n.NewsItem_MEDIA_ITEM_SEARCH_RESULT_SELECT}" reRender="pgMediaItemSelected" ajaxSingle="true">
+                                                <f:setPropertyActionListener target="#{newsItem.selectedMediaItemId}" value="#{item.id}" />
+                                                <rich:componentControl for="mpMediaItemSelected" operation="show" event="oncomplete" />
+                                            </a4j:commandButton>
+                                        </rich:column>
+
+                                    </rich:dataTable>
+
+                                </h:panelGroup>
+                            </h:panelGrid>
+                        </rich:tab>
+
+                        <rich:tab label="#{i18n.NewsItem_MEDIA_FILE_UPLOAD}">
+                            <h:panelGrid columnClasses="tabSheet" styleClass="tabSheetGrid" id="pgMediaItemUpload">
+                                <h:outputText value="#{i18n.NewsItem_MEDIA_FILE_UPLOAD_CATALOGUE}" />
+                                <h:selectOneMenu id="somCatalogue" styleClass="text mediumInput" value="#{newsItem.selectedCatalogue}" converter="#{converters.mediaRepositoryConverter}">
+                                    <f:selectItem itemLabel="" />
+                                    <f:selectItems value="#{userSession.myCatalogues}" />
+                                    <a4j:support event="onchange" reRender="pgMedia" ajaxSingle="true" />
+                                </h:selectOneMenu>
+
+                                <h:panelGrid id="pgMedia" columnClasses="tabSheet" styleClass="tabSheetGrid">
+
+                                    <a4j:outputPanel rendered="#{newsItem.selectedCatalogue != null}">
+                                        <rich:tabPanel id="tpNewRendition" switchType="ajax" activeTabClass="tabActive" inactiveTabClass="tabInactive">
+
+                                            <rich:tab id="tabNormalUpload" label="#{i18n.NewsItemModuleMedia_MEDIA_FILE_UPLOAD_NORMAL}">
+                                                <h:panelGrid id="pgRenditionNormalUpload" columnClasses="tabSheet" style="padding: 10px; width: 100%">
+                                                    <rich:fileUpload id="fuRenditionFile" 
+                                                                     fileUploadListener="#{newsItem.onUploadMediaItem}" 
+                                                                     immediateUpload="true" 
+                                                                     allowFlash="false"
+                                                                     listWidth="400"
+                                                                     listHeight="65"
+                                                                     ajaxSingle="true"
+                                                                     addControlLabel="#{i18n.NewsItemModuleMedia_SELECT_FILE}">
+                                                        <a4j:support event="onuploadcomplete" 
+                                                                     oncomplete="#{rich:component('mpMediaItemSelected')}.show();" 
+                                                                     reRender="pgMediaItemSelected,pgMediaItemUpload" />
+                                                        <f:facet name="label">
+                                                            <h:outputText value="#{i18n.NewsItemModuleMedia_UPLOAD_INDICATOR}" />
+                                                        </f:facet>
+                                                    </rich:fileUpload>
+                                                </h:panelGrid>
+                                            </rich:tab>
+
+                                            <rich:tab id="tabNewRendition" label="#{i18n.NewsItemModuleMedia_MEDIA_FILE_UPLOAD_LARGE}">
+                                                <h:panelGrid id="pgRenditionLargeUpload" columnClasses="tabSheet" style="padding: 10px; width: 100%">
+                                                    <h:outputText value="#{i18n.NewsItem_MEDIA_FILE_UPLOAD_HINT}" styleClass="media-item-details-upload-hint" />
+                                                    <applet archive="applets/jupload/wjhk.jupload.jar?version=#{common.buildNumber}" style="border: none;" border="0"
+                                                            code="wjhk.jupload2.JUploadApplet" height="150" mayscript="true"
+                                                            name="JUpload" width="440">
+                                                        <param name="postURL" value="#{facesContext.externalContext.request.contextPath}/FileUploadServlet?uploadType=newMediaItem&amp;catalogueId=#{newsItem.selectedCatalogue.id}"/>
+                                                        <param name="showLogWindow" value="false" />
+                                                        <param name="nbFilesPerRequest" value="1" />
+                                                        <param name="retryMaxNumberOf" value="50" />
+                                                        <param name="uploadPolicy" value="ConvergePolicy" />
+                                                        <param name="maxFileSize" value="#{newsItem.selectedCatalogue.maxFileUploadSize*1024}" />
+                                                        <param name="afterUploadURL" value="javascript:onMediaItemUploadComplete('%body%');" />
+                                                        Java Runtime 1.5 or higher plugin required.
+                                                    </applet>
+                                                </h:panelGrid>
+                                            </rich:tab>
+
+                                        </rich:tabPanel>
+
+                                    </a4j:outputPanel>
+                                </h:panelGrid>
+
+                                <a4j:jsFunction name="onMediaItemUploadComplete" reRender="pgMediaItemSelected,pgMediaItemUpload" ajaxSingle="true">
+                                    <a4j:actionparam name="response" assignTo="#{newsItem.uploadedMediaItem}"/>
+                                    <rich:componentControl for="mpMediaItemSelected" operation="show" event="oncomplete" />
+                                </a4j:jsFunction>
+                            </h:panelGrid>
+                        </rich:tab>
+                    </rich:tabPanel>
+
+                    <h:panelGroup styleClass="dialogueButtons">
+                        <h:commandLink id="lnkCloseMediaAttachmentDetails" styleClass="dialogButton" value="#{i18n.Generic_CLOSE}" onclick="#{rich:component('mpMediaFileUpload')}.hide(); return false;" />
+                    </h:panelGroup>
+                </h:panelGrid>
+
+            </rich:modalPanel>
+
+            <h:panelGroup id="pgMediaItemSelected">
+                <rich:modalPanel id="mpMediaItemSelected" autosized="true" domElementAttachment="parent" rendered="#{newsItem.selectedAttachment != null}">
+                    <f:facet name="header">
+                        <h:panelGroup>
+                            <h:outputText value="#{i18n.NewsItem_MEDIA_ATTACHMENT_DETAILS}"></h:outputText>
+                        </h:panelGroup>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:panelGroup>
+                            <h:graphicImage id="imgCloseMediaItemSelected" value="#{i18n.resource_ICON_DIALOGUE_CLOSE}" styleClass="link" />
+                            <rich:componentControl for="mpMediaItemSelected" attachTo="imgCloseMediaItemSelected" operation="hide" event="onclick" />
+                        </h:panelGroup>
+
+                    </f:facet>
+
+                    <h:panelGrid style="width: 480px;">
+                        <rich:tabPanel id="tpMediaItemSelected" switchType="client" activeTabClass="tabActive" inactiveTabClass="tabInactive">
+                            <rich:tab label="#{i18n.NewsItem_MEDIA_SELECTED_ITEM}">
+                                <h:panelGrid columnClasses="tabSheet center" styleClass="tabSheetGrid" rendered="#{!newsItem.selectedAttachment.mediaItem.held}">
+                                    <h:outputLink target="_blank" value="#{newsItem.selectedAttachment.mediaItem.original.absoluteFilename}">
+                                        <h:graphicImage style="border: 1px solid #aaaaaa; margin-left: 1%; margin-right: 1%;" url="/images/unknown-media-item.png" rendered="#{!newsItem.selectedAttachment.mediaItem.previewAvailable}" title="#{newsItem.selectedAttachment.mediaItem.title}" />
+                                        <h:graphicImage style="border: 1px solid #aaaaaa; margin-left: 1%; margin-right: 1%;" url="#{newsItem.selectedAttachment.mediaItem.preview.absoluteFilename}" rendered="#{newsItem.selectedAttachment.mediaItem.previewAvailable}" title="#{newsItem.selectedAttachment.mediaItem.title}" />
+                                    </h:outputLink>
+                                    <h:outputText value="#{i18n.NewsItem_MEDIA_SELECTED_ITEM_CAPTION}" />
+                                    <h:inputTextarea id="txtCaption" value="#{newsItem.selectedAttachment.caption}" style="width: 98%; height: 100px; margin-left: 1%; margin-right: 1%" styleClass="text mediumInput" required="true" requiredMessage="#{i18n.NewsItem_SELECTED_ITEM_CAPTION_REQUIRED}" />
+                                    <h:outputText value="#{i18n.NewsItem_MEDIA_SELECTED_ITEM_BY_LINE}" />
+                                    <h:inputText value="#{newsItem.selectedAttachment.mediaItem.byLine}" style="width: 98%; margin-left: 1%; margin-right: 1%" styleClass="text mediumInput" rendered="#{newsItem.selectedAttachment.mediaItem.status == 'SELF_UPLOAD'}"/>
+                                    <h:inputText value="#{newsItem.selectedAttachment.mediaItem.byLine}" style="width: 98%; margin-left: 1%; margin-right: 1%" styleClass="text mediumInput" disabled="true" rendered="#{newsItem.selectedAttachment.mediaItem.status != 'SELF_UPLOAD' &amp;&amp; newsItem.selectedAttachment.mediaItem.byLine != ''}"/>
+                                    <h:inputText value="#{newsItem.selectedAttachment.mediaItem.owner.fullName}" style="width: 98%; margin-left: 1%; margin-right: 1%" styleClass="text mediumInput" disabled="true" rendered="#{newsItem.selectedAttachment.mediaItem.status != 'SELF_UPLOAD' &amp;&amp; newsItem.selectedAttachment.mediaItem.byLine == ''}"/>
+                                </h:panelGrid>
+                                <h:panelGrid columnClasses="tabSheet center" styleClass="tabSheetGrid" rendered="#{newsItem.selectedAttachment.mediaItem.held}">
+                                    <h:outputText value="#{i18n.NewsItem_MEDIA_SELECTED_IS_HELD}" />                                
+                                </h:panelGrid>
+                            </rich:tab>
+                        </rich:tabPanel>
+
+                        <h:panelGroup styleClass="dialogueButtons">
+                            <a4j:commandLink id="lnkUseAttachment" actionListener="#{newsItem.onUseAttachment}" styleClass="dialogButton" value="#{i18n.Generic_ADD}" reRender="dtMediaFiles,searchResults,pgMediaItemUpload" rendered="#{!newsItem.selectedAttachment.mediaItem.held}" oncomplete="if (#{converge:isAllValid()}){ #{rich:component('mpMediaItemSelected')}.hide(); return false; }" />
+                            <h:commandLink id="lnkCloseMediaItemSelection" styleClass="dialogButton" value="#{i18n.Generic_CANCEL}" onclick="#{rich:component('mpMediaItemSelected')}.hide(); return false;" />
+                        </h:panelGroup>
+                    </h:panelGrid>
+
+                </rich:modalPanel>
+            </h:panelGroup>
+
+        </a4j:region>
+    </c:if>
+
+</ui:composition>

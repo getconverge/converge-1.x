@@ -1,0 +1,49 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://java.sun.com/jstl/core" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+    <h:form id="frmActivityStream">
+        <converge:moduleHeader moduleTitle="#{i18n.activityStreamModule_TITLE}" />
+        <div class="moduleContent">
+            <a4j:poll actionListener="#{activityStream.onCheckForUpdates}" ajaxSingle="true" reRender="activityStream" interval="60000" />
+            <a4j:outputPanel id="activityStream" ajaxRendered="true">
+                <rich:dataTable id="dtNotifications" value="#{activityStream.notifications}" var="notification" styleClass="activityStream">
+                    <rich:column width="50" styleClass="activityStreamSender">
+                        <h:graphicImage styleClass="profilePhoto" value="/UserPhoto?uid=#{notification.sender.id}" alt="#{notification.sender.fullName}" title="#{notification.sender.fullName}" height="48" width="48" />
+                    </rich:column>
+                    <rich:column styleClass="activityStreamMessage">
+                        <h:panelGrid>
+                            <h:outputLink value="#{notification.link}" styleClass="activityStreamSenderName">
+                                <h:outputText value="#{notification.sender.fullName}" escape="false"  />
+                            </h:outputLink>
+                            <h:outputText value="#{notification.message}" styleClass="activityStreamMessageText" escape="false" />
+                            <h:panelGroup layout="block">
+                                <h:outputText value="#{notification.added.time}" styleClass="activityStreamTime">
+                                    <f:converter converterId="com.ocpsoft.PrettyTimeConverter"/>
+                                </h:outputText>
+                                <h:outputText value="#{i18n.activityStreamModule_SEPARATOR}" escape="false" styleClass="activityStreamSeparator" rendered="#{notification.linkSet}" />
+                                <h:outputLink value="#{facesContext.externalContext.request.contextPath}/#{notification.link}" styleClass="activityStreamLink" rendered="#{notification.linkSet}">
+                                    <h:outputText value="#{i18n.activityStreamModule_LINK}" escape="false" />
+                                </h:outputLink>
+                                <h:outputText value="#{i18n.activityStreamModule_SEPARATOR}" escape="false" styleClass="activityStreamSeparator" />
+                                <a4j:commandLink ajaxSingle="true" reRender="dtNotifications" styleClass="activityStreamLink">
+                                    <f:setPropertyActionListener target="#{activityStream.deleteNotification}" value="#{notification}" />
+                                    <h:outputText value="#{i18n.activityStreamModule_DISMISS}" escape="false" />
+                                </a4j:commandLink>
+                                <h:outputText value="#{i18n.activityStreamModule_SEPARATOR}" escape="false" styleClass="activityStreamSeparator" rendered="#{notification.linkSet}" />
+                                <a4j:commandLink styleClass="activityStreamLink" rendered="#{notification.linkSet}" oncomplete="window.location='#{facesContext.externalContext.request.contextPath}/#{notification.link}'">
+                                    <f:setPropertyActionListener target="#{activityStream.deleteNotification}" value="#{notification}" />
+                                    <h:outputText value="#{i18n.activityStreamModule_LINK_AND_DISMISS}" escape="false" />
+                                </a4j:commandLink>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                    </rich:column>
+                </rich:dataTable>                    
+                <h:panelGroup layout="block">
+                    <a4j:commandLink styleClass="activityStreamBottomLink" actionListener="#{activityStream.onShowMore}" reRender="dtNotifications" value="#{i18n.activityStreamModule_SHOW_MORE}" rendered="#{activityStream.showMore}" />
+                    <a4j:commandLink styleClass="activityStreamBottomLink" actionListener="#{activityStream.onDismissAll}" reRender="dtNotifications" value="#{i18n.activityStreamModule_DISMISS_ALL}" rendered="#{activityStream.notifications.rowCount &gt; 0}" />
+                </h:panelGroup>
+            </a4j:outputPanel>
+
+        </div>
+        <h:outputText value="#{i18n.Generic_LICENSE}" style="color: white; background: white;" />
+    </h:form>
+    <converge:moduleSpacer />
+</ui:composition>

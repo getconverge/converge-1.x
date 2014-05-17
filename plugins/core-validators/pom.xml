@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <artifactId>plugins</artifactId>
+        <groupId>dk.i2m.converge</groupId>
+        <version>1.1.11-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    
+    <groupId>dk.i2m.converge.plugins</groupId>
+    <artifactId>core-validators</artifactId>
+
+    <packaging>jar</packaging>
+    <name>Plug-ins - Core Validators</name>
+    <description>Core workflow validators</description>
+
+    <dependencies>
+        <dependency>
+            <artifactId>converge-core</artifactId>
+            <groupId>dk.i2m.converge</groupId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>converge-plugin-${project.artifactId}-${project.version}</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <filters>
+            <filter>${basedir}/target/filter.properties</filter>
+        </filters>
+        
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <mkdir dir="${project.build.directory}" />
+                                <tstamp>
+                                    <format property="last.updated" pattern="yyyy-MM-dd HH:mm:ss" />
+                                </tstamp>
+                                <echo file="${basedir}/target/filter.properties" message="build.time=${last.updated}" />
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>m2.i2m.dk</id>
+            <name>Interactive Media Management Maven 2 Repository</name>
+            <url>http://m2.i2m.dk</url>
+        </repository>
+        <repository>
+            <id>maven2-repository.dev.java.net</id>
+            <name>Java.net Maven 2 Repository</name>
+            <url>http://download.java.net/maven/2</url>
+        </repository>
+    </repositories>
+
+    <properties>
+        <netbeans.hint.license>gpl30</netbeans.hint.license>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+</project>

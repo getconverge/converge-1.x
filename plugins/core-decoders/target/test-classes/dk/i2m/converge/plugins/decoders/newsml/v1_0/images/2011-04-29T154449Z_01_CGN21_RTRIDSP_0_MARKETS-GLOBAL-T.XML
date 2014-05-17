@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE NewsML SYSTEM "http://idsdat06.reuters.com/newsml/NewsMLv1.0.dtd" [
+  <!ENTITY % xhtml SYSTEM "http://idsdat06.reuters.com/newsml/xhtml1-strict.dtd">
+  %xhtml;
+]>
+<!--src: rtr2newsml0.995-->
+<NewsML Duid="MTFH16417_2011-04-29_15-44-49_CGN21_NEWSML">
+    <Catalog Href="http://idsdat06.reuters.com/newsml/catalog/catalog-reuters-master_catalog_1.xml"/>
+    <NewsEnvelope>
+        <DateAndTime>20110429T154449+0000</DateAndTime>
+        <NewsService FormalName="RTR_NGS"/>
+        <NewsProduct FormalName="PIX_GTS"/>
+        <Priority FormalName="4"/>
+    </NewsEnvelope>
+    <NewsItem Duid="MTFH16417_2011-04-29_15-44-49_CGN21_NEWSITEM">
+        <Identification>
+            <NewsIdentifier>
+                <ProviderId>reuters.com</ProviderId>
+                <DateId>20110429</DateId>
+                <NewsItemId>MTFH16417_2011-04-29_15-44-49_CGN21</NewsItemId>
+                <RevisionId Update="N" PreviousRevision="0">1</RevisionId>
+                <PublicIdentifier>urn:newsml:reuters.com:20110429:MTFH16417_2011-04-29_15-44-49_CGN21:1</PublicIdentifier>
+            </NewsIdentifier>
+        </Identification>
+        <NewsManagement>
+            <NewsItemType FormalName="News"/>
+            <FirstCreated>20110429T154449+0000</FirstCreated>
+            <ThisRevisionCreated>20110429T154449+0000</ThisRevisionCreated>
+            <Status FormalName="Embargoed"/>
+            <StatusWillChange>
+                <FutureStatus FormalName="Usable"/>
+                <DateAndTime>20090120T100000+0000</DateAndTime>
+            </StatusWillChange>
+            <Urgency FormalName="4"/>
+            <Property FormalName="USN" Value="GF2E74T17DE02"/>
+            <Property FormalName="CID" Value="GF2E74T17DE02" Scheme="IID"/>
+            <Property FormalName="OTR" Value="CGN21"/>
+        </NewsManagement>
+        <!--Outer "MAIN" NewsComponent-->
+        <NewsComponent EquivalentsList="no" Essential="no" Duid="MTFH16417_2011-04-29_15-44-49_CGN21_NC" xml:lang="en">
+            <TopicSet FormalName="HighImportance">
+<Topic Duid="ts_1">
+<TopicType FormalName="Unknown"/>
+<FormalName Scheme="N2000_Unknown">GFX</FormalName>
+<Property FormalName="WhyPresent" Value="Classifier"/>
+</Topic>
+<Topic Duid="ts_2">
+<TopicType FormalName="Recurring Report"/>
+<FormalName Scheme="Reuters Recurring Report">GF2E74T17DE02</FormalName>
+<Property FormalName="WhyPresent" Value="Classifier"/>
+</Topic>
+<Topic Duid="ts_3">
+<TopicType FormalName="CategoryCode"/>
+<FormalName Scheme="MediaCategory">I</FormalName>
+<Description xml:lang="en">International News</Description>
+<Property FormalName="WhyPresent" Value="Classifier"/>
+</Topic>
+</TopicSet>
+            <TopicSet FormalName="AdminRights" Scheme="reuters_TopicType">
+                <Topic Duid="ats_1">
+                    <TopicType FormalName="Geography"/>
+                    <FormalName Scheme="N2000Cities">COLOGNE</FormalName>
+                </Topic>
+                <Topic Duid="ats_2">
+                    <TopicType FormalName="Geography"/>
+                    <FormalName Scheme="N2000">DE</FormalName>
+                    <Description xml:lang="en">Germany</Description>
+                </Topic>
+            </TopicSet>
+            <Role FormalName="Main"/>
+            <AdministrativeMetadata>
+                <FileName>2011-04-29T154449Z_01_CGN21_RTRIDSP_0_MARKETS-GLOBAL-T.XML</FileName>
+                <Provider>
+                    <Party FormalName="Reuters"/>
+                </Provider>
+                <Creator>
+                    <Party FormalName="REUTERS"/>
+                </Creator>
+                <Source>
+                    <Party FormalName="Reuters"/>
+                </Source>
+                <Property FormalName="SourceFeed" Value="IDS"/>
+                <Property FormalName="IDSPublisher" Value="http://www.reuters.com/ids"/>
+            </AdministrativeMetadata>
+            <!--Single "Main Picture" inner NewsComponent-->
+            <NewsComponent EquivalentsList="no" Essential="no" Duid="MTFH16417_2011-04-29_15-44-49_CGN21_PICTURE_NC" xml:lang="en">
+                <Role FormalName="Main Picture"/>
+                <NewsLines>
+                    <HeadLine>MARKETS-GLOBAL T</HeadLine>
+                    <ByLine>RNGS</ByLine>
+                    <DateLine>
+                        <Origin Href="#ats_1">COLOGNE</Origin>
+                        <Origin Href="#ats_2">Germany</Origin>April 29, 2011</DateLine>
+                    <CreditLine>REUTERS</CreditLine>
+                    <CopyrightLine>(c) Copyright Thomson Reuters 2011. Click For Restrictions. http://about.reuters.com/fulllegal.asp</CopyrightLine>
+                    <SlugLine>MARKETS-GLOBAL T</SlugLine>
+                    <KeywordLine>Dax</KeywordLine>
+                    <KeywordLine>Nikkei</KeywordLine>
+                    <KeywordLine>Dow</KeywordLine>
+                    <KeywordLine>Jones</KeywordLine>
+                    <KeywordLine>FTSE</KeywordLine>
+                    <KeywordLine>100</KeywordLine>
+                    <KeywordLine>Gold</KeywordLine>
+                    <KeywordLine>Oil</KeywordLine>
+                    <KeywordLine>Dollar</KeywordLine>
+                    <KeywordLine>Yen</KeywordLine>
+                    <KeywordLine>CAC</KeywordLine>
+                    <KeywordLine>40</KeywordLine>
+                    <KeywordLine>Pound</KeywordLine>
+                </NewsLines>
+                <DescriptiveMetadata>
+                    <Language FormalName="en"/>
+                    <OfInterestTo FormalName="ZENGLI"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_1"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_2"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_3"/>
+                </DescriptiveMetadata>
+                <!--"Picture Caption" NewsComponent used solely for the picture's caption-->
+                <NewsComponent EquivalentsList="no" Essential="no" Duid="MTFH16417_2011-04-29_15-44-49_CGN21_CAPTION_NC" xml:lang="en">
+                    <Role FormalName="Picture Caption"/>
+                    <ContentItem Duid="MTFH16417_2011-04-29_15-44-49_CGN21_CAPTION_CI">
+                        <MediaType FormalName="Text"/>
+                        <Format FormalName="XHTML"/>
+                        <Characteristics>
+                            <Property FormalName="ContentID" Value="urn:newsml:reuters.com:20110429:MTFH16417_2011-04-29_15-44-49_CGN21_CAPTION:1"/>
+                            <Property FormalName="ContentCreationDateAndTime" Value="20110429T154449+0000"/>
+                            <Property FormalName="Creator" Value="PHOTOSHOP/MED 1.0.0.16"/>
+                        </Characteristics>
+                        <DataContent>
+                            <html xmlns="http://www.w3.org/1999/xhtml">
+                                <head>
+                                    <title/>
+                                </head>
+                                <body>
+                                    <p>GLOBAL MARKETS</p>
+                                </body>
+                            </html>
+                        </DataContent>
+                    </ContentItem>
+                </NewsComponent>
+                <!--NewsComponent that wraps the ContentItems-->
+                <NewsComponent EquivalentsList="yes" Essential="no" Duid="MTFH16417_2011-04-29_15-44-49_CGN21_PICTURE_WRAPPER_NC" xml:lang="en">
+                    <Role FormalName="Image Wrapper"/>
+                    <BasisForChoice>./ContentItem/Characteristics/Property[@FormalName="PicType"]/@Value</BasisForChoice>
+                    <!--ContentItem for the THUMBNAIL-->
+                    <ContentItem Duid="MTFH16417_2011-04-29_15-44-49_CGN21_THUMBNAIL_CI" Href="2011-04-29T154449Z_01_CGN21_RTRIDSP_1_MARKETS-GLOBAL-T.jpg">
+                        <MediaType FormalName="Photo"/>
+                        <Format FormalName="JPEG Baseline"/>
+                        <Characteristics>
+                            <Property Value="Thumbnail" FormalName="PicType"/>
+                            <Property FormalName="ContentID" Value="urn:newsml:reuters.com:20110429:MTFH16417_2011-04-29_15-44-49_CGN21_THUMBNAIL:1"/>
+                            <Property FormalName="ContentCreationDateAndTime" Value="20110429T154449+0000"/>
+                            <Property FormalName="Creator" Value="PHOTOSHOP/MED 1.0.0.16"/>
+                        </Characteristics>
+                    </ContentItem>
+                    <!--ContentItem for the VIEW IMAGE-->
+                    <ContentItem Duid="MTFH16417_2011-04-29_15-44-49_CGN21_VIEWIMAGE_CI" Href="2011-04-29T154449Z_01_CGN21_RTRIDSP_2_MARKETS-GLOBAL-T.jpg">
+                        <MediaType FormalName="Photo"/>
+                        <Format FormalName="JPEG Baseline"/>
+                        <Characteristics>
+                            <Property Value="ViewImage" FormalName="PicType"/>
+                            <Property FormalName="ContentID" Value="urn:newsml:reuters.com:20110429:MTFH16417_2011-04-29_15-44-49_CGN21_VIEWIMAGE:1"/>
+                            <Property FormalName="ContentCreationDateAndTime" Value="20110429T154449+0000"/>
+                            <Property FormalName="Creator" Value="PHOTOSHOP/MED 1.0.0.16"/>
+                        </Characteristics>
+                    </ContentItem>
+                    <!--ContentItem for the BASE IMAGE-->
+                    <ContentItem Duid="MTFH16417_2011-04-29_15-44-49_CGN21_BASEIMAGE_CI" Href="2011-04-29T154449Z_01_CGN21_RTRIDSP_3_MARKETS-GLOBAL-T.jpg">
+                        <MediaType FormalName="Photo"/>
+                        <Format FormalName="JPEG Baseline"/>
+                        <Characteristics>
+                            <Property Value="BaseImage" FormalName="PicType"/>
+                            <Property FormalName="ContentID" Value="urn:newsml:reuters.com:20110429:MTFH16417_2011-04-29_15-44-49_CGN21_BASEIMAGE:1"/>
+                            <Property FormalName="ContentCreationDateAndTime" Value="20110429T154449+0000"/>
+                            <Property FormalName="Creator" Value="PHOTOSHOP/MED 1.0.0.16"/>
+                        </Characteristics>
+                    </ContentItem>
+                </NewsComponent>
+            </NewsComponent>
+        </NewsComponent>
+    </NewsItem>
+</NewsML>

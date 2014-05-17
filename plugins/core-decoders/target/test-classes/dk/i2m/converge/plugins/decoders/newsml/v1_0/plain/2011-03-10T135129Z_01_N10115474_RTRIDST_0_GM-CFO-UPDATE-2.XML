@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE NewsML SYSTEM "http://idsdat06.reuters.com/newsml/NewsMLv1.0.dtd" [
+  <!ENTITY % xhtml SYSTEM "http://idsdat06.reuters.com/newsml/xhtml1-strict.dtd">
+  %xhtml;
+]>
+<!--src: rtr2newsml0.995-->
+<NewsML Duid="MTFH04596_2011-03-10_13-51-29_N10115474_NEWSML">
+    <Catalog Href="http://idsdat06.reuters.com/newsml/catalog/catalog-reuters-master_catalog_1.xml"/>
+    <NewsEnvelope>
+        <DateAndTime>20110310T135129+0000</DateAndTime>
+        <NewsService FormalName="RTR_TNS"/>
+        <NewsProduct FormalName="TXT"/>
+        <Priority FormalName="3"/>
+    </NewsEnvelope>
+    <NewsItem Duid="MTFH04596_2011-03-10_13-51-29_N10115474_NEWSITEM">
+        <Identification>
+            <NewsIdentifier>
+                <ProviderId>reuters.com</ProviderId>
+                <DateId>20110310</DateId>
+                <NewsItemId>MTFH04596_2011-03-10_13-51-29_N10115474</NewsItemId>
+                <RevisionId Update="N" PreviousRevision="0">1</RevisionId>
+                <PublicIdentifier>urn:newsml:reuters.com:20110310:MTFH04596_2011-03-10_13-51-29_N10115474:1</PublicIdentifier>
+            </NewsIdentifier>
+            <DateLabel>2011-03-10 13:51:29 GMT (Reuters)</DateLabel>
+        </Identification>
+        <NewsManagement>
+            <NewsItemType FormalName="News"/>
+            <FirstCreated>20110310T135129+0000</FirstCreated>
+            <ThisRevisionCreated>20110310T135129+0000</ThisRevisionCreated>
+            <Status FormalName="Usable"/>
+            <Urgency FormalName="3"/>
+            <Property FormalName="USN" Value="N10115474"/>
+            <Property FormalName="CID" Value="N10115474" Scheme="USN"/>
+        </NewsManagement>
+        <NewsComponent EquivalentsList="no" Essential="no" Duid="MTFH04596_2011-03-10_13-51-29_N10115474_MAIN_NC" xml:lang="en">
+            <TopicSet FormalName="HighImportance">
+<Topic Duid="ts_1">
+<TopicType FormalName="CategoryCode"/>
+<FormalName Scheme="MediaCategory">OEC</FormalName>
+<Description xml:lang="en">Economic news, EC, business/financial pages</Description>
+<Property FormalName="WhyPresent" Value="Classifier"/>
+</Topic>
+</TopicSet>
+            <Role FormalName="Main"/>
+            <AdministrativeMetadata>
+                <FileName>2011-03-10T135129Z_01_N10115474_RTRIDST_0_GM-CFO-UPDATE-2.XML</FileName>
+                <Provider>
+                    <Party FormalName="Reuters"/>
+                </Provider>
+                <Creator>
+                    <Party FormalName="Reuters"/>
+                </Creator>
+                <Source>
+                    <Party FormalName="Reuters"/>
+                </Source>
+                <Property FormalName="SourceFeed" Value="IDS"/>
+                <Property FormalName="IDSPublisher" Value="http://www.reuters.com/ids"/>
+            </AdministrativeMetadata>
+            <!--Single "Main Text" inner NewsComponent-->
+            <NewsComponent EquivalentsList="no" Essential="no" Duid="MTFH04596_2011-03-10_13-51-29_N10115474_MAIN_TEXT_NC" xml:lang="en">
+                <Role FormalName="Main Text"/>
+                <NewsLines>
+                    <HeadLine>UPDATE 2-GM CFO Liddell to leave company</HeadLine>
+                    <ByLine/>
+                    <DateLine>March 10, 2011</DateLine>
+                    <CreditLine>REUTERS</CreditLine>
+                    <CopyrightLine>(c) Copyright Thomson Reuters 2011. Click For Restrictions. http://about.reuters.com/fulllegal.asp</CopyrightLine>
+                    <SlugLine>GM-CFO/ (UPDATE 2)</SlugLine>
+                    <NewsLine>
+                        <NewsLineType FormalName="Caption"/>
+                        <NewsLineText>GM-CFO/ (UPDATE 2):UPDATE 2-GM CFO Liddell to leave company</NewsLineText>
+                    </NewsLine>
+                </NewsLines>
+                <DescriptiveMetadata>
+                    <Language FormalName="en"/>
+                    <OfInterestTo FormalName="AFA"/>
+                    <OfInterestTo FormalName="CSA"/>
+                    <OfInterestTo FormalName="LBY"/>
+                    <OfInterestTo FormalName="RWSA"/>
+                    <OfInterestTo FormalName="RWS"/>
+                    <OfInterestTo FormalName="REULB"/>
+                    <OfInterestTo FormalName="GNS"/>
+                    <OfInterestTo FormalName="ABX"/>
+                    <OfInterestTo FormalName="BNX"/>
+                    <OfInterestTo FormalName="SXNA"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_1"/>
+                </DescriptiveMetadata>
+                <ContentItem Duid="MTFH04596_2011-03-10_13-51-29_N10115474_MAIN1_TEXT_CI">
+                    <MediaType FormalName="Text"/>
+                    <Format FormalName="XHTML"/>
+                    <Characteristics>
+                        <Property FormalName="ContentID" Value="urn:newsml:reuters.com:20110310:MTFH04596_2011-03-10_13-51-29_N10115474_TXT:1"/>
+                        <Property FormalName="ContentCreationDateAndTime" Value="20110310T135129+0000"/>
+                        <Property FormalName="USN" Value="N10115474"/>
+                        <Property FormalName="Creator" Value="RTR_JANUS 4.170"/>
+                    </Characteristics>
+                    <DataContent>
+                        <html xmlns="http://www.w3.org/1999/xhtml">
+                            <head>
+                                <title/>
+                            </head>
+                            <body>
+                                <p> * Liddell to leave GM on April 1</p>
+                                <p> * Left CFO job at Microsoft in '09 seeking bigger job</p>
+                                <p> * Dan Ammann, 38, to replace Liddell as GM CFO
+ (Rewrites, adds Liddell, GM comments, details, background,
+byline)</p>
+                                <p> By Ben Klayman</p>
+                                <p> DETROIT, March 10 (Reuters) - General Motors Co said on
+Thursday that Chief Financial Officer Chris Liddell will leave
+a little more than a year after joining the U.S. automaker from
+software giant Microsoft Corp.</p>
+                                <p> Liddell, 52, will leave GM on April 1. He joined the
+company in January 2010 and saw it through its record initial
+public stock offering last November.</p>
+                                <p> "I came to General Motors to be part of something great,"
+Liddell said in a statement. "My objective was to help rebuild
+this iconic company."</p>
+                                <p> Liddell left Microsoft, where he was CFO, in November 2009
+to look for a bigger job. When he joined GM he was seen as a
+well-regarded outsider who could possibly succeed then-Chief
+Executive Ed Whitacre when he stepped aside.</p>
+                                <p> Microsoft said when Liddell left that he was looking at
+opportunities to "expand his career beyond being a CFO."</p>
+                                <p> However, last August Dan Akerson, 62, was named CEO,
+immediately leading to industry speculation Liddell would
+eventually leave.</p>
+                                <p> "The decision to leave was Chris'," GM spokeswoman Lori
+Arpin said. "He came here to be CFO and with the company on
+proper footing, he decided that it was the right time
+personally and professionally to pursue other opportunities. He
+has not announced his future plans yet."</p>
+                                <p> Dan Ammann will succeed Liddell as CFO. The 38-year-old
+executive, who joined GM in March 2010, is currently vice
+president, finance and treasurer. A successor for Ammann in the
+treasurer's office will be announced at a later date.</p>
+                                <p> GM said Ammann has played a major role in key financial
+decisions at the company, including setting financial strategy
+and reducing debt, and working toward the IPO.
+ (Additional reporting by Bernie Woodall; Editing by Lisa Von
+Ahn, Dave Zimmerman)
+
+
+</p>
+                            </body>
+                        </html>
+                    </DataContent>
+                </ContentItem>
+            </NewsComponent>
+        </NewsComponent>
+    </NewsItem>
+</NewsML>

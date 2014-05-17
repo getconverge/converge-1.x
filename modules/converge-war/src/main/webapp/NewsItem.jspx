@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jsp:root version="2.0" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:c="http://java.sun.com/jstl/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags" xmlns:v="http://converge.i2m.dk">
+
+    <ui:composition template="/WEB-INF/facelets/templates/newsitem.xhtml">
+
+        <ui:define name="leftTop">
+            <c:if test="#{newsItem.authorized}">
+                <converge:newsItemModuleOptions value="#{newsItem}" />
+
+                <converge:moduleHeader moduleTitle="#{i18n.NewsItem_PROPERTIES}" />
+                <div>
+                    <h:panelGrid id="pgProperties" style="margin-left: 2%; margin-right: 2%; width: 98%" rowClasses="left" columns="2">
+                        <h:outputText value="#{i18n.NewsItem_WORKFLOW_OUTLET}"  />
+                        <h:outputText value="#{newsItem.selectedNewsItem.outlet.title}" />
+
+                        <h:outputText value="#{i18n.NewsItem_LANGUAGE}"/>
+                        <h:selectOneMenu id="somLanguage" value="#{newsItem.selectedNewsItem.language}" disabled="#{!newsItem.currentActor || newsItem.readOnly}" style="width: 100%" converter="#{converters.languageConverter}">
+                            <f:selectItems value="#{common.languages}" />
+                        </h:selectOneMenu>
+
+                        <h:outputText value="#{i18n.NewsItem_TARGET_WORDS}"/>
+                        <rich:inputNumberSpinner id="insTargetWords" value="#{newsItem.selectedNewsItem.targetWordCount}" minValue="0" maxValue="100000" step="50" />                        
+
+                        <h:outputText value="#{i18n.NewsItem_SUBMITTED}"/>
+                        <h:outputText value="#{newsItem.selectedNewsItem.submittedDate}" rendered="#{newsItem.selectedNewsItem.submitted}">
+                            <f:convertDateTime timeZone="#{common.systemTimeZone}" pattern="#{i18n.Generic_FORMAT_SHORT_DATE_AND_TIME}" />
+                        </h:outputText>
+                        <h:outputText value="#{msgs.newsitem_SUBMITTED_NOT_SET}" rendered="#{!newsItem.selectedNewsItem.submitted}" />
+                    </h:panelGrid>
+                </div>
+                <converge:moduleSpacer />
+
+                <converge:newsItemModuleHistory value="#{newsItem.selectedNewsItem}" />
+                <converge:newsItemModuleActors value="#{newsItem}" />
+                <converge:newsItemModuleBriefing value="#{newsItem.selectedNewsItem}" />
+                <converge:newsItemModuleVersions value="#{newsItem}" />
+            </c:if>
+        </ui:define>
+
+        <ui:define name="body">
+            <a4j:keepAlive beanName="newsItem" />
+
+            <a4j:outputPanel ajaxRendered="true">
+                <v:message />
+            </a4j:outputPanel>
+
+            <c:if test="#{!newsItem.authorized}">
+                <h:panelGrid>
+                    <h:outputText value="#{i18n.NewsItem_UNAUTHORISED}" />
+                    <h:commandLink action="/inbox" immediate="true">
+                        <h:outputText value="#{i18n.NewsItem_GO_TO_INBOX}" />
+                    </h:commandLink>
+                </h:panelGrid>
+            </c:if>
+
+            <c:if test="#{newsItem.authorized}">
+                <converge:newsItemModuleLastTransition value="#{newsItem}" />
+                <converge:newsItemModuleSlugline value="#{newsItem}" />
+                <converge:newsItemModulePlacement value="#{newsItem}" />
+                <converge:newsItemModuleHeadline value="#{newsItem}" />
+                <converge:newsItemModuleByLine value="#{newsItem}" />
+                <converge:newsItemModuleBrief value="#{newsItem}" />
+                <converge:newsItemModuleStory value="#{newsItem}" />
+                <converge:newsItemModuleConcepts value="#{newsItem}" />
+                <converge:newsItemModuleMedia value="#{newsItem}" />
+            </c:if>
+        </ui:define>
+
+
+        <ui:define name="footer">
+            <c:if test="#{newsItem.authorized}">
+                <h:form id="frmPlacementDialog">
+                    <rich:modalPanel id="mpPlacement" autosized="true" domElementAttachment="parent" >
+                        <f:facet name="header">
+                            <h:panelGroup>
+                                <h:outputText value="#{i18n.NewsItem_PLACEMENT}" />
+                            </h:panelGroup>
+                        </f:facet>
+                        <f:facet name="controls">
+                            <h:panelGroup>
+                                <h:graphicImage value="#{i18n.resource_ICON_DIALOGUE_CLOSE}" styleClass="link">
+                                    <rich:componentControl for="mpPlacement" operation="hide" event="onclick" />
+                                </h:graphicImage>
+                            </h:panelGroup>
+                        </f:facet>
+                        <h:panelGrid style="width: 450px;" id="pgPlacement" rendered="#{newsItem.selectedNewsItemPlacement != null}">
+
+                            <rich:tabPanel id="tpPlacement" switchType="client" activeTabClass="tabActive" inactiveTabClass="tabInactive">
+
+                                <rich:tab label="#{i18n.NewsItem_PLACEMENT}">
+
+                                    <h:panelGrid columnClasses="tabSheet" styleClass="tabSheetGrid">
+                                        <h:outputText value="#{i18n.NewsItem_WORKFLOW_OUTLET}" />
+                                        <h:selectOneMenu id="somOutlets" value="#{newsItem.selectedNewsItemPlacement.outlet}" converter="#{converters.outletConverter}"
+                                                         valueChangeListener="#{newsItem.onChangePlacementOutlet}">
+                                            <f:selectItem itemLabel="" />
+                                            <f:selectItems value="#{userSession.myNewsItemsOutlets}" />
+                                            <a4j:support event="onchange" reRender="somEditions, somEditionSection" ajaxSingle="true" />
+                                        </h:selectOneMenu>
+
+                                        <h:outputText value="#{i18n.NewsItem_SECTION}" />
+                                        <h:selectOneMenu id="somEditionSection" value="#{newsItem.selectedNewsItemPlacement.section}" converter="#{converters.sectionConverter}" required="true" requiredMessage="You must specify the section of placement">
+                                            <f:selectItem itemLabel="" />
+                                            <f:selectItems value="#{newsItem.sections}" />
+                                            <a4j:support event="onchange" reRender="somEditions" />
+                                        </h:selectOneMenu>
+
+                                        <h:outputText value="#{i18n.NewsItem_EDITION}" />
+
+                                        <h:column>
+                                            <rich:calendar id="calEditionDate" value="#{newsItem.editionDate}" popup="true" timeZone="#{common.systemTimeZone}" datePattern="#{i18n.Generic_FORMAT_DATE}">
+                                                <a4j:support event="onchanged" reRender="somEditions" />
+                                            </rich:calendar>
+                                            <h:selectOneMenu id="somEditions" value="#{newsItem.editionCandidate}" converter="#{converters.editionCandidateConverter}">
+                                                <f:selectItems value="#{newsItem.editionCandidates}" />
+                                            </h:selectOneMenu>
+                                        </h:column>
+                                        <h:column>
+                                            <h:panelGrid columns="2">
+                                                <h:selectBooleanCheckbox id="sbcShowClosedEditions" value="#{newsItem.showClosedEditions}" title="Show closed editions">
+                                                    <a4j:support event="onclick" actionListener="#{newsItem.onToggleShowClosedEditions}" reRender="somEditions" />
+                                                </h:selectBooleanCheckbox>
+                                                <h:outputText value="Show closed editions" />
+                                            </h:panelGrid>
+                                        </h:column>
+
+                                        <h:outputText value="#{i18n.NewsItem_START}" />
+                                        <rich:inputNumberSpinner value="#{newsItem.selectedNewsItemPlacement.start}" required="true" requiredMessage="You must specify the start/page of the story" />
+
+                                        <h:outputText value="#{i18n.NewsItem_POSITION}" />
+                                        <rich:inputNumberSpinner value="#{newsItem.selectedNewsItemPlacement.position}" required="true" requiredMessage="You must specify the position of the story" />
+
+                                    </h:panelGrid>
+
+                                </rich:tab>
+                            </rich:tabPanel>
+
+                            <h:panelGroup styleClass="dialogueButtons">
+                                <a4j:commandLink id="lnkSavePlacement" styleClass="dialogButton" value="#{i18n.Generic_SAVE}" actionListener="#{newsItem.onAddPlacement}" reRender="dtPlacements" oncomplete="if (#{converge:isAllValid()}){ #{rich:component('mpPlacement')}.hide(); return false; }" rendered="#{newsItem.selectedNewsItemPlacement.id == null}" />
+                                <a4j:commandLink id="lnkUpdatePlacement" styleClass="dialogButton" value="#{i18n.Generic_UPDATE}" actionListener="#{newsItem.onUpdatePlacement}" reRender="dtPlacements" oncomplete="if (#{converge:isAllValid()}){ #{rich:component('mpPlacement')}.hide(); return false; }" rendered="#{newsItem.selectedNewsItemPlacement.id != null}" />
+                                <a4j:commandLink id="lnkRemovePlacement" styleClass="dialogButton" value="#{i18n.NewsItem_REMOVE_FROM_PLACEMENT}" actionListener="#{newsItem.onRemovePlacement}" reRender="dtPlacements" oncomplete="if (#{converge:isAllValid()}){ #{rich:component('mpPlacement')}.hide(); return false; }" rendered="#{newsItem.selectedNewsItemPlacement.id != null}" />
+                                <h:commandLink id="lnkCancelPlacement" styleClass="dialogButton" value="#{i18n.Generic_CANCEL}" onclick="#{rich:component('mpPlacement')}.hide(); return false;" />
+                            </h:panelGroup>
+                        </h:panelGrid>
+
+                    </rich:modalPanel>
+                </h:form>
+            </c:if>
+        </ui:define>
+
+    </ui:composition>
+
+</jsp:root>

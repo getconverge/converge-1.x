@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taglib version="2.0" xmlns="http://java.sun.com/xml/ns/j2ee" 
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee web-jsptaglibrary_2_0.xsd">
+    <tlib-version>1.0</tlib-version>
+    <short-name>v</short-name>
+    <uri>http://converge.i2m.dk</uri>
+    
+    <tag>
+        <name>message</name>
+        <tag-class>dk.i2m.converge.jsf.components.message.MessageTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <description>
+                The identifier of the component for which to display
+                FacesMessages.
+            </description>
+            <name>for</name>
+            <required>false</required>
+            <deferred-value/>
+        </attribute>
+    </tag>
+</taglib>

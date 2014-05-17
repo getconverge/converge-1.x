@@ -1,0 +1,169 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<jsp:root version="2.0"
+          xmlns:html="http://www.w3.org/1999/xhtml"
+          xmlns:jsp="http://java.sun.com/JSP/Page"
+          xmlns:c="http://java.sun.com/jstl/core"
+          xmlns:ui="http://java.sun.com/jsf/facelets"
+          xmlns:h="http://java.sun.com/jsf/html"
+          xmlns:f="http://java.sun.com/jsf/core"
+          xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+          xmlns:a4j="http://richfaces.org/a4j"
+          xmlns:rich="http://richfaces.org/rich"
+          xmlns:v="http://converge.i2m.dk"
+          xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+
+    <ui:composition template="/WEB-INF/facelets/templates/administration.xhtml">
+        <ui:define name="title">#{i18n.administrator_CalendarCategories_PAGE_TITLE}</ui:define>
+
+        <ui:define name="body">
+            <a4j:keepAlive beanName="administrator_CalendarCategories" />
+            <a4j:outputPanel ajaxRendered="true">
+                <v:message />
+            </a4j:outputPanel>
+            <h:form id="frmCalendarCategories">
+                <converge:moduleHeader moduleTitle="#{i18n.administrator_CalendarCategories_CATEGORY}" />
+                <div class="moduleContent">
+
+                    <h:panelGrid columns="2" columnClasses="left, right" style="width: 100%">
+                        <h:outputText value="" />
+                        <a4j:commandButton id="btnNewCategory"
+                                           styleClass="button mediumButton"
+                                           value="#{i18n.administrator_CalendarCategories_CATEGORY_NEW}"
+                                           actionListener="#{administrator_CalendarCategories.onNew}"
+                                           reRender="frmEventCategoryDetails">
+                            <rich:componentControl for="mpEventCategoryDetails"
+                                                   operation="show"
+                                                   event="oncomplete" />
+                        </a4j:commandButton>
+                    </h:panelGrid>
+
+
+
+                    <rich:dataTable id="dtCalendarCategories"
+                                    value="#{administrator_CalendarCategories.categories}" var="category"
+                                    styleClass="table" headerClass="tableHeader"
+                                    columnClasses="center columnIcon, left, left"
+                                    rowClasses="odd, even">
+                        <rich:column>
+                            <f:facet name="header">
+                                <a4j:status id="staCalendarCategories">
+                                    <f:facet name="start">
+                                        <h:graphicImage value="#{i18n.resource_ICON_AJAX_LOADING}" />
+                                    </f:facet>
+                                    <f:facet name="stop">
+                                        <h:graphicImage value="#{i18n.resource_ICON_EMPTY}" width="16" height="16" />
+                                    </f:facet>
+                                </a4j:status>
+                            </f:facet>
+                            <a4j:commandLink reRender="frmEventCategoryDetails">
+                                <f:setPropertyActionListener value="#{category}"
+                                                             target="#{administrator_CalendarCategories.selectedCategory}" />
+                                <rich:componentControl for="mpEventCategoryDetails"
+                                                       operation="show"
+                                                       event="oncomplete" />
+                                <h:graphicImage alt="#{i18n.administrator_CalendarCategories_CATEGORY}"
+                                                title="#{i18n.administrator_CalendarCategories_CATEGORY}"
+                                                value="#{i18n.resource_ICON_EVENT_CATEGORY}" />
+                            </a4j:commandLink>
+                        </rich:column>
+                        <rich:column sortBy="#{category.name}" sortOrder="ASCENDING">
+                            <f:facet name="header">
+                                <h:outputText value="#{i18n.administrator_CalendarCategories_CATEGORY}" />
+                            </f:facet>
+                            <a4j:commandLink reRender="frmEventCategoryDetails">
+                                <f:setPropertyActionListener value="#{category}"
+                                                             target="#{administrator_CalendarCategories.selectedCategory}" />
+                                <rich:componentControl for="mpEventCategoryDetails"
+                                                       operation="show"
+                                                       event="oncomplete" />
+                                <h:outputText value="#{category.name}" />
+                            </a4j:commandLink>
+                        </rich:column>
+                        <rich:column sortBy="#{category.description}">
+                            <f:facet name="header">
+                                <h:outputText value="#{i18n.administrator_CalendarCategories_CATEGORY_DESCRIPTION}" />
+                            </f:facet>
+                            <h:outputText value="#{category.description}" />
+                        </rich:column>
+                    </rich:dataTable>
+                </div>
+            </h:form>
+
+            <h:form id="frmEventCategoryDetails">
+                <rich:modalPanel id="mpEventCategoryDetails" autosized="true" domElementAttachment="parent">
+                    <f:facet name="header">
+                        <h:panelGroup>
+                            <h:outputText value="#{i18n.administrator_CalendarCategories_CATEGORY}"></h:outputText>
+                        </h:panelGroup>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:panelGroup>
+                            <h:graphicImage id="imgCloseEventCategoryDetails"
+                                            value="#{i18n.resource_ICON_DIALOGUE_CLOSE}"
+                                            style="link" />
+                            <rich:componentControl for="mpEventCategoryDetails"
+                                                   attachTo="imgCloseEventCategoryDetails"
+                                                   operation="hide"
+                                                   event="onclick"/>
+                        </h:panelGroup>
+                    </f:facet>
+
+                    <h:panelGrid style="width: 480px;">
+
+                        <rich:tabPanel id="tpEventCategoryDetails"
+                                       switchType="client"
+                                       activeTabClass="tabActive"
+                                       inactiveTabClass="tabInactive">
+
+                            <rich:tab label="#{i18n.administrator_CalendarCategories_CATEGORY}">
+                                <h:panelGrid columnClasses="tabSheet" style="padding: 10px; width: 100%">
+                                    <h:outputText value="#{i18n.administrator_CalendarCategories_CATEGORY_NAME}" />
+                                    <h:inputText value="#{administrator_CalendarCategories.selectedCategory.name}" required="true" requiredMessage="#{i18n.administrator_CalendarCategories_CATEGORY_NAME_REQUIRED}" styleClass="text" />
+
+                                    <h:outputText value="#{i18n.administrator_CalendarCategories_CATEGORY_DESCRIPTION}" />
+                                    <h:inputTextarea value="#{administrator_CalendarCategories.selectedCategory.description}" styleClass="text mediumTextArea"/>
+                                </h:panelGrid>
+                            </rich:tab>
+                        </rich:tabPanel>
+
+                        <h:panelGroup styleClass="dialogueButtons">
+                            <a4j:commandLink id="lnkSaveEventCategoryDetails"
+                                             styleClass="dialogButton"
+                                             value="#{i18n.Generic_SAVE}"
+                                             actionListener="#{administrator_CalendarCategories.onSave}"
+                                             reRender="frmCalendarCategories"
+                                             oncomplete="if (#{converge:isAllValid()}) { Richfaces.hideModalPanel('mpEventCategoryDetails'); return false;}" />
+
+                            <a4j:commandLink id="lnkApplyEventCategoryDetails"
+                                             styleClass="dialogButton"
+                                             value="#{i18n.Generic_APPLY}"
+                                             reRender="frmCalendarCategories"
+                                             actionListener="#{administrator_CalendarCategories.onSave}" />
+
+                            <a4j:commandLink id="lnkDeleteEventCategoryDetails"
+                                             rendered="#{administrator_CalendarCategories.editMode}"
+                                             onclick="if (confirm('#{i18n.administrator_CalendarCategories_CATEGORY_PROMPT_DELETE}') != true){ return false; };"
+                                             actionListener="#{administrator_CalendarCategories.onDelete}"
+                                             styleClass="dialogButton"
+                                             value="#{i18n.Generic_DELETE}"
+                                             reRender="frmCalendarCategories">
+                                <rich:componentControl for="mpEventCategoryDetails"
+                                                       operation="hide"
+                                                       event="oncomplete" />
+                            </a4j:commandLink>
+
+                            <h:commandLink id="lnkCancelEventCategoryDetails"
+                                           styleClass="dialogButton"
+                                           value="#{i18n.Generic_CANCEL}"
+                                           onclick="#{rich:component('mpEventCategoryDetails')}.hide(); return false;">
+                            </h:commandLink>
+                        </h:panelGroup>
+
+                    </h:panelGrid>
+
+                </rich:modalPanel>
+            </h:form>
+
+        </ui:define>
+    </ui:composition>
+</jsp:root>

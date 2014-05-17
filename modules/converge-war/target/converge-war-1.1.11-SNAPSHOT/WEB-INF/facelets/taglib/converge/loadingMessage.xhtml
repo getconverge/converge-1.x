@@ -1,0 +1,16 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich">
+    <a4j:status id="staLoadingMessage#{id}"
+                for="#{for}" 
+                onstart="Richfaces.showModalPanel('mpLoadingMessage#{id}')"
+                onstop="Richfaces.hideModalPanel('mpLoadingMessage#{id}')" />
+
+    <rich:modalPanel id="mpLoadingMessage#{id}" autosized="true" resizeable="false" minHeight="50" minWidth="300" zindex="2000" >
+        <h:panelGrid styleClass="pleaseWaitBackground">
+            <h:outputText value="#{message}" styleClass="pleaseWaitMessage" />
+            <h:outputText value="&#160;" />
+            <h:outputText value="&#160;" />
+            <h:outputText value="&#160;" />
+            <h:outputText value="&#160;" />
+        </h:panelGrid>
+    </rich:modalPanel>
+</ui:composition>

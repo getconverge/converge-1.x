@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jsp:root version="2.0" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:c="http://java.sun.com/jstl/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+    <ui:composition template="/WEB-INF/facelets/templates/administration.xhtml">
+        <ui:define name="title">#{i18n.administrator_Log_PAGE_TITLE}</ui:define>
+        <ui:define name="body">
+
+            <a4j:keepAlive beanName="administrator_Log" />
+            <converge:loading for="regMainContent" />
+
+            <a4j:region id="regMainContent">
+                <h:form id="frmPlugins">
+                    <converge:moduleHeader moduleTitle="#{i18n.administrator_Log_LOG}" />
+                    <div class="moduleContent">
+                        <rich:dataTable id="dtLogEntries" value="#{administrator_Log.logEntries}" var="logEntry" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
+                            <rich:column styleClass="columnIcon center logEntrySeverity#{logEntry.severity}" headerClass="columnIconHeader">
+                                <f:facet name="header">
+                                    <a4j:commandLink ajaxSingle="true" reRender="dtLogEntries" actionListener="#{administrator_Log.onRefresh}">  
+                                        <h:graphicImage value="#{i18n.resource_ICON_REFRESH}" />
+                                    </a4j:commandLink>
+                                </f:facet>
+                                <h:graphicImage value="#{i18n.resource_ICON_LOG_ENTRY}" />
+                            </rich:column>
+
+                            <rich:column styleClass="columnDateTime logEntrySeverity#{logEntry.severity}" headerClass="columnDateTime">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.Editions_NEWS_ITEM_PLACEMENT_DETAILS_LOG_DATE}" />
+                                </f:facet>
+                                <h:outputText value="#{logEntry.date}">
+                                    <f:convertDateTime pattern="#{i18n.Generic_FORMAT_SHORT_DATE_AND_TIME}" timeZone="#{common.systemTimeZone}" />
+                                </h:outputText>
+                            </rich:column>
+
+                            <rich:column styleClass="columnSeverity logEntrySeverity#{logEntry.severity}" headerClass="columnSeverity">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.Editions_NEWS_ITEM_PLACEMENT_DETAILS_LOG_SEVERITY}" />
+                                </f:facet>
+                                <c:set var="severity_key" value="LogEntry_SEVERITY_#{logEntry.severity}" />
+                                <h:outputText value="#{i18n[severity_key]}" />
+                            </rich:column>
+                            
+                            <rich:column styleClass="logEntrySeverity#{logEntry.severity}">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.Editions_NEWS_ITEM_PLACEMENT_DETAILS_LOG_LOG}" />
+                                </f:facet>
+                                <h:outputText value="#{logEntry.description}"  />
+                            </rich:column>
+                        </rich:dataTable>
+                    </div>
+                </h:form>
+            </a4j:region>
+        </ui:define>
+    </ui:composition>
+</jsp:root>

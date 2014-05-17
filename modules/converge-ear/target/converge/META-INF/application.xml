@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_5.xsd" version="5">
+    <description>Editorial Content Management System</description>
+    <display-name>Converge</display-name>
+    <module>
+        <web>
+            <web-uri>converge-war.war</web-uri>
+            <context-root>/converge</context-root>
+        </web>
+    </module>
+    <module>
+        <web>
+            <web-uri>converge-ws.war</web-uri>
+            <context-root>/converge-ws</context-root>
+        </web>
+    </module>
+    <module>
+        <ejb>converge-ejb.jar</ejb>
+    </module>
+    <library-directory>lib</library-directory>
+</application>

@@ -1,0 +1,30 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://java.sun.com/jstl/core" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+
+    <c:if test="#{value.selectedNewsItem.versionOf != null || value.versions.rowCount &gt; 0}">
+        <converge:moduleHeader moduleTitle="#{msgs.newsitem_VERSIONS}" />
+        <div class="moduleContent">
+
+            <h:panelGrid>
+                <h:column rendered="#{value.selectedNewsItem.versionOf != null}">
+                    <h:outputText value="This assignment is a version of:&#160;" />
+                    <ul>
+                        <li><h:outputLink value="#{facesContext.externalContext.request.contextPath}/NewsItem.xhtml">
+                            <f:param name="id" value="#{value.selectedNewsItem.versionOf.id}" />
+                            <h:outputText value="&lt;b&gt;#{value.selectedNewsItem.versionOf.title}&lt;/b&gt; for &lt;b&gt;#{value.selectedNewsItem.versionOf.outlet.title}&lt;/b&gt;" escape="false" />
+                        </h:outputLink></li>
+                    </ul>
+                </h:column>
+                <h:outputText value="This assignment was the basis for:&#160;" rendered="#{value.versions.rowCount &gt; 0}" />
+                <h:column rendered="#{value.versions.rowCount &gt; 0}">
+                    <rich:dataList var="version" value="#{value.versions}">
+                        <h:outputLink value="#{facesContext.externalContext.request.contextPath}/NewsItem.xhtml">
+                            <f:param name="id" value="#{version.id}" />
+                            <h:outputText value="&lt;b&gt;#{version.title}&lt;/b&gt; for &lt;b&gt;#{version.outlet.title}&lt;/b&gt;" escape="false" />
+                        </h:outputLink>
+                    </rich:dataList>
+                </h:column>
+            </h:panelGrid>
+        </div>
+        <div style="clear: both; padding-bottom: 12px;"></div>
+    </c:if>
+</ui:composition>

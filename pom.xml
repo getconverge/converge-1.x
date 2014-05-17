@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>dk.i2m.converge</groupId>
+    <artifactId>converge</artifactId>
+    <version>1.1.11-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Converge</name>
+    <inceptionYear>2006</inceptionYear>
+    <url>http://sourceforge.net/projects/convergeecms/</url>
+    <description>Converge is an editorial content management system for small and medium-size media houses who need to manage content for multiple outlets and re-publish it on multiple platforms (e.g. Websites, Mobile, Newsletters).</description>
+
+    <organization>
+        <name>Interactive Media Management</name>
+        <url>http://www.i2m.dk/</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <name>Allan Lykke Christensen</name>
+            <id>alc</id>
+            <email>allan@i2m.dk</email>
+            <organization>Interactive Media Management</organization>
+            <organizationUrl>http://www.i2m.dk</organizationUrl>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
+
+    <scm>
+        <url>http://scm.i2m.dk/converge-1.x/</url>
+        <developerConnection>scm:git:https://bitbucket.org/interactivemediamanagement/converge-1.x.git</developerConnection>
+        <connection>scm:git:git://bitbucket.org/interactivemediamanagement/converge-1.x.git</connection>
+    </scm>
+    
+    <build>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ftp</artifactId>
+                <version>1.0-beta-7</version>
+            </extension>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>1.0-beta-7</version>
+            </extension>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh-external</artifactId>
+                <version>1.0-alpha-5</version>
+            </extension>
+        </extensions>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.4.3</version>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.2.1</version>
+            </plugin>
+            
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.1.2</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+    
+    <distributionManagement>
+        <repository>
+            <id>m2.i2m.dk</id>
+            <name>I2M Maven Artifact Repository</name>
+            <url>scp://m2.i2m.dk:/var/www/m2.i2m.dk</url>
+        </repository>
+    </distributionManagement>
+    
+    <modules>
+        <module>modules</module>
+        <module>plugins</module>
+    </modules>
+    
+    <properties>
+        <netbeans.hint.license>gpl30</netbeans.hint.license>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+</project>

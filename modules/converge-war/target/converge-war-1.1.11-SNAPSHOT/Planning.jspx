@@ -1,0 +1,475 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jsp:root version="2.0" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:c="http://java.sun.com/jstl/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:v="http://converge.i2m.dk" xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+
+    <ui:composition template="/WEB-INF/facelets/templates/planning.xhtml">
+
+        <ui:define name="leftColumnBottom">
+
+            <h:form id="frmEditionDate" rendered="#{userSession.privileged['OUTLET_PLANNING']}">
+                <converge:moduleHeader moduleTitle="#{i18n.Planning_EDITION_DATE}" />
+                <div class="moduleContent">
+                    <rich:calendar id="calEditionDate" value="#{planning.selectedDate.time}" popup="false" firstWeekDay="1" style="width: 100%" timeZone="#{userSession.user.timeZone}">
+                        <a4j:support event="onchanged" actionListener="#{planning.onSelectDate}" reRender="frmPage" />
+                    </rich:calendar>
+                </div>
+            </h:form>
+
+        </ui:define>
+
+        <ui:define name="body">
+            <a4j:keepAlive beanName="planning" />
+
+            <a4j:outputPanel ajaxRendered="true">
+                <v:message />
+            </a4j:outputPanel>
+
+            <converge:loading for="regMainPage" />
+            <a4j:region id="regMainPage">
+                <h:form id="frmPage" rendered="#{userSession.privileged['OUTLET_PLANNING']}">
+
+                    <converge:moduleHeader moduleTitle="#{planning.editionTitle}" />
+                    <div class="moduleContent">
+
+                        <h:panelGrid columns="1" columnClasses="right" style="width: 100%">
+                            <a4j:commandButton id="btnNewEdition" styleClass="button mediumButton" value="#{i18n.Planning_EDITION_NEW}" title="#{i18n.Planning_EDITION_NEW_TOOLTIP}" actionListener="#{planning.onNewEdition}" reRender="frmEditionDetails" ajaxSingle="true">
+                                <rich:componentControl for="mpEditionDetails" operation="show" event="oncomplete" />
+                            </a4j:commandButton>
+                        </h:panelGrid>
+
+                        <ui:repeat value="#{planning.selectedEditions}" var="edition">
+                            <div style="clear: both; padding-bottom: 12px;"></div>
+
+                            <rich:dataTable value="#{edition.sections}"
+                                            var="section"
+                                            styleClass="table"
+                                            headerClass="tableHeader"
+                                            columnClasses="center columnIcon, left sectionColumn, right columnCount sectionColumn, right columnCount sectionColumn, right columnCount sectionColumn"
+                                            rowClasses="odd, even"
+                                            sortPriority="#{converge:createList('colStart,colEnd')}">
+
+                                <f:facet name="header">
+                                    <a4j:commandLink reRender="frmEditionDetails" limitToList="true">
+                                        <f:setPropertyActionListener value="#{edition}" target="#{planning.selectedEdition}" />
+                                        <rich:componentControl for="mpEditionDetails" operation="show" event="oncomplete" />
+
+                                        <h:outputFormat value="#{i18n.Planning_EDITION_HEADER}">
+                                            <f:param value="#{edition.volume}" />
+                                            <f:param value="#{edition.number}" />
+                                            <f:param value="#{edition.open ? 1 : 0}" />
+                                        </h:outputFormat>
+
+                                        <h:outputText value="#{i18n.Planning_PUBLISH_AT} " />
+                                        <h:outputText value="#{edition.publicationDate.time}" >
+                                            <f:convertDateTime pattern="#{i18n.Generic_FORMAT_TIME}" timeZone="#{userSession.user.timeZone}" />
+                                        </h:outputText>
+
+                                        <h:outputText value="#{i18n.Planning_EXPIRE_AT} " />
+                                        <h:outputText value="#{edition.expirationDate.time}" >
+                                            <f:convertDateTime pattern="#{i18n.Generic_FORMAT_TIME}" timeZone="#{userSession.user.timeZone}" />
+                                        </h:outputText>
+                                    </a4j:commandLink>
+                                </f:facet>
+
+                                <rich:column>
+                                    <h:graphicImage value="/images/icons/section.gif" alt="#{i18n.Planning_EDITION_TEMPLATE_SECTION}" title="#{i18n.Planning_EDITION_TEMPLATE_SECTION}" rendered="#{!section.advertisement}" />
+                                    <h:graphicImage value="/images/icons/section_advertisement.png" alt="#{i18n.Planning_EDITION_TEMPLATE_SECTION_ADVERTISEMENT}" title="#{i18n.Planning_EDITION_TEMPLATE_SECTION_ADVERTISEMENT}" rendered="#{section.advertisement}" />
+                                </rich:column>
+                                <rich:column sortBy="#{section.name}" colspan="3">
+                                    <f:facet name="header">
+                                        <h:outputText value="#{i18n.Planning_SECTION_NAME}" />
+                                    </f:facet>
+                                    <h:outputText value="#{section.name}"
+                                                  title="#{section.description}"
+                                                  style="font-weight: bold" />
+                                </rich:column>
+                                <rich:column id="colStart" sortBy="#{section.start}"  sortOrder="ASCENDING">
+                                    <f:facet name="header">
+                                        <h:outputText value="#{i18n.Planning_EDITION_SECTION_START}" title="#{i18n.Planning_EDITION_SECTION_START_TOOLTIP}" />
+                                    </f:facet>
+                                    <h:outputText value="#{section.start}" />
+                                </rich:column>
+                                <rich:column id="colEnd" sortBy="#{section.end}"  sortOrder="ASCENDING">
+                                    <f:facet name="header">
+                                        <h:outputText value="#{i18n.Planning_EDITION_SECTION_END}" title="#{i18n.Planning_EDITION_SECTION_END_TOOLTIP}" />
+                                    </f:facet>
+                                    <h:outputText value="#{section.end}" />
+                                </rich:column>
+                                <rich:column>
+                                    <a4j:commandButton styleClass="button mediumButton" value="#{i18n.planning_NEW_ASSIGNMENT}" ajaxSingle="true" rendered="#{edition.open}">
+                                        <f:setPropertyActionListener target="#{planning.selectedEdition}" value="#{edition}" />
+                                        <f:setPropertyActionListener target="#{planning.selectedEditionSection}" value="#{section}" />
+                                        <a4j:support event="oncomplete" actionListener="#{planning.onNewEditionPlacement}" reRender="frmAssignmentDetails">
+                                            <rich:componentControl for="mpAssignmentDetails" operation="show" event="oncomplete" />
+                                        </a4j:support>
+                                    </a4j:commandButton>
+                                </rich:column>
+
+                                <rich:subTable value="#{section.newsItems}" var="item"
+                                               columnClasses="center columnIcon, left subNewsItem, left columnStatus subNewsItem, left columnStatus subNewsItem, right subNewsItem, right subNewsItem, left subNewsItem"
+                                               styleClass="table"
+                                               headerClass="tableHeader" rendered="#{!empty section.newsItems}"
+                                               rowClasses="odd, even"
+                                               sortPriority="#{converge:createList('colPosition,colPriority')}">
+                                    <rich:column>
+                                        <h:graphicImage value="#{res.NEWS_ITEM_ICON}" alt="#{i18n.Planning_NEWS_ITEM}" title="#{i18n.Planning_NEWS_ITEM}" />
+                                    </rich:column>
+
+                                    <rich:column>
+                                        <h:outputText value="#{item.title}" /><br />
+                                        <h:outputText value="#{i18n.PipeLine_ACTOR_ACTORS}:&#160;" style="font-style: italic; font-weight: bold; font-size: 9px;" />
+                                        <h:outputText value="#{item.currentActor}" style="font-style: italic; font-size: 9px;" /><br/>
+                                        <h:outputText value="#{i18n.Planning_EDITOR}:&#160;" style="font-style: italic; font-weight: bold; font-size: 9px;" />
+                                        <h:outputText value="#{item.department.name}" style="font-style: italic; font-size: 9px;" /><br/>
+                                        <h:outputText value="#{i18n.PipeLine_WORD_COUNT}:&#160;" style="font-style: italic; font-weight: bold; font-size: 9px;" />
+                                        <h:outputText value="#{item.wordCount}" style="font-style: italic; font-size: 9px;" /><br/>
+                                        <h:outputText value="#{i18n.PipeLine_WORD_COUNT}:&#160;" style="font-style: italic; font-weight: bold; font-size: 9px;" />
+                                        <h:outputText value="#{item.targetWordCount}" style="font-style: italic; font-size: 9px;" rendered="#{item.targetWordCount != 0}" />
+                                        <h:outputText value="#{i18n.Planning_NOT_SET}" style="font-style: italic; font-size: 9px;" rendered="#{item.targetWordCount == 0}" />
+                                    </rich:column>
+                                    <rich:column>
+                                        <h:outputText value="#{item.currentState.name}" />
+                                    </rich:column>
+                                    <rich:column>
+                                        <h:outputText value="#{item.deadline.time}">
+                                            <f:convertDateTime pattern="#{i18n.Generic_FORMAT_DATE_AND_TIME}" timeZone="#{userSession.user.timeZone}" />
+                                        </h:outputText>
+                                    </rich:column>
+                                    <rich:column id="colPosition" sortBy="#{item.start}" sortOrder="ASCENDING">
+                                        <h:outputText value="#{item.start}" />
+                                    </rich:column>
+                                    <rich:column id="colPriority" sortBy="#{item.position}" sortOrder="ASCENDING">
+                                        <h:outputText value="#{item.position}" />
+                                    </rich:column>
+                                    <rich:column>
+                                        <a4j:commandButton rendered="#{false}" styleClass="button mediumButton" value="#{i18n.Planning_DETAILS}" reRender="frmAssignmentDetails" ajaxSingle="true">
+                                            <f:setPropertyActionListener target="#{planning.selectedAssignment}" value="#{item}" />
+                                            <rich:componentControl for="mpAssignmentDetails" operation="show" event="oncomplete" />
+                                        </a4j:commandButton>
+                                    </rich:column>
+                                </rich:subTable>
+                            </rich:dataTable>
+                        </ui:repeat>
+                    </div>
+                </h:form>
+            </a4j:region>
+
+            <h:form id="frmEditionDetails" rendered="#{userSession.privileged['OUTLET_PLANNING']}">
+                <rich:modalPanel id="mpEditionDetails" autosized="true" domElementAttachment="parent" rendered="#{planning.selectedEdition != null}">
+                    <f:facet name="header">
+                        <h:panelGroup>
+                            <h:outputText value="#{i18n.Planning_EDITION_DETAILS}" />
+                        </h:panelGroup>
+                    </f:facet>
+                    <h:panelGrid id="pgEditionDetails" style="width: 480px;">
+
+                        <rich:tabPanel switchType="client" activeTabClass="tabActive" inactiveTabClass="tabInactive">
+
+                            <rich:tab id="tabEdition" label="#{i18n.Planning_EDITION}">
+                                <h:panelGrid columnClasses="tabSheet" style="padding: 10px; width: 100%">
+                                    <h:outputText value="#{i18n.Planning_EDITION_OUTLET}:" />
+                                    <h:inputText styleClass="text mediumInput" value="#{planning.selectedEdition.outlet.title}" disabled="true" />
+
+                                    <h:outputText value="#{i18n.Planning_EDITION_OPEN}:" />
+                                    <h:selectBooleanCheckbox value="#{planning.selectedEdition.open}" />
+
+                                    <h:outputText value="#{i18n.Planning_EDITION_PUBLICATION_DATE}:" />
+                                    <rich:calendar popup="true" value="#{planning.selectedEdition.publicationDate.time}" datePattern="#{i18n.Generic_FORMAT_DATE_AND_TIME}" firstWeekDay="1" timeZone="#{userSession.user.timeZone}"/>
+
+                                    <h:outputText value="#{i18n.Planning_EDITION_EXPIRATION_DATE}:" />
+                                    <rich:calendar popup="true" value="#{planning.selectedEdition.expirationDate.time}" firstWeekDay="1" datePattern="#{i18n.Generic_FORMAT_DATE_AND_TIME}" timeZone="#{userSession.user.timeZone}"/>
+
+                                    <h:outputText value="#{i18n.Planning_EDITION_VOLUME}:" />
+                                    <rich:inputNumberSpinner value="#{planning.selectedEdition.volume}" styleClass="text" maxValue="9999" />
+
+                                    <h:outputText value="#{i18n.Planning_EDITION_NUMBER}:" />
+                                    <rich:inputNumberSpinner value="#{planning.selectedEdition.number}" styleClass="text" maxValue="9999" />
+                                </h:panelGrid>
+                            </rich:tab>
+
+                            <rich:tab id="tabEditionSections" label="#{i18n.Planning_EDITION_SECTIONS}">
+                                <h:panelGrid id="pgEditionSections" columnClasses="tabSheet" style="padding: 10px; width: 100%">
+                                    <h:panelGrid columns="1" columnClasses="right" style="width: 100%">
+                                        <h:column>
+                                            <a4j:commandButton id="btnShowTemplate"
+                                                               styleClass="button smallButton"
+                                                               style="margin-right: 2px;"
+                                                               value="#{i18n.Planning_TEMPLATES}"
+                                                               title="#{i18n.Planning_TEMPLATES_TOOLTIP}"
+                                                               reRender="frmEditionTemplateDetails"
+                                                               limitToList="true">
+                                                <rich:componentControl for="mpEditionTemplateDetails"
+                                                                       operation="show"
+                                                                       event="oncomplete" />
+                                            </a4j:commandButton>
+
+                                            <a4j:commandButton id="btnNewSection"
+                                                               styleClass="button smallButton"
+                                                               value="#{i18n.Planning_EDITION_SECTION_NEW}"
+                                                               title="#{i18n.Planning_EDITION_SECTION_NEW_TOOLTIP}"
+                                                               actionListener="#{planning.onNewEditionSection}"
+                                                               reRender="frmEditionSectionDetails"
+                                                               limitToList="true">
+                                                <rich:componentControl for="mpEditionSectionDetails"
+                                                                       operation="show"
+                                                                       event="oncomplete" />
+                                            </a4j:commandButton>
+                                        </h:column>
+                                    </h:panelGrid>
+
+                                    <rich:dataTable id="dtEditionSections"
+                                                    value="#{planning.selectedEdition.sections}"
+                                                    var="section"
+                                                    styleClass="table"
+                                                    headerClass="tableHeader"
+                                                    columnClasses="center columnIcon, left, right columnCount, right columnCount, right columnCount"
+                                                    rowClasses="odd, even"
+                                                    sortPriority="#{converge:createList('colStart,colEnd')}">
+                                        <rich:column>
+                                            <f:facet name="header">&#160;</f:facet>
+                                            <a4j:commandLink reRender="frmEditionSectionDetails"
+                                                             limitToList="true">
+                                                <rich:componentControl for="mpEditionSectionDetails"
+                                                                       operation="show"
+                                                                       event="oncomplete" />
+                                                <f:setPropertyActionListener value="#{section}"
+                                                                             target="#{planning.selectedEditionSection}" />
+                                                <h:graphicImage value="/images/icons/section.gif"
+                                                                alt="#{i18n.Planning_EDITION_TEMPLATE_SECTION}"
+                                                                title="#{i18n.Planning_EDITION_TEMPLATE_SECTION}"
+                                                                rendered="#{!section.advertisement}" />
+                                                <h:graphicImage value="/images/icons/section_advertisement.png"
+                                                                alt="#{i18n.Planning_EDITION_TEMPLATE_SECTION_ADVERTISEMENT}"
+                                                                title="#{i18n.Planning_EDITION_TEMPLATE_SECTION_ADVERTISEMENT}"
+                                                                rendered="#{section.advertisement}" />
+                                            </a4j:commandLink>
+                                        </rich:column>
+                                        <rich:column sortBy="#{section.name}">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{i18n.Planning_EDITION_SECTION_NAME}"
+                                                              title="#{i18n.Planning_EDITION_SECTION_NAME_TOOLTIP}" />
+                                            </f:facet>
+                                            <a4j:commandLink reRender="frmEditionSectionDetails"
+                                                             limitToList="true">
+                                                <rich:componentControl for="mpEditionSectionDetails"
+                                                                       operation="show"
+                                                                       event="oncomplete" />
+                                                <f:setPropertyActionListener value="#{section}"
+                                                                             target="#{planning.selectedEditionSection}" />
+
+                                                <h:outputText value="#{section.name}"
+                                                              title="#{section.description}" />
+                                            </a4j:commandLink>
+                                        </rich:column>
+                                        <rich:column id="colStart" sortBy="#{section.start}"  sortOrder="ASCENDING">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{i18n.Planning_EDITION_SECTION_START}"
+                                                              title="#{i18n.Planning_EDITION_SECTION_START_TOOLTIP}" />
+                                            </f:facet>
+                                            <h:outputText value="#{section.start}" />
+                                        </rich:column>
+                                        <rich:column id="colEnd" sortBy="#{section.end}"  sortOrder="ASCENDING">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{i18n.Planning_EDITION_SECTION_END}"
+                                                              title="#{i18n.Planning_EDITION_SECTION_END_TOOLTIP}" />
+                                            </f:facet>
+                                            <h:outputText value="#{section.end}" />
+                                        </rich:column>
+                                    </rich:dataTable>
+                                </h:panelGrid>
+                            </rich:tab>
+                        </rich:tabPanel>
+
+                        <h:panelGroup styleClass="dialogueButtons">
+                            <a4j:commandLink id="lnkSaveEdition" styleClass="dialogButton" value="#{i18n.Generic_SAVE}" actionListener="#{planning.onSaveEdition}" reRender="frmPage">
+                                <rich:componentControl for="mpEditionDetails" operation="hide" event="oncomplete" />
+                            </a4j:commandLink>
+
+                            <a4j:commandLink id="lnkApplyEdition"
+                                             styleClass="dialogButton"
+                                             value="#{i18n.Generic_APPLY}"
+                                             actionListener="#{planning.onSaveEdition}"
+                                             reRender="pgEditionDetails, frmPage" />
+
+                            <a4j:commandLink id="lnkDeleteEdition"
+                                             rendered="#{planning.editionEditMode}"
+                                             onclick="if (confirm('#{i18n.Planning_EDITION_PROMPT_DELETE}') != true){ return false; };"
+                                             actionListener="#{planning.onDeleteEdition}"
+                                             styleClass="dialogButton"
+                                             value="#{i18n.Generic_DELETE}"
+                                             reRender="frmPage">
+                                <rich:componentControl for="mpEditionDetails"
+                                                       operation="hide"
+                                                       event="oncomplete" />
+                            </a4j:commandLink>
+
+
+                            <h:commandLink id="lnkCloseOutletForm"
+                                           styleClass="dialogButton"
+                                           value="#{i18n.Generic_CLOSE}"
+                                           onclick="#{rich:component('mpEditionDetails')}.hide(); return false;" />
+                        </h:panelGroup>
+                    </h:panelGrid>
+
+                </rich:modalPanel>
+            </h:form>
+
+            <h:form id="frmEditionSectionDetails" rendered="#{userSession.privileged['OUTLET_PLANNING']}">
+                <rich:modalPanel id="mpEditionSectionDetails" autosized="true" domElementAttachment="parent" rendered="#{planning.selectedEditionSection != null}">
+                    <f:facet name="header">
+                        <h:panelGroup>
+                            <h:outputText value="#{i18n.Planning_EDITION_SECTION_DETAILS}" />
+                        </h:panelGroup>
+                    </f:facet>
+                    <h:panelGrid id="pgEditionSectionDetails" style="width: 480px;">
+
+                        <rich:tabPanel switchType="client" activeTabClass="tabActive" inactiveTabClass="tabInactive">
+
+                            <rich:tab id="tabEditionSection" label="#{i18n.Planning_EDITION_SECTION}">
+                                <h:panelGrid columnClasses="tabSheet" style="padding: 10px; width: 100%">
+                                    <h:outputText value="#{i18n.Planning_EDITION_SECTION_NAME}:" />
+                                    <h:inputText id="txtEditionSectionName" value="#{planning.selectedEditionSection.name}"
+                                                 styleClass="text mediumInput"
+                                                 title="#{i18n.Planning_EDITION_SECTION_NAME_TOOLTIP}" />
+
+                                    <h:outputText value="#{i18n.Planning_EDITION_SECTION_DESCRIPTION}:" />
+                                    <h:inputTextarea id="txtEditionSectionDescription"
+                                                     value="#{planning.selectedEditionSection.description}"
+                                                     styleClass="text mediumInput"
+                                                     title="#{i18n.Planning_EDITION_SECTION_DETAILS_TOOLTIP}" />
+
+                                    <h:outputText value="#{i18n.Planning_EDITION_SECTION_START}:" />
+                                    <rich:inputNumberSpinner value="#{planning.selectedEditionSection.start}" styleClass="text" />
+
+                                    <h:outputText value="#{i18n.Planning_EDITION_SECTION_END}:" />
+                                    <rich:inputNumberSpinner value="#{planning.selectedEditionSection.end}" styleClass="text" />
+                                </h:panelGrid>
+                            </rich:tab>
+                        </rich:tabPanel>
+
+                        <h:panelGroup styleClass="dialogueButtons">
+
+                            <a4j:commandLink id="lnkSaveEditionSection"
+                                             styleClass="dialogButton"
+                                             value="#{i18n.Generic_SAVE}"
+                                             actionListener="#{planning.onSaveEditionSection}"
+                                             reRender="pgEditionSections"
+                                             limitToList="true">
+                                <rich:componentControl for="mpEditionSectionDetails"
+                                                       operation="hide"
+                                                       event="oncomplete" />
+                            </a4j:commandLink>
+
+                            <a4j:commandLink id="lnkApplyEditionSection"
+                                             styleClass="dialogButton"
+                                             value="#{i18n.Generic_APPLY}"
+                                             actionListener="#{planning.onSaveEditionSection}"
+                                             reRender="pgEditionSections, pgEditionSectionDetails"
+                                             limitToList="true" />
+
+                            <a4j:commandLink id="lnkDeleteEditionSection"
+                                             rendered="#{planning.editionSectionEditMode}"
+                                             onclick="if (confirm('#{i18n.Planning_EDITION_SECTION_PROMPT_DELETE}') != true){ return false; };"
+                                             actionListener="#{planning.onDeleteEditionSection}"
+                                             styleClass="dialogButton"
+                                             value="#{i18n.Generic_DELETE}"
+                                             reRender="pgEditionSections"
+                                             limitToList="true">
+                                <rich:componentControl for="mpEditionSectionDetails"
+                                                       operation="hide"
+                                                       event="oncomplete" />
+                            </a4j:commandLink>
+
+
+                            <h:commandLink id="lnkCloseEditionSectionForm"
+                                           styleClass="dialogButton"
+                                           value="#{i18n.Generic_CANCEL}"
+                                           onclick="#{rich:component('mpEditionSectionDetails')}.hide(); return false;" />
+                        </h:panelGroup>
+                    </h:panelGrid>
+
+                </rich:modalPanel>
+            </h:form>
+
+            <h:form id="frmEditionTemplateDetails" rendered="#{userSession.privileged['OUTLET_PLANNING']}">
+                <rich:modalPanel id="mpEditionTemplateDetails" autosized="true" domElementAttachment="parent" rendered="#{planning.selectedEdition != null}">
+                    <f:facet name="header">
+                        <h:panelGroup>
+                            <h:outputText value="#{i18n.Planning_EDITION_TEMPLATES}" />
+                        </h:panelGroup>
+                    </f:facet>
+                    <h:panelGrid id="pgEditionTemplateDetails" style="width: 480px;">
+
+                        <rich:tabPanel switchType="client" activeTabClass="tabActive" inactiveTabClass="tabInactive">
+
+                            <rich:tab id="tabEditionTemplate" label="#{i18n.Planning_EDITION_TEMPLATES}">
+                                <h:panelGrid columnClasses="tabSheet" style="padding: 10px; width: 100%">
+                                    <h:selectOneMenu id="selTemplates" value="#{planning.selectedEditionTemplate}" styleClass="text mediumInput" converter="#{converters.editionTemplateConverter}">
+                                        <f:selectItem itemLabel="" />
+                                        <f:selectItems value="#{planning.outletEditionTemplates}" />
+                                        <a4j:support event="onchange" reRender="dtEditionTemplateSections" />
+                                    </h:selectOneMenu>
+
+                                    <rich:dataTable id="dtEditionTemplateSections"
+                                                    value="#{planning.selectedEditionTemplate.sections}"
+                                                    var="section"
+                                                    styleClass="table"
+                                                    headerClass="tableHeader"
+                                                    columnClasses="center columnIcon, left, right columnCount, right columnCount, right columnCount"
+                                                    rowClasses="odd, even"
+                                                    sortPriority="#{converge:createList('colStart,colEnd')}">
+                                        <rich:column>
+                                            <f:facet name="header">&#160;</f:facet>
+                                            <h:graphicImage value="/images/icons/section.gif"
+                                                            alt="#{i18n.Planning_EDITION_TEMPLATE_SECTION}"
+                                                            title="#{i18n.Planning_EDITION_TEMPLATE_SECTION}"
+                                                            rendered="#{!section.advertisement}" />
+                                            <h:graphicImage value="/images/icons/section_advertisement.png"
+                                                            alt="#{i18n.Planning_EDITION_TEMPLATE_SECTION_ADVERTISEMENT}"
+                                                            title="#{i18n.Planning_EDITION_TEMPLATE_SECTION_ADVERTISEMENT}"
+                                                            rendered="#{section.advertisement}" />
+                                        </rich:column>
+                                        <rich:column sortBy="#{section.name}">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{i18n.Planning_EDITION_SECTION_NAME}"
+                                                              title="#{i18n.Planning_EDITION_SECTION_NAME_TOOLTIP}" />
+                                            </f:facet>
+                                            <h:outputText value="#{section.name}"
+                                                          title="#{section.description}" />
+                                        </rich:column>
+                                        <rich:column id="colStart" sortBy="#{section.start}" sortOrder="ASCENDING">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{i18n.Planning_EDITION_SECTION_START}"
+                                                              title="#{i18n.Planning_EDITION_SECTION_START_TOOLTIP}" />
+                                            </f:facet>
+                                            <h:outputText value="#{section.start}" />
+                                        </rich:column>
+                                        <rich:column id="colEnd" sortBy="#{section.end}"  sortOrder="ASCENDING">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{i18n.Planning_EDITION_SECTION_END}"
+                                                              title="#{i18n.Planning_EDITION_SECTION_END_TOOLTIP}" />
+                                            </f:facet>
+                                            <h:outputText value="#{section.end}" />
+                                        </rich:column>
+                                    </rich:dataTable>
+
+                                </h:panelGrid>
+                            </rich:tab>
+                        </rich:tabPanel>
+
+                        <h:panelGroup styleClass="dialogueButtons">
+                            <a4j:commandLink id="lnkUseTemplate" styleClass="dialogButton" value="#{i18n.Planning_EDITION_USE_TEMPLATE}" title="#{i18n.Planning_EDITION_USE_TEMPLATE_TOOLTIP}" actionListener="#{planning.onUseEditionTemplate}" reRender="pgEditionSections">
+                                <rich:componentControl for="mpEditionTemplateDetails" operation="hide" event="oncomplete" />
+                            </a4j:commandLink>
+                            <h:commandLink id="lnkCloseTemplates" styleClass="dialogButton" value="#{i18n.Generic_CANCEL}" onclick="#{rich:component('mpEditionTemplateDetails')}.hide(); return false;" />
+                        </h:panelGroup>
+                    </h:panelGrid>
+
+                </rich:modalPanel>
+            </h:form>
+
+            <converge:dialogAssignment bean="#{planning.dialogAssignment}" enableRemoveEvent="#{true}" />
+            <converge:dialogEventSelection bean="#{planning.dialogEventSelection}" reRenderOnSelect="txtStoryTitle, pgEvent, grpAssignmentDetailsButtons" />
+
+        </ui:define>
+    </ui:composition>
+</jsp:root>

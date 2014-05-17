@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE NewsML SYSTEM "http://idsdat06.reuters.com/newsml/NewsMLv1.0.dtd" [
+  <!ENTITY % xhtml SYSTEM "http://idsdat06.reuters.com/newsml/xhtml1-strict.dtd">
+  %xhtml;
+]>
+<!--src: rtr2newsml0.995-->
+<NewsML Duid="MTFH39812_2011-05-10_14-17-50_SIN07_NEWSML">
+    <Catalog Href="http://idsdat06.reuters.com/newsml/catalog/catalog-reuters-master_catalog_1.xml"/>
+    <NewsEnvelope>
+        <DateAndTime>20110510T141750+0000</DateAndTime>
+        <NewsService FormalName="RTR_NGS"/>
+        <NewsProduct FormalName="NGS"/>
+        <Priority FormalName="4"/>
+    </NewsEnvelope>
+    <NewsItem Duid="MTFH39812_2011-05-10_14-17-50_SIN07_NEWSITEM">
+        <Identification>
+            <NewsIdentifier>
+                <ProviderId>reuters.com</ProviderId>
+                <DateId>20110510</DateId>
+                <NewsItemId>MTFH39812_2011-05-10_14-17-50_SIN07</NewsItemId>
+                <RevisionId Update="N" PreviousRevision="0">1</RevisionId>
+                <PublicIdentifier>urn:newsml:reuters.com:20110510:MTFH39812_2011-05-10_14-17-50_SIN07:1</PublicIdentifier>
+            </NewsIdentifier>
+        </Identification>
+        <NewsManagement>
+            <NewsItemType FormalName="News"/>
+            <FirstCreated>20110510T141750+0000</FirstCreated>
+            <ThisRevisionCreated>20110510T141750+0000</ThisRevisionCreated>
+            <Status FormalName="Usable"/>
+            <Urgency FormalName="4"/>
+            <Property FormalName="USN" Value="GM1E75A1PX601"/>
+            <Property FormalName="CID" Value="GM1E75A1PX601" Scheme="IID"/>
+            <Property FormalName="OTR" Value="SIN07"/>
+        </NewsManagement>
+        <!--Outer "Main" NewsComponent-->
+        <NewsComponent EquivalentsList="no" Essential="no" Duid="MTFH39812_2011-05-10_14-17-50_SIN07_NC" xml:lang="en">
+            <TopicSet FormalName="HighImportance">
+<Topic Duid="ts_1">
+<TopicType FormalName="Economics"/>
+<FormalName Scheme="N2000">ECO</FormalName>
+<FormalName Scheme="IPTCSubjectCodes">04008004</FormalName>
+<Description xml:lang="en">Economics</Description>
+<Property FormalName="WhyPresent" Value="Classifier"/>
+</Topic>
+<Topic Duid="ts_2">
+<TopicType FormalName="Recurring Report"/>
+<FormalName Scheme="Reuters Recurring Report">GM1E75A1PX601</FormalName>
+<Property FormalName="WhyPresent" Value="Classifier"/>
+</Topic>
+<Topic Duid="ts_3">
+<TopicType FormalName="CategoryCode"/>
+<FormalName Scheme="MediaCategory">I</FormalName>
+<Description xml:lang="en">International News</Description>
+<Property FormalName="WhyPresent" Value="Classifier"/>
+</Topic>
+</TopicSet>
+            <TopicSet FormalName="AdminRights" Scheme="reuters_TopicType">
+                <Topic Duid="ats_1">
+                    <TopicType FormalName="Geography"/>
+                    <FormalName Scheme="N2000">US</FormalName>
+                    <Description xml:lang="en">United States</Description>
+                </Topic>
+            </TopicSet>
+            <Role FormalName="Main"/>
+            <AdministrativeMetadata>
+                <FileName>2011-05-10T141750Z_01_SIN07_RTRIDSG_0_SKYPE-MICROSOFT.XML</FileName>
+                <Provider>
+                    <Party FormalName="Reuters"/>
+                </Provider>
+                <Creator>
+                    <Party FormalName="Reuters"/>
+                </Creator>
+                <Source>
+                    <Party FormalName="Reuters"/>
+                </Source>
+                <Property FormalName="SourceFeed" Value="IDS"/>
+                <Property FormalName="IDSPublisher" Value="http://www.reuters.com/ids"/>
+            </AdministrativeMetadata>
+            <!--Single "Main Graphic" inner NewsComponent-->
+            <NewsComponent EquivalentsList="no" Essential="no" Duid="MTFH39812_2011-05-10_14-17-50_SIN07_GRAPHIC_NC" xml:lang="en">
+                <Role FormalName="Main Graphic"/>
+                <NewsLines>
+                    <HeadLine>SKYPE-MICROSOFT/</HeadLine>
+                    <ByLine>RNGS, RNGS</ByLine>
+                    <DateLine>
+                        <Origin Href="#ats_1">United States</Origin>May 10, 2011</DateLine>
+                    <CreditLine>REUTERS</CreditLine>
+                    <CopyrightLine>(c) Copyright Thomson Reuters 2011. Click For Restrictions. http://about.reuters.com/fulllegal.asp</CopyrightLine>
+                    <SlugLine>SKYPE-MICROSOFT/</SlugLine>
+                </NewsLines>
+                <DescriptiveMetadata>
+                    <Language FormalName="en"/>
+                    <OfInterestTo FormalName="ZENGLI"/>
+                    <OfInterestTo FormalName="ZARC"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_1"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_2"/>
+                    <TopicOccurrence Importance="High" Topic="#ts_3"/>
+                </DescriptiveMetadata>
+                <!--"Picture Caption" NewsComponent used solely for the picture's caption-->
+                <NewsComponent EquivalentsList="no" Essential="no" Duid="MTFH39812_2011-05-10_14-17-50_SIN07_CAPTION_NC" xml:lang="en">
+                    <Role FormalName="Picture Caption"/>
+                    <ContentItem Duid="MTFH39812_2011-05-10_14-17-50_SIN07_CAPTION_CI">
+                        <MediaType FormalName="text"/>
+                        <Format FormalName="XHTML"/>
+                        <Characteristics>
+                            <Property FormalName="ContentID" Value="urn:newsml:reuters.com:20110510:MTFH39812_2011-05-10_14-17-50_SIN07_CAPTION:1"/>
+                            <Property FormalName="ContentCreationDateAndTime" Value="20110510T141750+0000"/>
+                            <Property FormalName="Creator" Value="Adobe Illustrator/MED 9.0d18"/>
+                        </Characteristics>
+                        <DataContent>
+                            <html xmlns="http://www.w3.org/1999/xhtml">
+                                <head>
+                                    <title/>
+                                </head>
+                                <body>
+                                    <p>SKYPE-MICROSOFT/ - Charts of registered and average monthly Skype users from 2007 to 2010. Microsoft Corp agreed to buy Skype Technologies for $8.5 billion. RNGS. (SIN07)</p>
+                                </body>
+                            </html>
+                        </DataContent>
+                    </ContentItem>
+                </NewsComponent>
+                <!--NewsComponent that wraps the ContentItems-->
+                <NewsComponent EquivalentsList="yes" Essential="no" Duid="MTFH39812_2011-05-10_14-17-50_SIN07_GRAPHIC_WRAPPER_NC" xml:lang="en">
+                    <Role FormalName="Image Wrapper"/>
+                    <BasisForChoice>./ContentItem/MediaType/@FormalName</BasisForChoice>
+                    <BasisForChoice>./ContentItem/Characteristics/Property[@FormalName="PicType"]/@Value</BasisForChoice>
+                    <!--ContentItem for the THUMBNAIL-->
+                    <ContentItem Duid="MTFH39812_2011-05-10_14-17-50_SIN07_THUMBNAIL_CI" Href="2011-05-10T141750Z_01_SIN07_RTRIDSG_1_SKYPE-MICROSOFT.png">
+                        <MediaType FormalName="Photo"/>
+                        <Format FormalName="PNG"/>
+                        <Characteristics>
+                            <Property Value="Thumbnail" FormalName="PicType"/>
+                            <Property FormalName="ContentID" Value="urn:newsml:reuters.com:20110510:MTFH39812_2011-05-10_14-17-50_SIN07_THUMBNAIL:1"/>
+                            <Property FormalName="ContentCreationDateAndTime" Value="20110510T141750+0000"/>
+                            <Property FormalName="Creator" Value="Adobe Illustrator/MED 9.0d18"/>
+                        </Characteristics>
+                    </ContentItem>
+                    <!--ContentItem for the VIEW IMAGE-->
+                    <ContentItem Duid="MTFH39812_2011-05-10_14-17-50_SIN07_VIEWIMAGE_CI" Href="2011-05-10T141750Z_01_SIN07_RTRIDSG_2_SKYPE-MICROSOFT.png">
+                        <MediaType FormalName="Photo"/>
+                        <Format FormalName="PNG"/>
+                        <Characteristics>
+                            <Property Value="ViewImage" FormalName="PicType"/>
+                            <Property FormalName="ContentID" Value="urn:newsml:reuters.com:20110510:MTFH39812_2011-05-10_14-17-50_SIN07_VIEWIMAGE:1"/>
+                            <Property FormalName="ContentCreationDateAndTime" Value="20110510T141750+0000"/>
+                            <Property FormalName="Creator" Value="Adobe Illustrator/MED 9.0d18"/>
+                        </Characteristics>
+                    </ContentItem>
+                    <!--ContentItem for the BASE IMAGE-->
+                    <ContentItem Duid="MTFH39812_2011-05-10_14-17-50_SIN07_BASEIMAGE_CI" Href="2011-05-10T141750Z_01_SIN07_RTRIDSG_3_SKYPE-MICROSOFT.eps">
+                        <MediaType FormalName="Graphic"/>
+                        <Format FormalName="EPS Adobe Illustrator v6.0 Compatible"/>
+                        <Characteristics>
+                            <Property Value="BaseImage" FormalName="PicType"/>
+                            <Property FormalName="ContentID" Value="urn:newsml:reuters.com:20110510:MTFH39812_2011-05-10_14-17-50_SIN07_BASEIMAGE:1"/>
+                            <Property FormalName="ContentCreationDateAndTime" Value="20110510T141750+0000"/>
+                            <Property FormalName="Creator" Value="Adobe Illustrator/MED 9.0d18"/>
+                        </Characteristics>
+                    </ContentItem>
+                </NewsComponent>
+            </NewsComponent>
+        </NewsComponent>
+    </NewsItem>
+</NewsML>

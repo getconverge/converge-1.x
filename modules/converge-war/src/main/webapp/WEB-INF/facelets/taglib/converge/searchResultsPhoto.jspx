@@ -1,0 +1,108 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<jsp:root version="2.0"
+          xmlns:html="http://www.w3.org/1999/xhtml"
+          xmlns:jsp="http://java.sun.com/JSP/Page"
+          xmlns:c="http://java.sun.com/jstl/core"
+          xmlns:ui="http://java.sun.com/jsf/facelets"
+          xmlns:h="http://java.sun.com/jsf/html"
+          xmlns:f="http://java.sun.com/jsf/core"
+          xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+          xmlns:ecms="http://www.webparation.net/ecms/tags"
+          xmlns:t="http://myfaces.apache.org/tomahawk"
+          xmlns:ba="http://com.googlecode.benevolentact/tags"
+          xmlns:a4j="http://richfaces.org/a4j"
+          xmlns:rich="http://richfaces.org/rich">
+    <ui:composition>
+
+        <rich:dataTable id="photos" value="#{photos}" var="photo"
+                        styleClass="table" headerClass="tableHeader"
+                        columnClasses="center columnArticleIcon, center, left"
+                        rowClasses="odd, even"
+                        rendered="#{display &amp;&amp; photos.rowCount > 0}">
+            <rich:column>
+                <f:facet name="header">
+                    <h:outputText value="&#160;" />
+                </f:facet>
+                <h:outputLink onclick="openDialogue('#{facesContext.externalContext.request.contextPath}/DisplayPhoto.xhtml?PHOTO_ID=#{photo.id}', '_blank', 600, 510); return false;">
+                    <h:graphicImage value="/images/template/icons/photo.gif" alt="" title="" />
+                </h:outputLink>
+            </rich:column>
+
+            <rich:column>
+                <f:facet name="header">
+                    <h:outputText value="&#160;" />
+                </f:facet>
+                <h:outputLink rendered="#{photo.photoAvailable}" onclick="openDialogue('#{facesContext.externalContext.request.contextPath}/DisplayPhoto.xhtml?PHOTO_ID=#{photo.id}', '_blank', 600, 510); return false;">
+                    <h:graphicImage value="/photothumbs/?id=#{photo.id}" alt="#{photo.title} by #{photo.photographer.fullName}" title="#{photo.title} by #{photo.photographer.fullName}" />
+                </h:outputLink>
+                <h:outputLink rendered="#{!photo.photoAvailable}" onclick="openDialogue('#{facesContext.externalContext.request.contextPath}/DisplayPhoto.xhtml?PHOTO_ID=#{photo.id}', '_blank', 600, 510); return false;">
+                    <h:graphicImage value="/images/photo/no_photo_horizontal.gif" alt="#{photo.title} by #{photo.photographer.fullName}" title="#{photo.title} by #{photo.photographer.fullName}" />
+                </h:outputLink>
+            </rich:column>
+
+            <rich:column>
+                <f:facet name="header">
+                    <h:outputText value="#{msgs.PHOTO_LISTING_DETAILS}"/>
+                </f:facet>
+                <h:panelGrid  columns="2" style="width: 100%" columnClasses="photoDetailField, photoDetailValue">
+                    <h:outputText value="#{msgs.PHOTO_LISTING_DETAILS_ID}:" style="font-weight: bold" />
+                    <h:column>
+                        <h:outputLink onclick="openDialogue('#{facesContext.externalContext.request.contextPath}/DisplayPhoto.xhtml?PHOTO_ID=#{photo.id}', '_blank', 600, 510); return false;">
+                            <h:outputText value="#"/><h:outputText value="#{photo.id}"><f:convertNumber integerOnly="true" type="number" pattern="#{msgs.FORMAT_PHOTO_ID}" /></h:outputText>
+                        </h:outputLink>
+                    </h:column>
+                    <h:outputText value="#{msgs.PHOTO_PHOTOGRAPHER}:" style="font-weight: bold" />
+                    <h:outputText value="#{photo.photographer.fullName}&#160;" />
+
+                    <h:outputText value="#{msgs.PHOTO_LISTING_DETAILS_TITLE}:" style="font-weight: bold" />
+                    <h:outputText value="#{photo.title}&#160;" />
+
+                    <h:outputText value="#{msgs.PHOTO_LISTING_DETAILS_DESCRIPTION}:" style="font-weight: bold" />
+                    <h:outputText value="#{photo.description}&#160;" />
+
+                    <h:outputText value="#{msgs.PHOTO_LISTING_DETAILS_PHOTO_SERIES}:" style="font-weight: bold" rendered="#{photo.photoSeries != null}" />
+                    <h:outputText value="#{photo.photoSeries.name}" rendered="#{photo.photoSeries != null}"/>
+
+                    <h:outputText value="#{msgs.DATES}:" style="font-weight: bold" />
+                    <h:column>
+                        <h:outputText value="#{msgs.PHOTO_LISTING_DETAILS_TAKEN}:&#160;"  />
+                        <h:outputText value="#{msgs.NOT_SET}" rendered="#{photo.photoTaken == null}"   />
+                        <h:outputText value="#{photo.photoTaken.time}" rendered="#{photo.photoTaken != null}">
+                            <f:convertDateTime type="both" pattern="#{msgs.FORMAT_DATE}" timeZone="#{userSession.user.timeZone}" />
+                        </h:outputText>
+
+                        <h:outputText value="&#160;#{msgs.PHOTO_LISTING_DETAILS_UPDATED}:&#160;" />
+                        <h:outputText value="#{photo.updated.time}">
+                            <f:convertDateTime type="both" pattern="#{msgs.FORMAT_DATE_AND_TIME}" timeZone="#{userSession.user.timeZone}" />
+                        </h:outputText>
+
+                        <h:outputText value="&#160;#{msgs.PHOTO_LISTING_DETAILS_CREATED}:&#160;" />
+                        <h:outputText value="#{photo.created.time}">
+                            <f:convertDateTime type="both" pattern="#{msgs.FORMAT_DATE_AND_TIME}" timeZone="#{userSession.user.timeZone}" />
+                        </h:outputText>
+                    </h:column>
+
+                    <h:outputText value="#{msgs.PHOTO_LISTING_DETAILS_META_DATA}:" style="font-weight: bold" />
+                    <h:column>
+
+                        <t:dataList value="#{photo.locations}" var="location">
+                            <h:outputLink value="#{facesContext.externalContext.request.contextPath}/search/BrowseByLocation.xhtml?ID=#{location.id}&amp;CONTENT_TYPE=PHOTO">#{location.name}</h:outputLink>&#160;
+                        </t:dataList>
+                        <t:dataList value="#{photo.organisations}" var="organisation">
+                            <h:outputLink value="#{facesContext.externalContext.request.contextPath}/search/BrowseByOrganisation.xhtml?ID=#{organisation.id}&amp;CONTENT_TYPE=PHOTO">#{organisation.name}</h:outputLink>&#160;
+                        </t:dataList>
+                        <t:dataList value="#{photo.persons}" var="person">
+                            <h:outputLink value="#{facesContext.externalContext.request.contextPath}/search/BrowseByPerson.xhtml?ID=#{person.id}&amp;CONTENT_TYPE=PHOTO">#{person.firstName} #{person.lastName}</h:outputLink>&#160;
+                        </t:dataList>
+                        <t:dataList value="#{photo.subjects}" var="subject">
+                            <h:outputLink value="#{facesContext.externalContext.request.contextPath}/search/BrowseBySubject.xhtml?ID=#{subject.id}&amp;CONTENT_TYPE=PHOTO">#{subject.fullTitle}</h:outputLink>&#160;
+                        </t:dataList>
+
+                        &#160;
+                    </h:column>
+                </h:panelGrid>
+            </rich:column>
+        </rich:dataTable>
+
+    </ui:composition>
+</jsp:root>

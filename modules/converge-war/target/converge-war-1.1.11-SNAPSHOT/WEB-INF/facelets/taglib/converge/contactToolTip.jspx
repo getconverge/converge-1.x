@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<jsp:root version="2.0" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:c="http://java.sun.com/jstl/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+    <ui:composition>
+
+        <rich:toolTip styleClass="tooltip">
+            <h:panelGrid>
+                <h:outputText value="#{value.title} #{value.firstName} #{value.lastName}" style="font-weight: bold" />
+                <h:outputText value="#{value.jobTitle}" />
+                <h:outputText value="#{value.organisation}" />
+                <h:outputText value="&lt;br/&gt;#{msgs.contacts_PHONES}:" escape="false" rendered="#{!empty value.phones}" />
+                <rich:dataTable value="#{value.phones}" var="phone" rendered="#{!empty contact.phones}">
+                    <rich:column>
+                        <h:outputText value="#{phone.label}" />
+                    </rich:column>
+                    <rich:column>
+                        <h:outputText value="#{phone.number}" />
+                    </rich:column>
+                </rich:dataTable>
+                <h:outputText value="&lt;br/&gt;#{msgs.contacts_EMAILS}:" escape="false" rendered="#{!empty value.emails}" />
+                <rich:dataTable value="#{value.emails}" var="email" rendered="#{!empty value.emails}">
+                    <rich:column>
+                        <h:outputText value="#{email.label}" />
+                    </rich:column>
+                    <rich:column>
+                        <h:outputText value="#{email.email}" />
+                    </rich:column>
+                </rich:dataTable>
+                <h:outputText value="&lt;br/&gt;#{msgs.contacts_ADDRESSES}:" escape="false" rendered="#{!empty value.addresses}" />
+                <rich:dataTable value="#{value.addresses}" var="address" rendered="#{!empty value.addresses}">
+                    <rich:column>
+                        <h:outputText value="#{address.label}" style="font-weight: bold;" /><br/>
+                        <h:outputText value="#{address.address_line1}" /><br/>
+                        <h:outputText value="#{address.address_line2}" /><br/>
+                        <h:outputText value="#{address.city}" /><br/>
+                        <h:outputText value="#{address.state}" /><br/>
+                        <h:outputText value="#{address.country}" /><br/>
+                    </rich:column>
+                </rich:dataTable>
+
+                <h:outputText value="&lt;br/&gt;#{msgs.contacts_NOTE}:" escape="false" rendered="#{value.note != ''}" style="font-weight: bold;" />
+                <h:outputText value="#{value.note}" escape="false" />
+
+                <h:outputText value="&lt;br/&gt;#{msgs.contacts_UPDATED}:" escape="false" style="font-weight: bold;" />
+                <h:outputText value="#{value.updated.time}" >
+                    <f:convertDateTime pattern="#{msgs.FORMAT_DATE_AND_TIME}" timeZone="#{userSession.user.timeZone}" />
+                </h:outputText>
+                <h:outputText value="#{msgs.contacts_UPDATED_BY}:" escape="false" style="font-weight: bold;" />
+                <h:outputText value="#{value.updatedBy.fullName}" />
+
+                <h:outputText value="&lt;br/&gt;#{msgs.contacts_CREATED}:" escape="false" style="font-weight: bold;" />
+                <h:outputText value="#{value.created.time}" >
+                    <f:convertDateTime pattern="#{msgs.FORMAT_DATE_AND_TIME}" timeZone="#{userSession.user.timeZone}" />
+                </h:outputText>
+                <h:outputText value="#{msgs.contacts_CREATED_BY}:" escape="false" style="font-weight: bold;" />
+                <h:outputText value="#{value.createdBy.fullName}" />
+
+            </h:panelGrid>
+        </rich:toolTip>
+    </ui:composition>
+</jsp:root>

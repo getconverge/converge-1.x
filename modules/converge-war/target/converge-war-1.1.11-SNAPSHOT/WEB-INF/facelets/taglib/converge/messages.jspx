@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<jsp:root version="2.0"
+          xmlns:jsp="http://java.sun.com/JSP/Page"
+          xmlns:ui="http://java.sun.com/jsf/facelets"
+          xmlns:h="http://java.sun.com/jsf/html"
+          xmlns:f="http://java.sun.com/jsf/core">
+    <ui:composition>
+        <h:messages errorClass="errorMessage"
+                    warnClass="warnMessage"
+                    infoClass="infoMessage"
+                    fatalClass="fatalMessage" />
+    </ui:composition>
+</jsp:root>

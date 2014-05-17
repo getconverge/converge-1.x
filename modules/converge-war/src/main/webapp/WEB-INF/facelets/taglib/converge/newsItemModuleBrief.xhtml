@@ -1,0 +1,11 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://java.sun.com/jstl/core" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+
+    <c:if test="#{newsItem.fieldVisible['BRIEF']}">
+        <converge:moduleHeader moduleTitle="#{msgs.newsitem_BRIEF}" />
+        <div class="moduleContent">
+            <h:inputTextarea id="txtNewsItemBrief" value="#{newsItem.selectedNewsItem.brief}" style="width: 98%; height: 100px; margin-left: 1%; margin-right: 1%" styleClass="text mediumInput" disabled="#{!value.currentActor || value.readOnly}" />
+        </div>
+        <converge:moduleSpacer />
+    </c:if>
+
+</ui:composition>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jsp:root version="2.0" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:c="http://java.sun.com/jstl/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags" xmlns:v="http://converge.i2m.dk">
+
+    <ui:composition template="/WEB-INF/facelets/templates/newsreader.xhtml">
+        <ui:define name="body">
+            <a4j:keepAlive beanName="newsReader" />
+
+            <h:form id="frmPage">
+
+                <h:panelGroup rendered="#{newsReader.selectedEdition != null}" layout="div" style="font-weight: bold; font-size: 14px; padding-bottom: 5px; text-transform: uppercase;" >
+                    <converge:moduleHeader moduleTitle="#{newsReader.selectedEditionTitle}" />
+                </h:panelGroup>
+
+                <rich:datascroller id="scNewsReaderTop" for="dtEditionPlacements" align="center" maxPages="99" renderIfSinglePage="false" reRender="scNewsReaderTop, scNewsReader" />
+
+                <rich:dataTable id="dtEditionPlacements" value="#{newsReader.selectedEdition.placements}" var="placement" styleClass="newsReaderTable" rendered="#{!empty newsReader.selectedEdition.placements}" rows="1">
+
+                    <rich:column>
+                        <h:outputText value="#{placement.newsItem.title} (#{placement.newsItem.currentState.name})" styleClass="newsReaderTitle" />
+                        <br/><br/>
+
+                        <h:outputText value="Brief" styleClass="newsReaderLabel" rendered="#{placement.newsItem.brief != ''}" /><br/>
+                        <h:panelGroup layout="div" styleClass="scrollableContent" style="height: 200px; padding: 10px;" rendered="#{placement.newsItem.brief != ''}">
+                            <h:outputText value="#{placement.newsItem.brief}" styleClass="newsReaderBrief" />
+                        </h:panelGroup>
+
+                        <h:outputText value="#{i18n.NewsReader_STORY}" styleClass="newsReaderLabel" /><br/>
+                        <h:panelGroup layout="div" styleClass="scrollableContent" style="padding: 10px;">
+                            <h:outputText value="#{placement.newsItem.story}" escape="false" styleClass="newsReaderStory" />
+                        </h:panelGroup>
+                    </rich:column>
+                    <rich:column>
+
+                        <h:outputText value="Media" styleClass="newsReaderLabel" rendered="#{!empty placement.newsItem.mediaAttachments}" /><br/>
+                        <ui:repeat value="#{placement.newsItem.mediaAttachments}" var="attachment">
+                            <h:outputLink value="#{attachment.mediaItem.original.absoluteFilename}" target="_blank" rendered="#{!attachment.mediaItem.original.video &amp;&amp; !attachment.mediaItem.original.audio}">
+                                <h:graphicImage url="#{attachment.mediaItem.preview.absoluteFilename}" rendered="#{attachment.mediaItem.previewAvailable}" />
+                            </h:outputLink><br/>
+
+                            <h:panelGroup rendered="#{attachment.mediaItem.original.audio}" layout="block">
+                                <div id="container#{attachment.id}">Loading the player ...</div>
+                                <script type="text/javascript"> 
+                                    jwplayer("container#{attachment.id}").setup({
+                                        flashplayer: "#{facesContext.externalContext.request.contextPath}/scripts/jwplayer/player.swf", 
+                                        file: "#{attachment.mediaItem.original.absoluteFilename}", 
+                                        plugins: {},
+                                        height: 60, 
+                                        width: 300,
+                                        volume: 100
+                                    });
+                                </script>
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{attachment.mediaItem.original.video}" layout="block">
+                                <div id="container#{attachment.id}">Loading the player ...</div>
+                                <script type="text/javascript"> 
+                                    jwplayer("container#{attachment.id}").setup({
+                                        flashplayer: "#{facesContext.externalContext.request.contextPath}/scripts/jwplayer/player.swf", 
+                                        file: "#{attachment.mediaItem.original.absoluteFilename}", 
+                                        plugins: {},
+                                        width: 300,
+                                        volume: 100
+                                    });
+                                </script>
+                            </h:panelGroup>
+                            <br/>
+                            <h:outputText value="#{attachment.caption}" />
+                        </ui:repeat>
+
+                    </rich:column>
+                </rich:dataTable>
+                <rich:datascroller id="scNewsReader" for="dtEditionPlacements" align="center" maxPages="99" renderIfSinglePage="false" reRender="scNewsReader, scNewsReaderTop" />
+
+            </h:form>
+
+
+        </ui:define>
+    </ui:composition>
+
+</jsp:root>

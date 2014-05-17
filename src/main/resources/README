@@ -1,0 +1,29 @@
+This directory contains the installable EAR (Enterprise 
+Archive) file ready for installation on GlassFish v2.1.1.
+
+On top of the EAR file you'll also find the following files:
+
+- setup.sql                SQL structure and default data
+- solr.zip                 Search engine configuration
+
+Instructions for installing Converge can be found at
+http://www.getconverge.com/support
+
+Changes in 1.1.2:
+----------------
+
+Bugs fixed
+Bug #429: Missing caption in media item yields "Field is required"
+Bug #430: Number of days to keep is ignored when fetching newswire items
+Bug #434: Excessive debug info from the MailNewswireDecoder
+Bug #435: Space missing between "Show more..." and "Dismiss all"
+Bug #436: Opening the Newswire Item details containing photos fields an HTTP Status 500 error
+Bug #437: Add to Catalogue from Photo Newswire not importing images and caption
+Bug #439: Media items indexed under 1.0.8 shows Null in the description
+Bug #440: Content of documents with extractable text is not indexed
+
+New features
+Feature #438: Add option for executing catalogue hooks ad-hoc on a media item
+Feature #441: Include date ranges in search
+Feature #455: User activity report for non-submitters
+Feature #478: Add newswire items to database and search engine during processing

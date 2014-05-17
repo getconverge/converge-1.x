@@ -1,0 +1,33 @@
+/*
+ * Copyright 2008 - 2010 Interactive Media Management
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package dk.i2m.converge.core.security;
+
+/**
+ * Type of employment. The employment type is relevant for journalists when
+ * calculating the payroll.
+ *
+ * @author Allan Lykke Christensen
+ */
+public enum EmploymentType {
+
+    /** Permanent employment. */
+    PERMANENT,
+    /** Freelance employment. */
+    FREELANCE,
+    /** Unknown employment. */
+    UNKNOWN
+}

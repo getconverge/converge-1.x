@@ -1,0 +1,298 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<jsp:root version="2.0" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:c="http://java.sun.com/jstl/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+    <ui:composition>
+        <converge:loading for="regAssignmentDetails#{id}" />
+        <a4j:region id="regAssignmentDetails#{id}">
+            <h:form id="frmAssignmentDetails#{id}">
+
+                <rich:modalPanel id="mpAssignmentDetails" autosized="true" domElementAttachment="parent" rendered="#{bean.assignment != null}">
+
+                    <f:facet name="header">
+                        <h:outputText value="#{msgs.planning_ASSIGNMENT_DETAILS}" />
+                    </f:facet>
+
+                    <h:panelGrid id="pgAssignmentDetails" style="width: 480px;">
+
+                        <rich:tabPanel id="tpAssignmentDetails" switchType="client" activeTabClass="tabActive" inactiveTabClass="tabInactive" selectedTab="#{bean.selectedTab}">
+
+                            <rich:tab id="tabStory" label="#{msgs.STORY}">
+                                <h:panelGrid id="pgStory" columnClasses="tabSheet" style="padding: 10px; width: 100%">
+
+                                    <h:outputText value="#{msgs.TITLE}:" />
+                                    <h:inputText id="txtStoryTitle" required="true" requiredMessage="#{msgs.planning_NEWS_ITEM_TITLE_REQUIRED}" value="#{bean.assignment.title}" styleClass="text mediumInput" disabled="#{!bean.currentActor || bean.readOnly}" />
+
+                                    <h:outputText value="#{msgs.planning_NEWS_ITEM_DEADLINE}:" />
+                                    <rich:calendar id="calDeadline" popup="true" required="true" requiredMessage="#{msgs.planning_NEWS_ITEM_DEADLINE_REQUIRED}" value="#{bean.assignment.deadline.time}" datePattern="#{msgs.FORMAT_DATE_AND_TIME}" firstWeekDay="1" timeZone="#{userSession.user.timeZone}" disabled="#{!bean.currentActor || bean.readOnly}" />
+
+                                    <h:outputText value="#{msgs.newsitem_TARGET_WORD_COUNT}:" />
+                                    <h:inputText id="txtTargetWordCount" required="true" requiredMessage="#{msgs.planning_TARGET_WORD_COUNT_REQUIRED}" value="#{bean.assignment.targetWordCount}" styleClass="text mediumInput" disabled="#{!bean.currentActor || bean.readOnly}" />
+
+                                    <h:outputText value="#{msgs.planning_OUTLET}:" />
+                                    <h:selectOneMenu id="soOutlet" value="#{bean.assignment.outlet}" converter="#{converters.outletConverter}" required="true" requiredMessage="#{msgs.planning_OUTLET_REQUIRED}" disabled="#{!bean.currentActor || bean.readOnly}" >
+                                        <f:selectItem itemLabel="" />
+                                        <f:selectItems value="#{bean.outlets}" />
+                                        <a4j:support event="onchange" actionListener="#{bean.onChangeOutlet}" reRender="somRole, soDepartments, somEditions, somEditionSections" ajaxSingle="true" />
+                                    </h:selectOneMenu>
+
+                                    <h:outputText value="#{msgs.newsitem_ACTORS}:" />
+                                    <h:column>
+                                        <h:panelGrid columns="3">
+                                            <h:selectOneMenu id="somRole" value="#{bean.selectedOutletRole}" converter="#{converters.userRoleConverter}" disabled="#{!bean.currentActor || bean.readOnly}">
+                                                <f:selectItem itemLabel="- Select Role - " itemDisabled="true" />
+                                                <f:selectItems value="#{bean.outletRoles}" />
+                                                <a4j:support event="onchange" reRender="somUser" ajaxSingle="true" />
+                                            </h:selectOneMenu>
+
+                                            <h:selectOneMenu id="somUser" value="#{bean.selectedUser}"  converter="#{converters.userAccountConverter}" disabled="#{!bean.currentActor || bean.readOnly}">
+                                                <f:selectItem itemLabel="- Select User - " itemDisabled="true" />
+                                                <f:selectItems value="#{bean.usersInRole}" />
+                                            </h:selectOneMenu>
+
+                                            <a4j:commandLink id="lnkAddActor" styleClass="dialogButton dynamicButton #{!bean.editable ? 'disabledTextButton' : ''}" value="#{msgs.ADD}" actionListener="#{bean.onAddActor}" reRender="dtActors" disabled="#{!bean.editable}"/>
+                                        </h:panelGrid>
+                                    </h:column>
+
+                                    <rich:dataTable id="dtActors" value="#{bean.assignment.actors}" var="actor" >
+                                        <rich:column>
+                                            <h:graphicImage styleClass="profilePhoto" value="/UserPhoto?uid=#{actor.user.id}" alt="#{actor.user.fullName}" title="#{actor.user.fullName}" height="24" width="24" />
+                                        </rich:column>
+                                        <rich:column>
+                                            <h:outputText value="#{actor.role.name}" />
+                                        </rich:column>
+                                        <rich:column>
+                                            <h:outputText value="#{actor.user.fullName}" /><br/>
+                                            <h:outputText value="#{actor.user.jobTitle}" />
+                                        </rich:column>
+                                        <rich:column>
+                                            <a4j:commandLink onclick="if (confirm('#{msgs.planning_REMOVE_ACTOR_PROMPT}') != true){ return false; };" rendered="#{!bean.editable}">
+                                                <f:setPropertyActionListener value="#{actor}" target="#{bean.selectedActor}" />
+                                                <a4j:support event="oncomplete" actionListener="#{bean.onRemoveActor}" reRender="dtActors" />
+                                                <h:graphicImage value="#{i18n.resource_ICON_DELETE}" alt="#{msgs.planning_REMOVE_ACTOR}" title="#{msgs.planning_REMOVE_ACTOR}" />
+                                            </a4j:commandLink>
+                                        </rich:column>
+                                    </rich:dataTable>
+                                </h:panelGrid>
+                            </rich:tab>
+
+                            <rich:tab id="tabBriefing" label="#{msgs.planning_ASSIGNMENT_BRIEFING}">
+                                <h:panelGrid id="pgBriefing" columnClasses="tabSheet" style="padding: 10px; width: 100%; text-align:center">
+                                    <rich:editor id="edBriefing" value="#{bean.assignment.assignmentBriefing}" theme="advanced" plugins="safari,spellchecker,inlinepopups,paste,fullscreen" rendered="true" skin="default" style="margin-left: 1%; margin-right: 1%" height="300" readonly="#{!bean.editable}" dialogType="window" inputElementType="input">
+                                        <f:param name="theme_advanced_buttons1" value="bold,italic,underline,separator,bullist,numlist,separator,outdent,indent,separator,cut,copy,paste,pastetext,pasteword,separator,spellchecker,separator,link,unlink,separator,fullscreen"/>
+                                        <f:param name="theme_advanced_buttons2" value=""/>
+                                        <f:param name="theme_advanced_buttons3" value=""/>
+                                        <f:param name="theme_advanced_toolbar_location" value="top"/>
+                                        <f:param name="theme_advanced_toolbar_align" value="left"/>
+                                        <f:param name="theme_advanced_resizing" value="true"/>
+                                        <f:param name="spellchecker_languages" value="+English=en" />
+                                        <f:param name="spellchecker_rpc_url" value="spell.check" />
+                                        <f:param name="spellchecker_report_misspellings" value="false" />
+                                        <f:param name="language" value="en" />
+                                        <f:param name="apply_source_formatting" value="false" />
+                                        <f:param name="remove_linebreaks" value="false" />
+                                        <f:param name="paste_use_dialog" value="true" />
+                                        <f:param name="paste_auto_cleanup_on_paste" value="true" />
+                                        <f:param name="forced_root_block" value="false" />
+                                        <f:param name="verify_html" value="true" />
+                                        <f:param name="fix_list_elements" value="true" />
+                                        <f:param name="width" value="98%" />
+                                    </rich:editor>
+                                    <h:outputText styleClass="italic" value="#{msgs.planning_ASSIGNMENT_BRIEFING_CHANGE}" rendered="#{bean.editMode}" />
+                                </h:panelGrid>
+                            </rich:tab>
+
+                            <rich:tab id="tabEvent" label="#{msgs.planning_ASSIGNMENT_EVENT}">
+
+                                <h:panelGrid id="pgEvent" columnClasses="tabSheet" style="padding: 10px; width: 100%">
+
+                                    <a4j:commandLink id="lnkSelectEvent" styleClass="dialogButton #{!bean.editable ? 'disabledTextButton' : ''}" value="#{msgs.planning_SELECT_EVENT}" reRender="frmEventSelection" ajaxSingle="true" rendered="#{bean.assignment.event == null}" oncomplete="if (#{converge:isAllValid()}){ #{rich:component('mpEventSelection')}.show(); return false; }" disabled="#{!bean.editable}" />
+
+                                    <h:outputText value="#{msgs.EVENT_SUMMARY}" rendered="#{bean.assignment.event != null}" />
+                                    <h:inputText value="#{bean.assignment.event.summary}" disabled="true" styleClass="text mediumInput" rendered="#{bean.assignment.event != null}" />
+
+                                    <h:outputText value="#{msgs.EVENT_START_TIME}" rendered="#{bean.assignment.event != null}" />
+
+                                    <rich:calendar id="calStartDate" value="#{bean.assignment.event.startDate.time}" popup="true" disabled="true" timeZone="#{userSession.user.timeZone}" rendered="#{bean.assignment.event != null}" datePattern="#{bean.assignment.event.allDayEvent ? msgs.FORMAT_DATE : msgs.FORMAT_DATE_AND_TIME}" />
+                                    <h:outputText value="#{msgs.EVENT_END_TIME}" rendered="#{bean.assignment.event != null}" />
+
+                                    <rich:calendar id="calEndDate" value="#{bean.assignment.event.endDate.time}" popup="true" disabled="true" timeZone="#{userSession.user.timeZone}" rendered="#{bean.assignment.event != null}" datePattern="#{bean.assignment.event.allDayEvent ? msgs.FORMAT_DATE : msgs.FORMAT_DATE_AND_TIME}" />
+                                    <h:outputText value="#{msgs.EVENT_ALL_DAY_EVENT}" rendered="#{bean.assignment.event != null}" />
+
+                                    <h:selectBooleanCheckbox value="#{bean.assignment.event.allDayEvent}" disabled="true" rendered="#{bean.assignment.event != null}" />
+
+                                    <h:outputText value="#{msgs.EVENT_LOCATION}" rendered="#{bean.assignment.event != null}" />
+                                    <h:inputText value="#{bean.assignment.event.location}" styleClass="text mediumInput" disabled="true" rendered="#{bean.assignment.event != null}" />
+
+                                    <h:outputText value="#{msgs.EVENT_CATEGORY}" rendered="#{bean.assignment.event != null}" />
+                                    <h:selectOneMenu value="#{bean.assignment.event.category}" styleClass="mediumInput" disabled="true" rendered="#{bean.assignment.event != null}">
+                                        <f:selectItem itemLabel="" itemValue="" />
+                                        <f:selectItems value="#{common.eventCategoriesAsStrings}" />
+                                    </h:selectOneMenu>
+
+                                    <h:outputText value="#{msgs.EVENT_DESCRIPTION}" rendered="#{bean.assignment.event != null}" />
+                                    <h:inputTextarea value="#{bean.assignment.event.description}" styleClass="text mediumTextArea" disabled="true" rendered="#{bean.assignment.event != null}"/>
+
+                                </h:panelGrid>
+                            </rich:tab>
+
+                            <rich:tab id="tabPlacement" label="#{msgs.newsitem_PLACEMENT}">
+                                <h:panelGrid id="pgPlacement" columnClasses="tabSheet" style="padding: 10px; width: 100%">
+
+                                    <rich:dataTable id="dtAssignmentPlacements" value="#{bean.assignment.placements}" var="placement" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
+
+                                        <rich:column styleClass="columnIcon center">
+                                            <f:facet name="header"></f:facet>
+                                            <h:graphicImage value="#{res.EDITION_OPEN_ICON}" title="#{msgs.EDITION_OPEN}" alt="#{msgs.EDITION_OPEN}" rendered="#{placement.edition.open}"  />
+                                            <h:graphicImage value="#{res.EDITION_CLOSED_ICON}" title="#{msgs.EDITION_CLOSED}" alt="#{msgs.EDITION_CLOSED}" rendered="#{!placement.edition.open}"  />
+                                        </rich:column>
+
+                                        <rich:column sortBy="#{placement.outlet.title}">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.OUTLET}" />
+                                            </f:facet>
+                                            <h:outputText value="#{placement.outlet.title}" />
+                                        </rich:column>
+
+                                        <rich:column styleClass="columnDate left" sortBy="#{placement.edition.publicationDate}">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.DATE_DAY}" />
+                                            </f:facet>
+                                            <h:outputText value="#{placement.edition.publicationDate.time}">
+                                                <f:convertDateTime timeZone="#{userSession.user.timeZone}" pattern="EEEE" />
+                                            </h:outputText>
+                                        </rich:column>
+
+                                        <rich:column styleClass="columnDate left" sortBy="#{placement.edition.publicationDate}" sortOrder="ASCENDING">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.DATE}" />
+                                            </f:facet>
+                                            <h:outputText value="#{placement.edition.publicationDate.time}">
+                                                <f:convertDateTime timeZone="#{userSession.user.timeZone}" pattern="#{msgs.FORMAT_SHORT_DATE}" />
+                                            </h:outputText>
+                                        </rich:column>
+
+                                        <rich:column styleClass="columnDate left" sortBy="#{placement.edition.publicationDate}">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.TIME}" />
+                                            </f:facet>
+                                            <h:outputText value="#{placement.edition.publicationDate.time}">
+                                                <f:convertDateTime timeZone="#{userSession.user.timeZone}" pattern="#{msgs.FORMAT_SHORT_TIME}" />
+                                            </h:outputText>
+                                        </rich:column>
+
+                                        <rich:column styleClass="left" sortBy="#{placement.section.name}">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.newsitem_SECTION}" />
+                                            </f:facet>
+                                            <h:outputText value="#{placement.section.name}" title="#{placement.section.fullName}" />
+                                        </rich:column>
+
+                                        <rich:column styleClass="columnMediumNumber right" sortBy="#{placement.start}">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.newsitem_START}" />
+                                            </f:facet>
+                                            <h:outputText value="#{placement.start}" />
+                                        </rich:column>
+
+                                        <rich:column styleClass="columnMediumNumber right" sortBy="#{placement.position}">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.newsitem_POSITION}" />
+                                            </f:facet>
+                                            <h:outputText value="#{placement.position}" />
+                                        </rich:column>
+
+                                        <rich:column styleClass="columnOneButton center">
+                                            <f:facet name="header">
+                                                <a4j:commandButton styleClass="button smallButton" value="#{msgs.NEW}" ajaxSingle="true" reRender="frmAssignmentPlacementDialog" actionListener="#{bean.onNewPlacement}" oncomplete="#{rich:component('mpAssignmentPlacement')}.show();" />
+                                            </f:facet>
+                                            <a4j:commandButton styleClass="button smallButton" value="#{msgs.MODIFY}" ajaxSingle="true" reRender="frmAssignmentPlacementDialog" oncomplete="#{rich:component('mpAssignmentPlacement')}.show();">
+                                                <f:setPropertyActionListener target="#{bean.selectedNewsItemPlacement}" value="#{placement}" />
+                                                <f:setPropertyActionListener target="#{bean.editionDate}" value="#{placement.edition.publicationDate.time}" />
+                                            </a4j:commandButton>
+                                        </rich:column>
+                                    </rich:dataTable>                                    
+
+                                </h:panelGrid>
+                            </rich:tab>
+                        </rich:tabPanel>
+
+                        <h:panelGroup styleClass="dialogueButtons" id="grpAssignmentDetailsButtons">
+                            <a4j:commandLink id="lnkSaveAssignment" styleClass="dialogButton #{!bean.editable ? 'disabledTextButton' : ''}" value="#{msgs.SAVE}" disabled="#{!bean.editable}" actionListener="#{bean.onSaveAssignment}" reRender="frmPage" oncomplete="if (#{converge:isAllValid()}){ #{rich:component('mpAssignmentDetails')}.hide(); return false; }" />
+                            <a4j:commandLink id="lnkApplyAssignment" styleClass="dialogButton #{!bean.editable ? 'disabledTextButton' : ''}" value="#{msgs.APPLY}" disabled="#{!bean.editable}" actionListener="#{bean.onApplyAssignment}" reRender="frmPage, pgAssignmentDetails" />
+                            <a4j:commandLink id="lnkDeleteAssignment" rendered="#{bean.editMode}" disabled="#{!bean.editable}" onclick="if (confirm('#{msgs.planning_ASSIGNMENT_PROMPT_DELETE}') != true){ return false; };" actionListener="#{bean.onDeleteAssignment}" styleClass="dialogButton #{!bean.editable ? 'disabledTextButton' : ''}" ajaxSingle="true" value="#{msgs.DELETE}" reRender="frmPage" >
+                                <rich:componentControl for="mpAssignmentDetails" operation="hide" event="oncomplete" />
+                            </a4j:commandLink>
+                            <a4j:commandLink id="lnkRemoveEvent" title="#{msgs.planning_REMOVE_EVENT_TOOLTIP}" disabled="#{!bean.editable}" styleClass="dialogButton #{!bean.editable ? 'disabledTextButton' : ''}" value="#{msgs.planning_REMOVE_EVENT}" reRender="pgEvent, grpAssignmentDetailsButtons" rendered="#{enableRemoveEvent &amp;&amp; bean.assignment.event != null}" ajaxSingle="true" actionListener="#{bean.onRemoveEventFromAssignment}" />
+                            <a4j:commandLink id="lnkCloseAssignmentDetails" styleClass="dialogButton" value="#{msgs.CANCEL}" actionListener="#{bean.onCancelAssignment}" immediate="true">
+                                <rich:componentControl for="mpAssignmentDetails" operation="hide" event="oncomplete" />
+                            </a4j:commandLink>
+                        </h:panelGroup>
+                    </h:panelGrid>
+
+                </rich:modalPanel>
+            </h:form>
+
+
+            <h:form id="frmAssignmentPlacementDialog">
+                <rich:modalPanel id="mpAssignmentPlacement" autosized="true" domElementAttachment="parent" >
+                    <f:facet name="header">
+                        <h:panelGroup>
+                            <h:outputText value="#{msgs.PLACEMENT}" />
+                        </h:panelGroup>
+                    </f:facet>
+                    <h:panelGrid style="width: 450px;" id="pgPlacement" rendered="#{bean.selectedNewsItemPlacement != null}">
+
+                        <rich:tabPanel id="tpPlacement" switchType="client" activeTabClass="tabActive" inactiveTabClass="tabInactive">
+
+                            <rich:tab label="#{msgs.PLACEMENT}">
+
+                                <h:panelGrid columnClasses="tabSheet" styleClass="tabSheetGrid">
+                                    <h:outputText value="#{msgs.OUTLET}" />
+                                    <h:selectOneMenu id="somOutlets" value="#{bean.selectedNewsItemPlacement.outlet}" converter="#{converters.outletConverter}"
+                                                     valueChangeListener="#{bean.onChangePlacementOutlet}">
+                                        <f:selectItem itemLabel="" />
+                                        <f:selectItems value="#{userSession.myNewsItemsOutlets}" />
+                                        <a4j:support event="onchange" reRender="somEditions, somEditionSection" ajaxSingle="true" />
+                                    </h:selectOneMenu>
+
+                                    <h:outputText value="#{msgs.newsitem_EDITION}" />
+                                    <h:column>
+                                        <rich:calendar id="calEditionDate" value="#{bean.editionDate}" popup="true" timeZone="#{userSession.user.timeZone}" datePattern="#{msgs.FORMAT_DATE}">
+                                            <a4j:support event="onchanged" reRender="somEditions" />
+                                        </rich:calendar>
+                                        <h:selectOneMenu id="somEditions" value="#{bean.editionCandidate}" converter="#{converters.editionCandidateConverter}">
+                                            <f:selectItem itemLabel="" />
+                                            <f:selectItems value="#{bean.editionCandidates}" />
+                                        </h:selectOneMenu>
+                                    </h:column>
+
+                                    <h:outputText value="#{msgs.newsitem_SECTION}" />
+                                    <h:selectOneMenu id="somEditionSection" value="#{bean.selectedNewsItemPlacement.section}" converter="#{converters.sectionConverter}">
+                                        <f:selectItem itemLabel="" />
+                                        <f:selectItems value="#{bean.sections}" />
+                                    </h:selectOneMenu>
+
+                                    <h:outputText value="#{msgs.newsitem_START}" />
+                                    <rich:inputNumberSpinner value="#{bean.selectedNewsItemPlacement.start}" />
+
+                                    <h:outputText value="#{msgs.newsitem_POSITION}" />
+                                    <rich:inputNumberSpinner value="#{bean.selectedNewsItemPlacement.position}" />
+
+                                </h:panelGrid>
+
+                            </rich:tab>
+                        </rich:tabPanel>
+
+                        <h:panelGroup styleClass="dialogueButtons">
+                            <a4j:commandLink id="lnkSavePlacement" styleClass="dialogButton" value="#{msgs.CREATE}" actionListener="#{bean.onAddPlacement}" reRender="dtAssignmentPlacements" oncomplete="if (#{converge:isAllValid()}){ #{rich:component('mpAssignmentPlacement')}.hide(); return false; }" rendered="#{bean.selectedNewsItemPlacement.id == null}" />
+                            <a4j:commandLink id="lnkUpdatePlacement" styleClass="dialogButton" value="#{msgs.UPDATE}" actionListener="#{bean.onUpdatePlacement}" reRender="dtAssignmentPlacements" oncomplete="if (#{converge:isAllValid()}){ #{rich:component('mpAssignmentPlacement')}.hide(); return false; }" rendered="#{bean.selectedNewsItemPlacement.id != null}" />
+                            <a4j:commandLink id="lnkRemovePlacement" styleClass="dialogButton" value="#{msgs.REMOVE_FROM_PLACEMENT}" actionListener="#{bean.onRemovePlacement}" reRender="dtPlacements" oncomplete="if (#{converge:isAllValid()}){ #{rich:component('mpAssignmentPlacement')}.hide(); return false; }" rendered="#{bean.selectedNewsItemPlacement.id != null}" />
+                            <h:commandLink id="lnkCancelPlacement" styleClass="dialogButton" value="#{msgs.CANCEL}" onclick="#{rich:component('mpPlacement')}.hide(); return false;" />
+                        </h:panelGroup>
+                    </h:panelGrid>
+
+                </rich:modalPanel>
+            </h:form>
+
+        </a4j:region>
+    </ui:composition>
+</jsp:root>

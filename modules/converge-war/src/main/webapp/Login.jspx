@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jsp:root version="2.0" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/WEB-INF/facelets/templates/login.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{i18n.LogIn_PAGE_TITLE}" />
+        </ui:define>
+        <ui:define name="body">
+            <form method="POST" action="j_security_check">
+                <h:panelGrid columns="2" columnClasses="right, left">
+                    <h:outputText value="#{i18n.LogIn_USERNAME}:" />
+                    <h:column>
+                        <input id="loginUsername" name="j_username" type="text" class="text" style="width: 200px;" title="#{i18n.LogIn_USERNAME_TOOLTIP}" />
+                    </h:column>
+                    <h:outputText value="#{i18n.LogIn_PASSWORD}:" />
+                    <h:column>
+                        <input id="loginPassword" name="j_password" type="password" class="text" style="width: 200px;" title="#{i18n.LogIn_PASSWORD_TOOLTIP}" />
+                    </h:column>
+                </h:panelGrid>
+
+                <h:panelGrid columns="2" columnClasses="loginErrorColumn, loginButtonColumn" styleClass="loginStatusTable">
+                    <h:column>
+                        <h:outputText styleClass="errorMessage" value="#{param['err'] == 1 ? i18n.LogIn_ERROR : ''}" />
+                        <h:outputText styleClass="infoMessage" value="#{param['err'] == 2 ? i18n.LogIn_OFF : ''}" />
+                    </h:column>
+                    <input type="submit" class="button smallButton" value="#{i18n.LogIn_BUTTON}" title="#{i18n.LogIn_BUTTON_TOOLTIP}" />
+                </h:panelGrid>
+            </form>
+            <script type="text/javascript">
+                document.getElementById("loginUsername").focus();
+            </script>
+        </ui:define>
+    </ui:composition>
+</jsp:root>

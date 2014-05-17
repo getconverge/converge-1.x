@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jsp:root version="2.0" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:c="http://java.sun.com/jstl/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags" xmlns:v="http://converge.i2m.dk">
+
+    <ui:composition template="/WEB-INF/facelets/templates/reporting.xhtml">
+
+        <ui:define name="body">
+            <a4j:keepAlive beanName="reportActivity" />
+
+            <a4j:outputPanel ajaxRendered="true">
+                <v:message />
+            </a4j:outputPanel>
+
+
+            <h:form id="frmReporting">
+                <converge:moduleHeader moduleTitle="#{i18n.ReportActivity_PAGE_TITLE}" />
+                <div class="moduleContent">
+
+                    <h:panelGrid columns="2">
+                        <h:outputText value="#{i18n.ReportActivity_USER_ROLE}" />
+                        <h:selectOneMenu value="#{reportActivity.userRole}" converter="#{converters.userRoleConverter}">
+                            <f:selectItems value="#{common.userRoles}"/>
+                        </h:selectOneMenu>
+
+                        <h:outputText value="#{i18n.ReportActivity_USER_ROLE_SUBMITTER}" />
+                        <h:selectBooleanCheckbox value="#{reportActivity.userRoleSubmitter}" title="#{i18n.ReportActivity_USER_ROLE_SUBMITTER_TOOLTIP}" />
+
+                        <h:outputText value="#{i18n.ReportActivity_START_DATE}" />
+                        <rich:calendar id="calStartDate" value="#{reportActivity.startDate}" popup="true" timeZone="#{common.systemTimeZone}" datePattern="#{i18n.Generic_FORMAT_DATE}" />
+
+                        <h:outputText value="#{i18n.ReportActivity_END_DATE}" />
+                        <rich:calendar id="calEndDate" value="#{reportActivity.endDate}" popup="true" timeZone="#{common.systemTimeZone}" datePattern="#{i18n.Generic_FORMAT_DATE}" />
+
+                        <h:outputText value="" />
+                        <h:column>
+                            <a4j:commandButton actionListener="#{reportActivity.onGenerateReport}" value="#{i18n.ReportActivity_GENERATE_REPORT}" reRender="frmOutput" styleClass="button mediumButton" />
+                            <a4j:status>
+                                <f:facet name="start">
+                                    <h:graphicImage value="#{i18n.resource_ICON_AJAX_LOADING}" />
+                                </f:facet>
+                                <f:facet name="stop">
+                                    <h:graphicImage value="#{i18n.resource_ICON_EMPTY}" width="16" height="16" />
+                                </f:facet>
+                            </a4j:status>
+                        </h:column>
+                    </h:panelGrid>
+                </div>
+            </h:form>
+            <converge:moduleSpacer />                
+
+            <h:form id="frmOutput">
+                <a4j:outputPanel rendered="#{reportActivity.report.rowCount > 0}">
+                    <converge:moduleHeader moduleTitle="#{i18n.ReportActivity_OUTPUT}" />
+                    <div class="moduleContent">
+
+                        <h:panelGrid style="float: right; margin-bottom: 5px;" columns="2">
+                            <h:commandLink actionListener="#{reportActivity.onDownloadXls}" >
+                                <h:graphicImage url="/images/mime/application/vnd.ms-excel.gif" />
+                            </h:commandLink>
+
+                            <h:commandLink actionListener="#{reportActivity.onDownloadXls}" >
+                                <h:outputText value="#{i18n.ReportActivity_DOWNLOAD_AS_SPREADSHEET}" />
+                            </h:commandLink>
+                        </h:panelGrid>
+
+                        <rich:dataTable id="dtReport" value="#{reportActivity.report}" var="report" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
+
+                            <rich:column sortBy="#{report.user.fullName}" sortOrder="ASCENDING">
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.ReportActivity_REPORT_NAME}" />
+                                </f:facet>
+                                <a4j:commandLink ajaxSingle="true" reRender="frmNewsItems">
+                                    <h:outputText value="#{report.user.fullName} (#{report.user.username})" />
+                                    <f:setPropertyActionListener target="#{reportActivity.selectedUserActivity}" value="#{report}" />
+                                    <rich:componentControl for="mpNewsItems" operation="show" event="oncomplete" />
+                                </a4j:commandLink>
+                            </rich:column>
+
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.ReportActivity_REPORT_SUBMITTED}" escape="false" />
+                                </f:facet>
+                                <h:outputText value="#{report.numberOfNewsItemsSubmitted}" />
+                            </rich:column>
+
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.ReportActivity_REPORT_SUBMITTED_WITH_MEDIA}" escape="false" />
+                                </f:facet>
+                                <h:outputText value="#{report.numberOfNewsItemsSubmittedWithMediaItems}" />
+                            </rich:column>
+
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.ReportActivity_REPORT_USED}" />
+                                </f:facet>
+                                <h:outputText value="#{report.numberOfNewsItemsUsed}" />
+                            </rich:column>
+
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.ReportActivity_REPORT_USED_WITH_MEDIA}" />
+                                </f:facet>
+                                <h:outputText value="#{report.numberOfNewsItemsUsedWithMedia}" />
+                            </rich:column>
+
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.ReportActivity_REPORT_USED_PERCENT}" />
+                                </f:facet>
+                                <h:outputFormat value="{0,number,#%}">
+                                    <f:param value="#{report.usage}" />
+                                </h:outputFormat>
+                            </rich:column>
+
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{i18n.ReportActivity_REPORT_USED_PERCENT_WITH_MEDIA}" />
+                                </f:facet>
+                                <h:outputFormat value="{0,number,#%}">
+                                    <f:param value="#{report.usageWithMedia}" />
+                                </h:outputFormat>
+                            </rich:column>
+                        </rich:dataTable>
+                    </div>
+                </a4j:outputPanel>
+            </h:form>
+
+            <h:form id="frmNewsItems">
+                <rich:modalPanel id="mpNewsItems" autosized="true" domElementAttachment="parent" >
+                    <f:facet name="header">
+                        <h:panelGroup>
+                            <h:outputText value="#{reportActivity.selectedUserActivity.user.fullName}"  rendered="#{reportActivity.selectedUserActivity != null}" />
+                        </h:panelGroup>
+                    </f:facet>
+                    <h:panelGrid style="width: 500px;" id="pgNewsItems"  rendered="#{reportActivity.selectedUserActivity != null}">
+
+                        <rich:tabPanel id="tpNewsItems" switchType="client" activeTabClass="tabActive" inactiveTabClass="tabInactive">
+
+                            <rich:tab label="Used (#{reportActivity.selectedUserActivity.numberOfNewsItemsUsed})">
+
+                                <h:panelGrid columnClasses="tabSheet" styleClass="tabSheetGrid">
+
+                                    <rich:dataTable id="dtUsed" value="#{reportActivity.selectedUserActivity.used}" var="newsItem" styleClass="table pluginPropertiesList" headerClass="tableHeader" rowClasses="odd, even">
+
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="ID" />
+                                            </f:facet>
+                                            <h:outputLink value="#{facesContext.externalContext.request.contextPath}/NewsItem.xhtml" target="_blank">
+                                                <f:param name="id" value="#{newsItem.id}" />
+                                                <h:outputText value="#{newsItem.id}" />
+                                            </h:outputLink>
+                                        </rich:column>
+
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Title" />
+                                            </f:facet>
+                                            <h:outputText value="#{newsItem.title}" />
+                                        </rich:column>
+
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Word count" />
+                                            </f:facet>
+                                            <h:outputText value="#{newsItem.wordCount}" />
+                                        </rich:column>
+                                    </rich:dataTable>
+
+                                </h:panelGrid>
+
+                            </rich:tab>
+
+                            <rich:tab label="Used with Media (#{reportActivity.selectedUserActivity.numberOfNewsItemsUsedWithMedia})">
+
+                                <h:panelGrid columnClasses="tabSheet" styleClass="tabSheetGrid">
+                                    <rich:dataTable id="dtUsedWithMedia" value="#{reportActivity.selectedUserActivity.usedWithMedia}" var="newsItem" styleClass="table pluginPropertiesList" headerClass="tableHeader" rowClasses="odd, even">
+
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="ID" />
+                                            </f:facet>
+                                            <h:outputLink value="#{facesContext.externalContext.request.contextPath}/NewsItem.xhtml" target="_blank">
+                                                <f:param name="id" value="#{newsItem.id}" />
+                                                <h:outputText value="#{newsItem.id}" />
+                                            </h:outputLink>
+                                        </rich:column>
+
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Title" />
+                                            </f:facet>
+                                            <h:outputText value="#{newsItem.title}" />
+                                        </rich:column>
+
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Word count" />
+                                            </f:facet>
+                                            <h:outputText value="#{newsItem.wordCount}" />
+                                        </rich:column>
+
+                                    </rich:dataTable>
+
+                                </h:panelGrid>
+
+                            </rich:tab>
+
+                            <rich:tab label="Submitted (#{reportActivity.selectedUserActivity.numberOfNewsItemsSubmitted})">
+
+                                <h:panelGrid columnClasses="tabSheet" styleClass="tabSheetGrid">
+                                    <rich:dataTable id="dtSubmitted" value="#{reportActivity.selectedUserActivity.submitted}" var="newsItem" styleClass="table pluginPropertiesList" headerClass="tableHeader" rowClasses="odd, even">
+
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="ID" />
+                                            </f:facet>
+                                            <h:outputLink value="#{facesContext.externalContext.request.contextPath}/NewsItem.xhtml" target="_blank">
+                                                <f:param name="id" value="#{newsItem.id}" />
+                                                <h:outputText value="#{newsItem.id}" />
+                                            </h:outputLink>
+                                        </rich:column>
+
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Title" />
+                                            </f:facet>
+                                            <h:outputText value="#{newsItem.title}" />
+                                        </rich:column>
+
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Word count" />
+                                            </f:facet>
+                                            <h:outputText value="#{newsItem.wordCount}" />
+                                        </rich:column>
+
+                                    </rich:dataTable>
+
+                                </h:panelGrid>
+
+                            </rich:tab>
+
+                            <rich:tab label="Submitted with Media (#{reportActivity.selectedUserActivity.numberOfNewsItemsSubmittedWithMediaItems})">
+
+                                <h:panelGrid columnClasses="tabSheet" styleClass="tabSheetGrid">
+                                    <rich:dataTable id="dtSubmittedWithMedia" value="#{reportActivity.selectedUserActivity.submittedWithMedia}" var="newsItem" styleClass="table pluginPropertiesList" headerClass="tableHeader" rowClasses="odd, even">
+
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="ID" />
+                                            </f:facet>
+                                            <h:outputLink value="#{facesContext.externalContext.request.contextPath}/NewsItem.xhtml" target="_blank">
+                                                <f:param name="id" value="#{newsItem.id}" />
+                                                <h:outputText value="#{newsItem.id}" />
+                                            </h:outputLink>
+                                        </rich:column>
+
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Title" />
+                                            </f:facet>
+                                            <h:outputText value="#{newsItem.title}" />
+                                        </rich:column>
+
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Word count" />
+                                            </f:facet>
+                                            <h:outputText value="#{newsItem.wordCount}" />
+                                        </rich:column>
+
+                                    </rich:dataTable>
+
+                                </h:panelGrid>
+
+                            </rich:tab>
+
+                        </rich:tabPanel>
+
+                        <h:panelGroup styleClass="dialogueButtons">
+                            <h:commandLink id="lnkClose" styleClass="dialogButton" value="#{i18n.Generic_CLOSE}" onclick="#{rich:component('mpNewsItems')}.hide(); return false;" />
+                        </h:panelGroup>
+                    </h:panelGrid>
+
+                </rich:modalPanel>
+            </h:form>
+
+            <converge:moduleSpacer />
+        </ui:define>
+
+    </ui:composition>
+</jsp:root>

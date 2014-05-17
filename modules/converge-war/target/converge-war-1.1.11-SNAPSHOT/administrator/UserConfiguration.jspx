@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<jsp:root version="2.0" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:c="http://java.sun.com/jstl/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:v="http://converge.i2m.dk" xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+
+    <ui:composition template="/WEB-INF/facelets/templates/administration.xhtml">
+        <ui:define name="title">#{i18n.administrator_UserConfiguration_TITLE}</ui:define>
+
+        <ui:define name="body">
+
+            <a4j:keepAlive beanName="administrator_UserConfiguration" />
+
+            <a4j:outputPanel ajaxRendered="true">
+                <v:message />
+            </a4j:outputPanel>
+
+            <h:form id="frmUserConfiguration">
+                <converge:moduleHeader moduleTitle="#{i18n.administrator_UserConfiguration_LDAP_SETTINGS}" />
+                <div class="moduleContent">
+                    <h:outputText value="#{i18n.administrator_UserConfiguration_LDAP_SETTINGS_HELP}" escape="false" style="font-size: 0.9em;" />
+                    <h:panelGrid columns="2" style="width: 100%; margin-top: 10px;" columnClasses="left, left">
+                        <h:outputText value="#{i18n.administrator_UserConfiguration_LDAP_CONNECTION_FACTORY}" />
+                        <h:inputText value="#{administrator_UserConfiguration.ldapConnectionFactory}" styleClass="text" style="width: 100%" />
+
+                        <h:outputText value="#{i18n.administrator_UserConfiguration_LDAP_PROVIDER_URL}" />
+                        <h:inputText value="#{administrator_UserConfiguration.ldapProviderUrl}" styleClass="text" style="width: 100%" />
+
+                        <h:outputText value="#{i18n.administrator_UserConfiguration_LDAP_CONNECT_TIMEOUT}" />
+                        <h:inputText value="#{administrator_UserConfiguration.ldapConnectTimeout}" styleClass="text" style="width: 100%" />
+
+                        <h:outputText value="#{i18n.administrator_UserConfiguration_LDAP_READ_TIMEOUT}" />
+                        <h:inputText value="#{administrator_UserConfiguration.ldapReadTimeout}" styleClass="text" style="width: 100%" />
+
+                        <h:outputText value="#{i18n.administrator_UserConfiguration_LDAP_SECURITY_PRINCIPAL}" />
+                        <h:inputText value="#{administrator_UserConfiguration.ldapSecurityPrincipal}" styleClass="text" style="width: 100%" />
+
+                        <h:outputText value="#{i18n.administrator_UserConfiguration_LDAP_SECURITY_CREDENTIALS}" />
+                        <h:inputText value="#{administrator_UserConfiguration.ldapSecurityCredentials}" styleClass="text" style="width: 100%" />
+
+                        <h:outputText value="#{i18n.administrator_UserConfiguration_LDAP_SECURITY_AUTHENTICATION}" />
+                        <h:inputText value="#{administrator_UserConfiguration.ldapSecurityAuthentication}" styleClass="text" style="width: 100%" />
+
+                        <h:outputText value="#{i18n.administrator_UserConfiguration_LDAP_BASE}" />
+                        <h:inputText value="#{administrator_UserConfiguration.ldapBase}" styleClass="text" style="width: 100%" />
+
+                        <h:outputText value="#{i18n.administrator_UserConfiguration_LDAP_GROUP_USERS}" />
+                        <h:inputText value="#{administrator_UserConfiguration.ldapGroupUsers}" styleClass="text" style="width: 100%" />
+
+                        <h:outputText value="#{i18n.administrator_UserConfiguration_LDAP_GROUP_ADMINISTRATORS}" />
+                        <h:inputText value="#{administrator_UserConfiguration.ldapGroupAdministrators}" styleClass="text" style="width: 100%" />
+
+                    </h:panelGrid>
+                    <h:panelGrid columns="1" columnClasses="right">
+                        <a4j:commandButton id="btnSaveLdapSettings" styleClass="button dynamicButton" value="#{i18n.Generic_SAVE}" 
+                                           actionListener="#{administrator_UserConfiguration.onSaveLdapSettings}" reRender="frmUserConfiguration" />
+                    </h:panelGrid>
+                </div>
+                <converge:moduleSpacer />
+
+                <converge:moduleHeader moduleTitle="#{i18n.administrator_UserConfiguration_LDAP_FIELD_MAPPING}" />
+                <div class="moduleContent">
+                    <h:outputText value="#{i18n.administrator_UserConfiguration_LDAP_FIELD_MAPPING_HELP}" escape="false" style="font-size: 0.9em;" />
+                    <h:panelGrid columns="2" style="width: 100%; margin-top: 10px;" columnClasses="left, left">
+
+                        <h:outputText value="#{i18n.administrator_UserConfiguration_LDAP_USER_MAPPING_USERNAME}" />
+                        <h:inputText value="#{administrator_UserConfiguration.ldapUserMappingUsername}" styleClass="text" style="width: 100%" />
+
+                        <h:outputText value="#{i18n.administrator_UserConfiguration_LDAP_USER_MAPPING_FIRST_NAME}" />
+                        <h:inputText value="#{administrator_UserConfiguration.ldapUserMappingFirstName}" styleClass="text" style="width: 100%" />
+                        
+                        <h:outputText value="#{i18n.administrator_UserConfiguration_LDAP_USER_MAPPING_LAST_NAME}" />
+                        <h:inputText value="#{administrator_UserConfiguration.ldapUserMappingLastName}" styleClass="text" style="width: 100%" />
+                        
+                        <h:outputText value="#{i18n.administrator_UserConfiguration_LDAP_USER_MAPPING_COMMON_NAME}" />
+                        <h:inputText value="#{administrator_UserConfiguration.ldapUserMappingCommonName}" styleClass="text" style="width: 100%" />
+                        
+                        <h:outputText value="#{i18n.administrator_UserConfiguration_LDAP_USER_MAPPING_JOB_TITLE}" />
+                        <h:inputText value="#{administrator_UserConfiguration.ldapUserMappingJobTitle}" styleClass="text" style="width: 100%" />
+                        
+                        <h:outputText value="#{i18n.administrator_UserConfiguration_LDAP_USER_MAPPING_ORGANISATION}" />
+                        <h:inputText value="#{administrator_UserConfiguration.ldapUserMappingOrganisation}" styleClass="text" style="width: 100%" />
+                        
+                        <h:outputText value="#{i18n.administrator_UserConfiguration_LDAP_USER_MAPPING_MOBILE}" />
+                        <h:inputText value="#{administrator_UserConfiguration.ldapUserMappingMobile}" styleClass="text" style="width: 100%" />
+                        
+                        <h:outputText value="#{i18n.administrator_UserConfiguration_LDAP_USER_MAPPING_PHONE}" />
+                        <h:inputText value="#{administrator_UserConfiguration.ldapUserMappingPhone}" styleClass="text" style="width: 100%" />
+                        
+                        <h:outputText value="#{i18n.administrator_UserConfiguration_LDAP_USER_MAPPING_EMAIL}" />
+                        <h:inputText value="#{administrator_UserConfiguration.ldapUserMappingEmail}" styleClass="text" style="width: 100%" />
+                        
+                        <h:outputText value="#{i18n.administrator_UserConfiguration_LDAP_USER_MAPPING_LANGUAGE}" />
+                        <h:inputText value="#{administrator_UserConfiguration.ldapUserMappingLanguage}" styleClass="text" style="width: 100%" />
+                        
+                        <h:outputText value="#{i18n.administrator_UserConfiguration_LDAP_USER_MAPPING_JPEG_PHOTO}" />
+                        <h:inputText value="#{administrator_UserConfiguration.ldapUserMappingJpegPhoto}" styleClass="text" style="width: 100%" />
+
+                        <h:outputText value="#{i18n.administrator_UserConfiguration_LDAP_GROUP_MAPPING_NAME}" />
+                        <h:inputText value="#{administrator_UserConfiguration.ldapGroupMappingName}" styleClass="text" style="width: 100%" />
+
+                        <h:outputText value="#{i18n.administrator_UserConfiguration_LDAP_GROUP_MAPPING_MEMBEROF}" />
+                        <h:inputText value="#{administrator_UserConfiguration.ldapGroupMappingMemberOf}" styleClass="text" style="width: 100%" />
+
+                    </h:panelGrid>
+                    <h:panelGrid columns="1" columnClasses="right">
+                        <a4j:commandButton id="btnSaveLdapFieldMapping" styleClass="button dynamicButton" value="#{i18n.Generic_SAVE}" 
+                                           actionListener="#{administrator_UserConfiguration.onSaveLdapFieldMappings}" reRender="frmUserConfiguration" />
+                    </h:panelGrid>
+                </div>
+                <converge:moduleSpacer />
+            </h:form>
+
+        </ui:define>
+    </ui:composition>
+</jsp:root>

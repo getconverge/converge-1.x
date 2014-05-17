@@ -1,0 +1,16 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://java.sun.com/jstl/core" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+    <h:form id="frmMyAssignments">
+        <converge:moduleHeader moduleTitle="#{i18n.currentAssignmentsModule_TITLE}" />
+        <div class="moduleContent">
+            <h:panelGrid columns="2">
+                <h:graphicImage value="#{res.NEWS_ITEM_ICON}" />
+                <h:outputLink value="#{facesContext.externalContext.request.contextPath}/Inbox.xhtml">
+                    <h:outputFormat value="#{i18n.currentAssignmentsModule_X_ASSIGNMENTS_IN_INBOX}">
+                        <f:param value="#{dashboard.userAssignments.rowCount}" />
+                    </h:outputFormat>
+                </h:outputLink>
+            </h:panelGrid>
+        </div>
+    </h:form>
+    <converge:moduleSpacer />
+</ui:composition>

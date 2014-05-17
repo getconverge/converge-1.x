@@ -1,0 +1,130 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<jsp:root version="2.0" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:c="http://java.sun.com/jstl/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:v="http://converge.i2m.dk" xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+
+    <ui:composition template="/WEB-INF/facelets/templates/administration.xhtml">
+        <ui:define name="title">#{i18n.Announcements_ANNOUNCEMENTS_TITLE}</ui:define>
+
+        <ui:define name="body">
+
+            <a4j:keepAlive beanName="administrator_Announcements" />
+
+            <a4j:outputPanel ajaxRendered="true">
+                <v:message />
+            </a4j:outputPanel>
+
+            <h:form id="frmAnnouncements">
+                <converge:moduleHeader moduleTitle="#{i18n.Announcements_ANNOUNCEMENTS_TITLE}" />
+                <div class="moduleContent">
+
+                    <h:panelGrid columns="2" columnClasses="left, right" style="width: 100%">
+                        <h:outputText value="" />
+                        <a4j:commandButton id="btnNew" styleClass="button dynamicButton" value="#{i18n.Announcements_Button_NEW}" actionListener="#{administrator_Announcements.onNew}" reRender="frmAnnouncementDetails">
+                            <rich:componentControl for="mpAnnouncementDetails" operation="show" event="oncomplete" />
+                        </a4j:commandButton>
+                    </h:panelGrid>
+
+                    <rich:dataTable id="dtAnnouncements" value="#{administrator_Announcements.announcements}" var="announcement" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
+                        <rich:column styleClass="center columnIcon">
+                            <f:facet name="header">
+                                <a4j:status id="staAnnouncements">
+                                    <f:facet name="start">
+                                        <h:graphicImage value="#{i18n.resource_ICON_AJAX_LOADING}" />
+                                    </f:facet>
+                                    <f:facet name="stop">
+                                        <h:graphicImage value="#{i18n.resource_ICON_EMPTY}" width="16" height="16" />
+                                    </f:facet>
+                                </a4j:status>
+                            </f:facet>
+                            <a4j:commandLink reRender="frmAnnouncementDetails">
+                                <f:setPropertyActionListener value="#{announcement}" target="#{administrator_Announcements.selectedAnnouncement}" />
+                                <rich:componentControl for="mpAnnouncementDetails" operation="show" event="oncomplete" />
+                                <h:graphicImage alt="#{i18n.Announcements_ANNOUNCEMENT_LABEL}" title="#{i18n.Announcements_ANNOUNCEMENT_LABEL}" value="#{i18n.resource_ICON_ALERT}" />
+                            </a4j:commandLink>
+                        </rich:column>
+
+                        <rich:column sortBy="#{announcement.title}">
+                            <f:facet name="header">
+                                <h:outputText value="#{i18n.Announcements_TITLE}" />
+                            </f:facet>
+                            <a4j:commandLink reRender="frmAnnouncementDetails">
+                                <f:setPropertyActionListener value="#{announcement}" target="#{administrator_Announcements.selectedAnnouncement}" />
+                                <rich:componentControl for="mpAnnouncementDetails" operation="show" event="oncomplete" />
+                                <h:outputText value="#{announcement.title}" />
+                            </a4j:commandLink>
+                        </rich:column>
+
+                        <rich:column styleClass="columnDateTime" sortBy="#{announcement.date}" sortOrder="DESCENDING">
+                            <f:facet name="header">
+                                <h:outputText value="#{i18n.Announcements_DATE}" />
+                            </f:facet>
+                            <h:outputText value="#{announcement.date.time}">
+                                <f:convertDateTime pattern="#{i18n.Generic_FORMAT_SHORT_DAY_AND_TIME}" timeZone="#{userSession.user.timeZone}" />
+                            </h:outputText>
+                        </rich:column>
+
+                        <rich:column styleClass="columnTiny" sortBy="#{announcement.published}">
+                            <f:facet name="header">
+                                <h:outputText value="#{i18n.Announcements_PUBLISHED}" />
+                            </f:facet>
+                            <h:graphicImage alt="#{i18n.Announcements_PUBLISHED}" title="#{i18n.Announcements_PUBLISHED}" value="#{i18n.resource_ICON_PUBLISHED}" rendered="#{announcement.published}" />
+                            <h:graphicImage alt="#{i18n.Announcements_UNPUBLISHED}" title="#{i18n.Announcements_UNPUBLISHED}" value="#{i18n.resource_ICON_UNPUBLISHED}" rendered="#{!announcement.published}" />
+                        </rich:column>
+                    </rich:dataTable>
+                </div>
+            </h:form>
+
+            <h:form id="frmAnnouncementDetails">
+                <rich:modalPanel id="mpAnnouncementDetails" autosized="true" domElementAttachment="parent">
+                    <f:facet name="header">
+                        <h:panelGroup>
+                            <h:outputText value="#{msgs.announcements_ANNOUNCEMENT_DETAIL}"></h:outputText>
+                        </h:panelGroup>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:panelGroup>
+                            <h:graphicImage id="imgCloseAnnouncementDetails" value="#{i18n.resource_ICON_DIALOGUE_CLOSE}" style="link" />
+                            <rich:componentControl for="mpAnnouncementDetails" attachTo="imgCloseAnnouncementDetails" operation="hide" event="onclick"/>
+                        </h:panelGroup>
+                    </f:facet>
+
+                    <h:panelGrid style="width: 480px;">
+
+                        <rich:tabPanel id="tpAnnouncementDetails" switchType="client" activeTabClass="tabActive" inactiveTabClass="tabInactive">
+
+                            <rich:tab label="#{i18n.Announcements_ANNOUNCEMENT_LABEL}">
+                                <h:panelGrid columnClasses="tabSheet" styleClass="tabSheetGrid">
+                                    <h:outputText value="#{i18n.Announcements_TITLE}" />
+                                    <h:inputText value="#{administrator_Announcements.selectedAnnouncement.title}" required="true" requiredMessage="#{i18n.Announcements_ANNOUNCEMENT_TITLE_REQUIRED}" styleClass="text mediumInput" />
+
+                                    <h:outputText value="#{i18n.Announcements_DESCRIPTION}" />
+                                    <h:inputTextarea value="#{administrator_Announcements.selectedAnnouncement.description}" styleClass="text mediumTextArea"/>
+
+                                    <h:outputText value="#{i18n.Announcements_PUBLISHED}" />
+                                    <h:selectBooleanCheckbox value="#{administrator_Announcements.selectedAnnouncement.published}" />
+
+                                    <h:outputText value="#{i18n.Announcements_DATE}" />
+                                    <rich:calendar id="calDate" value="#{administrator_Announcements.selectedAnnouncement.date.time}" popup="true" timeZone="#{userSession.user.timeZone}" datePattern="#{i18n.Generic_FORMAT_DATE_AND_TIME}" />
+
+                                    <h:outputText value="#{i18n.Announcements_IMAGE}" />
+                                    <h:inputText value="#{administrator_Announcements.selectedAnnouncement.thumb}" styleClass="text mediumInput" />
+                                </h:panelGrid>
+                            </rich:tab>
+                        </rich:tabPanel>
+
+                        <h:panelGroup styleClass="dialogueButtons">
+                            <a4j:commandLink id="lnkSaveAnnouncementDetails" styleClass="dialogButton" value="#{i18n.Generic_SAVE}" actionListener="#{administrator_Announcements.onSave}" reRender="frmAnnouncementDetails,dtAnnouncements" oncomplete="if (#{converge:isAllValid()}) { Richfaces.hideModalPanel('mpAnnouncementDetails'); return false;}" />
+                            <a4j:commandLink id="lnkApplyAnnouncementDetails" styleClass="dialogButton" value="#{i18n.Generic_APPLY}" reRender="frmAnnouncementDetails,dtAnnouncements" actionListener="#{administrator_Announcements.onSave}" />
+                            <a4j:commandLink id="lnkDeleteAnnouncementDetails" rendered="#{administrator_Announcements.editMode}" onclick="if (confirm('#{i18n.Announcements_DELETE_PROMPT}') != true){ return false; };" actionListener="#{administrator_Announcements.onDelete}" styleClass="dialogButton" value="#{i18n.Generic_DELETE}" reRender="frmAnnouncementDetails,dtAnnouncements">
+                                <rich:componentControl for="mpAnnouncementDetails" operation="hide" event="oncomplete" />
+                            </a4j:commandLink>
+                            <h:commandLink id="lnkCancelAnnouncementDetails" styleClass="dialogButton" value="#{i18n.Generic_CANCEL}" onclick="#{rich:component('mpAnnouncementDetails')}.hide(); return false;" />
+                        </h:panelGroup>
+
+                    </h:panelGrid>
+
+                </rich:modalPanel>
+            </h:form>
+
+        </ui:define>
+    </ui:composition>
+</jsp:root>

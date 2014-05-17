@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<jsp:root version="2.0"
+          xmlns:html="http://www.w3.org/1999/xhtml"
+          xmlns:jsp="http://java.sun.com/JSP/Page"
+          xmlns:c="http://java.sun.com/jstl/core"
+          xmlns:ui="http://java.sun.com/jsf/facelets"
+          xmlns:h="http://java.sun.com/jsf/html"
+          xmlns:f="http://java.sun.com/jsf/core"
+          xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+          xmlns:a4j="http://richfaces.org/a4j"
+          xmlns:rich="http://richfaces.org/rich"
+          xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+    <ui:composition>
+
+        <rich:toolTip style="width: 350px;" styleClass="tooltip">
+            <h:panelGrid>
+                <h:outputText styleClass="smallHeading" value="#{value.summary}" />
+
+                <h:outputText value="#{value.description}" escape="false">
+                    <f:converter converterId="i2m.stringLineBreakConverter" />
+                </h:outputText>
+
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{msgs.EVENT_START_TIME}:" />
+                    <h:outputText value="#{value.startDate.time}">
+                        <f:convertDateTime timeZone="#{userSession.user.timeZone}"
+                                           pattern="#{value.allDayEvent ? msgs.FORMAT_SHORT_DATE : msgs.FORMAT_SHORT_DATE_AND_TIME}" />
+                    </h:outputText>
+
+                    <h:outputText value="#{msgs.EVENT_END_TIME}:" />
+                    <h:outputText value="#{value.endDate.time}">
+                        <f:convertDateTime timeZone="#{userSession.user.timeZone}"
+                                           pattern="#{value.allDayEvent ? msgs.FORMAT_SHORT_DATE : msgs.FORMAT_SHORT_DATE_AND_TIME}" />
+                    </h:outputText>
+
+                    <h:outputText value="#{msgs.EVENT_ALL_DAY_EVENT}:" />
+                    <h:outputText value="#{value.allDayEvent ? msgs.YES : msgs.NO}" />
+
+                    <h:outputText value="#{msgs.EVENT_LOCATION}:" />
+                    <h:outputText value="#{value.location}" />
+
+                    <h:outputText value="#{msgs.EVENT_CATEGORY}:" />
+                    <h:outputText value="#{value.category}" />
+
+                    <h:outputText value="#{msgs.EVENT_SUBMITTED_BY}:" />
+                    <h:outputText value="#{value.originator.fullName}" />
+
+                </h:panelGrid>
+            </h:panelGrid>
+        </rich:toolTip>
+    </ui:composition>
+</jsp:root>

@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<jsp:root version="2.0" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:c="http://java.sun.com/jstl/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" xmlns:converge="http://com.interactivemediamanagement.converge/tags">
+    <ui:composition>
+        <div id="convergeMediaPlayer#{id}">Loading the player ...</div>
+        <script type="text/javascript"> 
+            jwplayer("convergeMediaPlayer#{id}").setup({
+                flashplayer: "#{facesContext.externalContext.request.contextPath}/scripts/jwplayer/player.swf", 
+                file: "#{value}", 
+                plugins: {
+                    sharing: { link: false }}
+            <f:verbatim rendered="#{width != null}">
+                ,width: #{width} 
+        </f:verbatim>
+            <f:verbatim rendered="#{height != null}">
+                    ,height: #{height} 
+        </f:verbatim>
+            <f:verbatim rendered="#{controlbar != null}">
+                    ,controlbar: "#{controlbar}"
+        </f:verbatim>
+            });
+        </script>
+    </ui:composition>
+</jsp:root>
