@@ -23,12 +23,12 @@
             <version>${project.version}</version>
             <type>war</type>
         </dependency>
-                <dependency>
+        <!-- dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>converge-ws</artifactId>
             <version>${project.version}</version>
             <type>war</type>
-        </dependency>
+        </dependency-->
     </dependencies>
     <build>
         <finalName>converge</finalName>
@@ -53,12 +53,12 @@
                             <contextRoot>/converge</contextRoot>
                             <bundleFileName>converge-war.war</bundleFileName>
                         </webModule>
-                        <webModule>
+                        <!-- webModule>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>converge-ws</artifactId>
                             <contextRoot>/converge-ws</contextRoot>
                             <bundleFileName>converge-ws.war</bundleFileName>
-                        </webModule>
+                        </webModule -->
                         <ejbModule>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>converge-ejb</artifactId>
