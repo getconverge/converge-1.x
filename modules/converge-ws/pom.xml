@@ -43,12 +43,6 @@
 
     <repositories>
         <repository>
-            <id>m2.i2m.dk</id>
-            <name>Interactive Media Management Maven 2 Repository</name>
-            <url>http://m2.i2m.dk</url>
-        </repository>
-        
-        <repository>
             <id>jboss-public-repository-group</id>
             <name>JBoss Public Maven Repository Group</name>
             <url>https://repository.jboss.org/nexus/content/groups/public/</url>

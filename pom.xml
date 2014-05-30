@@ -107,9 +107,9 @@
     
     <distributionManagement>
         <repository>
-            <id>m2.i2m.dk</id>
-            <name>I2M Maven Artifact Repository</name>
-            <url>scp://m2.i2m.dk:/var/www/m2.i2m.dk</url>
+            <id>mvn.getconverge.com</id>
+            <name>GetConverge Maven Artifact Repository</name>
+            <url>scp://mvn.getconverge.com:/var/www/mvn</url>
         </repository>
     </distributionManagement>
     

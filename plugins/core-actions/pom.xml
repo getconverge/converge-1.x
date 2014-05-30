@@ -152,11 +152,6 @@
 
     <repositories>
         <repository>
-            <id>m2.i2m.dk</id>
-            <name>Interactive Media Management Maven 2 Repository</name>
-            <url>http://m2.i2m.dk</url>
-        </repository>
-        <repository>
             <id>maven2-repository.dev.java.net</id>
             <name>Java.net Maven 2 Repository</name>
             <url>http://download.java.net/maven/2</url>

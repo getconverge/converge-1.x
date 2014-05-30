@@ -68,9 +68,9 @@
 
     <repositories>
         <repository>
-            <id>m2.i2m.dk</id>
-            <name>Interactive Media Management Maven 2 Repository</name>
-            <url>http://m2.i2m.dk</url>
+            <id>mvn.getconverge.com</id>
+            <name>GetConverge Maven Repository</name>
+            <url>http://mvn.getconverge.com</url>
         </repository>
         <repository>
             <id>maven2-repository.dev.java.net</id>

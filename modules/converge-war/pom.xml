@@ -151,11 +151,6 @@
     </dependencies>
 
     <repositories>
-        <repository>
-            <id>m2.i2m.dk</id>
-            <name>Interactive Media Management Maven 2 Repository</name>
-            <url>http://m2.i2m.dk</url>
-        </repository>
         
         <repository>
             <id>jboss-public-repository-group</id>
