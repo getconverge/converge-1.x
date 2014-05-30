@@ -7,21 +7,21 @@
     <packaging>pom</packaging>
     <name>Converge</name>
     <inceptionYear>2006</inceptionYear>
-    <url>http://sourceforge.net/projects/convergeecms/</url>
+    <url>http://www.getconverge.com</url>
     <description>Converge is an editorial content management system for small and medium-size media houses who need to manage content for multiple outlets and re-publish it on multiple platforms (e.g. Websites, Mobile, Newsletters).</description>
 
     <organization>
-        <name>Interactive Media Management</name>
-        <url>http://www.i2m.dk/</url>
+        <name>Converge Consulting</name>
+        <url>http://www.getconverge.com/</url>
     </organization>
 
     <developers>
         <developer>
             <name>Allan Lykke Christensen</name>
             <id>alc</id>
-            <email>allan@i2m.dk</email>
-            <organization>Interactive Media Management</organization>
-            <organizationUrl>http://www.i2m.dk</organizationUrl>
+            <email>allan@getconverge.com</email>
+            <organization>Converge Consulting</organization>
+            <organizationUrl>http://www.getconverge.com</organizationUrl>
             <roles>
                 <role>Developer</role>
             </roles>
@@ -30,10 +30,20 @@
     </developers>
 
     <scm>
-        <url>http://scm.i2m.dk/converge-1.x/</url>
-        <developerConnection>scm:git:https://bitbucket.org/interactivemediamanagement/converge-1.x.git</developerConnection>
-        <connection>scm:git:git://bitbucket.org/interactivemediamanagement/converge-1.x.git</connection>
+        <url>https://github.com/allanlykkechristensen/converge-1.x</url>
+        <developerConnection>scm:git:https://github.com/allanlykkechristensen/converge-1.x.git</developerConnection>
+        <connection>scm:git:https://github.com/allanlykkechristensen/converge-1.x.git</connection>
     </scm>
+    
+    <issueManagement>
+        <system>Jira</system>
+        <url>https://getconverge.atlassian.net/browse/CON/</url>
+    </issueManagement>
+
+    <ciManagement>
+        <system>Jenkins</system>
+        <url>http://ci.getconverge.com</url>
+    </ciManagement>
     
     <build>
         <extensions>
