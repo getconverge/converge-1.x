@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 - 2012 Interactive Media Management
+ * Copyright (C) 2010 - 2014 Converge Consulting
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -276,9 +276,6 @@ public class NewsItem {
                 this.permission = nih.getPermission();
                 this.readOnly = nih.isReadOnly();
                 this.selectedNewsItem = nih.getNewsItem();
-//                if (selectedNewsItem.getEdition() != null && selectedNewsItem.getEdition().getPublicationDate() != null) {
-//                    setEditionDate(this.selectedNewsItem.getEdition().getPublicationDate().getTime());
-//                }
                 this.pullbackAvailable = nih.isPullbackAvailable();
                 this.fieldVisibible = nih.getFieldVisibility();
                 this.versions = new ListDataModel(nih.getVersions());
@@ -447,20 +444,6 @@ public class NewsItem {
                 Bundle.i18n.name(), "NewsItem_MEDIA_ATTACHMENT_UPDATED");
     }
 
-    public void onDeleteSelectedActor(ActionEvent event) {
-//        if (selectedActor != null) {
-//            try {
-//                selectedNewsItem = newsItemFacade.save(selectedNewsItem);
-//                selectedNewsItem = newsItemFacade.removeActorFromNewsItem(selectedActor);
-//                JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO, false, "The actor has been removed", null);
-//            } catch (LockingException ex) {
-//                JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_ERROR, false, ex.getMessage(), null);
-//            }
-//        } else {
-//            JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_ERROR, false, "Select actor", null);
-//        }
-    }
-
     public void onAddActor(ActionEvent event) {
         if (this.newActor != null && this.newActor.getRole() != null
                 && this.newActor.getUser() != null) {
@@ -502,7 +485,6 @@ public class NewsItem {
     }
 
     public void onSelectMetaData(ActionEvent event) {
-//        selectedNewsItem = newsItemFacade.checkin(selectedNewsItem);
         try {
             selectedNewsItem.getConcepts().add(selectedMetaDataConcept);
             selectedNewsItem = newsItemFacade.save(selectedNewsItem);
@@ -519,7 +501,6 @@ public class NewsItem {
     }
 
     public void onDeleteSelectedConcept(ActionEvent event) {
-//        selectedNewsItem = newsItemFacade.checkin(selectedNewsItem);
         try {
             selectedNewsItem.getConcepts().remove(selectedMetaDataConcept);
             selectedNewsItem = newsItemFacade.save(selectedNewsItem);
@@ -1076,9 +1057,6 @@ public class NewsItem {
         if (editionDate != null) {
 
             java.util.Calendar editionCal = java.util.Calendar.getInstance();
-//            if (getUser().getTimeZone() != null) {
-//                editionCal.setTimeZone(getUser().getTimeZone());
-//            }
             editionCal.setTime(editionDate);
 
             List<EditionCandidate> editions = outletFacade.
@@ -1249,13 +1227,6 @@ public class NewsItem {
 
             LOG.log(Level.FINE, "New media item rendition created: {0}",
                     mediaItemRendition.getId());
-
-            // Progress to Self-upload State
-//            WorkflowState selfUp = getSelectedCatalogue().getSelfUploadState();
-//            mediaItem = (MediaItem) contentItemFacade.step(mediaItem,
-//                    selfUp.getId(), true);
-//            LOG.log(Level.FINE, "MediaItem #{0} transitioned to State #{1}",
-//                    new Object[]{mediaItem.getId(), selfUp.getId()});
 
             this.uploadedMediaItem = mediaItem.getId();
             setSelectedMediaItemId(this.uploadedMediaItem);

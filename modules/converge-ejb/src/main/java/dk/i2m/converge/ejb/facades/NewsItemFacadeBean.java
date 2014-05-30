@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 - 2012 Interactive Media Management
+ * Copyright (C) 2010 - 2014 Converge Consulting
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -132,18 +132,12 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
         try {
             Calendar now = Calendar.getInstance();
 
-            Outlet outlet = newsItem.getOutlet();
-
-            // Ensure that the outlet is set
-//            if (outlet != null) {
-//                WorkflowState startState = outlet.getWorkflow().getStartState();
             WorkflowStateTransition transition = new WorkflowStateTransition(
                     newsItem, now, startState, ua);
             transition.setStoryVersion("");
             transition.setComment("");
             newsItem.getHistory().add(transition);
             newsItem.setCurrentState(startState);
-//            }
 
             newsItem.setUpdated(now);
             newsItem.setCreated(now);
@@ -368,12 +362,9 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
     /**
      * Gets items in the inbox for a particular user.
      * <p/>
-     * @param username
-* Username of the {@link UserAccount}
-     * @param start
-   * First record to retrieve
-     * @param limit
-   * Number of records to retrieve
+     * @param username Username of the {@link UserAccount}
+     * @param start First record to retrieve
+     * @param limit Number of records to retrieve
      * @return
      */
     @Override
@@ -393,8 +384,7 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
     /**
      * Gets items in the inbox for a particular user.
      * <p/>
-     * @param username
-* Username of the {@link UserAccount}
+     * @param username Username of the {@link UserAccount}
      * @return {@link List} of inbox items
      */
     @Override
