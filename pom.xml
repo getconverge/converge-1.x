@@ -27,12 +27,21 @@
             </roles>
             <timezone>+1</timezone>
         </developer>
+        <developer>
+            <name>Fred Ondieki</name>
+            <id>fredndk@gmail.com</id>
+            <email>fredndk@gmail.com</email>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>+3</timezone>
+        </developer>
     </developers>
 
     <scm>
-        <url>https://github.com/allanlykkechristensen/converge-1.x</url>
-        <developerConnection>scm:git:https://github.com/allanlykkechristensen/converge-1.x.git</developerConnection>
-        <connection>scm:git:https://github.com/allanlykkechristensen/converge-1.x.git</connection>
+        <url>https://github.com/getconverge/converge-1.x</url>
+        <developerConnection>scm:git:https://github.com/getconverge/converge-1.x.git</developerConnection>
+        <connection>scm:git:https://github.com/getconverge/converge-1.x.git</connection>
     </scm>
     
     <issueManagement>

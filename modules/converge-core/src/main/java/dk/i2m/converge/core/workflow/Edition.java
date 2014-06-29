@@ -52,7 +52,7 @@ import javax.persistence.TemporalType;
     @NamedQuery(name = Edition.FIND_BY_OUTLET_AND_DATE, query = "SELECT e FROM Edition AS e WHERE e.outlet = :outlet AND e.publicationDate >= :start_date AND e.publicationDate <= :end_date ORDER BY e.publicationDate ASC"),
     @NamedQuery(name = Edition.VIEW_EDITION_PLANNING, query = "SELECT NEW dk.i2m.converge.core.dto.EditionView(e.id, e.outlet.id, e.outlet.title, e.open, e.publicationDate, e.expirationDate, e.closeDate) FROM Edition e WHERE e.outlet = :outlet AND e.publicationDate >= :start_date AND e.publicationDate <= :end_date ORDER BY e.publicationDate ASC"),
     @NamedQuery(name = Edition.FIND_BY_STATUS, query = "SELECT e FROM Edition AS e WHERE e.open = :status AND e.outlet = :outlet ORDER BY e.publicationDate DESC"),
-    @NamedQuery(name = Edition.FIND_OVERDUE, query = "SELECT e FROM Edition e WHERE e.open = true AND e.closeDate IS NOT NULL AND e.closeDate <= CURRENT_TIMESTAMP")
+    @NamedQuery(name = Edition.FIND_OVERDUE, query = "SELECT e FROM Edition e WHERE e.open = true AND e.outlet.id IS NOT NULL AND  e.closeDate IS NOT NULL AND e.closeDate <= CURRENT_TIMESTAMP")
 })
 public class Edition implements Serializable {
 
