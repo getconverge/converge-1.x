@@ -20,6 +20,8 @@ import dk.i2m.converge.core.DataNotFoundException;
 import dk.i2m.converge.core.security.UserRole;
 import dk.i2m.converge.ejb.facades.UserFacadeLocal;
 import dk.i2m.jsf.JsfUtils;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.DataModel;
@@ -32,14 +34,12 @@ import javax.faces.model.ListDataModel;
  */
 public class Roles {
 
-    @EJB private UserFacadeLocal userFacade;
-
+    @EJB
+    private UserFacadeLocal userFacade;
+    private static final Logger LOG = Logger.getLogger(Roles.class.getName());
     private DataModel roles = null;
-
     private UserRole selected;
-
     private String selectedTab = "";
-
     private boolean update = false;
 
     /**
@@ -72,8 +72,7 @@ public class Roles {
     /**
      * Sets the selected {@link UserRole}.
      *
-     * @param selected
-     *          Selected {@link UserRole}
+     * @param selected Selected {@link UserRole}
      */
     public void setSelected(UserRole selected) {
         this.selected = selected;
@@ -108,9 +107,11 @@ public class Roles {
             this.selected = userFacade.findUserRoleById(Long.valueOf(id));
             setSelectedTab("tabDetails");
         } catch (DataNotFoundException ex) {
-            ex.printStackTrace();
+            LOG.log(Level.WARNING, "Could not Modify, Given Role ID was NOT Found in the Database");
+            LOG.log(Level.FINEST, "", ex);
         } catch (NumberFormatException ex) {
-            ex.printStackTrace();
+            LOG.log(Level.WARNING, "Could not Modify,value Entered is not could not be converted to a Number Instance");
+            LOG.log(Level.FINEST, "", ex);
         }
     }
 
