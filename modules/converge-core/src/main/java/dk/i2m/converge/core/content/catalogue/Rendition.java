@@ -1,20 +1,27 @@
 /*
- * Copyright (C) 2010 - 2011 Interactive Media Management
+ * Copyright (C) 2010 - 2014 Converge Consulting
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later 
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package dk.i2m.converge.core.content.catalogue;
 
 import java.io.Serializable;
-import java.util.List;
 import javax.persistence.*;
 
 /**
- * Entity representing a label that can be attached to a media item to identify its purpose.
+ * Entity representing a label that can be attached to a media item to identify
+ * its purpose.
  *
  * @author Allan Lykke Christensen
  */
@@ -43,7 +50,8 @@ public class Rendition implements Serializable {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "description") @Lob
+    @Column(name = "description")
+    @Lob
     private String description;
 
     @Column(name = "default_width")
@@ -51,9 +59,6 @@ public class Rendition implements Serializable {
 
     @Column(name = "default_height")
     private Integer defaultHeight;
-
-    @ManyToMany(mappedBy = "renditions")
-    private List<Catalogue> catalogues;
 
     /**
      * Creates a new {@link Rendtion}.
@@ -66,7 +71,7 @@ public class Rendition implements Serializable {
 
     /**
      * Gets the unique identifier of the {@link Rendition}.
-     * 
+     *
      * @return Unique identifier of the {@link Rendition}
      */
     public Long getId() {
@@ -75,18 +80,17 @@ public class Rendition implements Serializable {
 
     /**
      * Sets the unique identifier of the {@link Rendition}.
-     * 
-     * @param id
-     *          Unique identifier of the {@link Rendition}
+     *
+     * @param id Unique identifier of the {@link Rendition}
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * Gets the label of the {@link Rendition}. The label is used
-     * to display a "user-friendly" version of the {@link Rendition#name}.
-     * 
+     * Gets the label of the {@link Rendition}. The label is used to display a
+     * "user-friendly" version of the {@link Rendition#name}.
+     *
      * @return Label of the {@link Rendition}
      */
     public String getLabel() {
@@ -95,19 +99,18 @@ public class Rendition implements Serializable {
 
     /**
      * Sets the label of the {@link Rendition}.
-     * 
-     * @param label 
-     *          Label of the {@link Rendition}
+     *
+     * @param label Label of the {@link Rendition}
      */
     public void setLabel(String label) {
         this.label = label;
     }
 
     /**
-     * Gets the technical name of the {@link Rendition}. The technical 
-     * name is typically a short textual identifier used by plug-ins
-     * to identify items of this particular type.
-     * 
+     * Gets the technical name of the {@link Rendition}. The technical name is
+     * typically a short textual identifier used by plug-ins to identify items
+     * of this particular type.
+     *
      * @return Name of the {@link Rendition}
      */
     public String getName() {
@@ -116,9 +119,8 @@ public class Rendition implements Serializable {
 
     /**
      * Sets the name of the {@link Rendition}.
-     * 
-     * @param name 
-     *          Name of the {@link Rendition}
+     *
+     * @param name Name of the {@link Rendition}
      */
     public void setName(String name) {
         this.name = name;
@@ -126,7 +128,7 @@ public class Rendition implements Serializable {
 
     /**
      * Gets the description and purpose of the {@link Rendition}.
-     * 
+     *
      * @return Description of the {@link Rendition}
      */
     public String getDescription() {
@@ -135,9 +137,8 @@ public class Rendition implements Serializable {
 
     /**
      * Sets the description and purpose of the {@link Rendition}.
-     * 
-     * @param description 
-     *          Description of the {@link Rendition}
+     *
+     * @param description Description of the {@link Rendition}
      */
     public void setDescription(String description) {
         this.description = description;
@@ -145,7 +146,7 @@ public class Rendition implements Serializable {
 
     /**
      * Gets the default image height of this type of {@link Rendition}.
-     * 
+     *
      * @return Default image height
      */
     public Integer getDefaultHeight() {
@@ -154,9 +155,8 @@ public class Rendition implements Serializable {
 
     /**
      * Sets the default image height of this type of {@link Rendition}.
-     * 
-     * @param defaultHeight 
-     *          Default image height
+     *
+     * @param defaultHeight Default image height
      */
     public void setDefaultHeight(Integer defaultHeight) {
         this.defaultHeight = defaultHeight;
@@ -179,10 +179,7 @@ public class Rendition implements Serializable {
             return false;
         }
         final Rendition other = (Rendition) obj;
-        if (this.id != other.id && (this.id == null || !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return this.id == other.id || (this.id != null && this.id.equals(other.id));
     }
 
     @Override

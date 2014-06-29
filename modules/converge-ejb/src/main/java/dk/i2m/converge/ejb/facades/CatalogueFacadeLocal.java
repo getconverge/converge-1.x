@@ -75,8 +75,6 @@ public interface CatalogueFacadeLocal {
     void indexCatalogues() throws InvalidMediaRepositoryException,
             MediaRepositoryIndexingException;
 
-    void scanDropPoints();
-
     List<Catalogue> findWritableCatalogues();
 
     List<Rendition> findRenditions();

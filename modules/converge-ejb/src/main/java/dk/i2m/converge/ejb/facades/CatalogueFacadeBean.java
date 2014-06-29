@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 - 2012 Interactive Media Management
+ * Copyright (C) 2010 - 2014 Converge Consulting
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -240,7 +240,6 @@ public class CatalogueFacadeBean implements CatalogueFacadeLocal {
         }
 
         // Set-up the media item rendition
-        //MediaItemRendition mediaItemRendition = new MediaItemRendition();
         mediaItemRendition.setMediaItem(item);
         mediaItemRendition.setFilename(realFilename.toString());
         mediaItemRendition.setSize(file.length());
@@ -791,46 +790,6 @@ public class CatalogueFacadeBean implements CatalogueFacadeLocal {
         }
 
         return output;
-    }
-
-    /**
-     * Scans all the active catalogue drop points for files and processes new files.
-     */
-    @Override
-    public void scanDropPoints() {
-        //TODO: Drop point scanning not yet complete
-//        List<MediaRepository> catalogues = daoService.findAll(MediaRepository.class);
-//
-//        for (MediaRepository catalogue : catalogues) {
-//            if (catalogue.isEnabled() && !catalogue.isReadOnly()) {
-//                logger.log(Level.INFO, "Scanning ''{0}'' drop point [{1}]", new Object[]{catalogue.getName(), catalogue.getWatchLocation()});
-//                File dropPoint = new File(catalogue.getWatchLocation());
-//                if (!dropPoint.exists()) {
-//                    logger.log(Level.WARNING, "{0} does not exist", new Object[]{catalogue.getWatchLocation()});
-//                    continue;
-//                }
-//
-//                if (!dropPoint.isDirectory()) {
-//                    logger.log(Level.WARNING, "{0} is not a directory", new Object[]{catalogue.getWatchLocation()});
-//                    continue;
-//                }
-//
-//                for (File found : dropPoint.listFiles()) {
-//                    logger.log(Level.INFO, "Found ''{0}''", found.getName());
-//                    try {
-//                        Map<String, String> xmp = indexXmp(FileUtils.getBytes(found));
-//                        for (String key : xmp.keySet()) {
-//                            logger.log(Level.INFO, "{0} = {1}", new Object[]{key, xmp.get(key)});
-//                        }
-//
-//                    } catch (IOException ex) {
-//                        Logger.getLogger(MediaDatabaseFacadeBean.class.getName()).log(Level.SEVERE, null, ex);
-//                    } catch (CannotIndexException ex) {
-//                        Logger.getLogger(MediaDatabaseFacadeBean.class.getName()).log(Level.SEVERE, null, ex);
-//                    }
-//                }
-//            }
-//        }
     }
 
     /**
