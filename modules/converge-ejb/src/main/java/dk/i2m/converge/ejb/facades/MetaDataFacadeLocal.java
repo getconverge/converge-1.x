@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Interactive Media Management
+ * Copyright (C) 2010 - 2014 Converge Consulting
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,42 +91,6 @@ public interface MetaDataFacadeLocal {
     Concept findConceptByName(String name) throws DataNotFoundException;
 
     /**
-     * Stores a {@link Subject} in the database.
-     *
-     * @param subject
-     *          {@link Subject} to store in the database
-     * @return Created {@link Subject}
-     */
-    //Subject create(Subject subject);
-    /**
-     * Deletes a {@link Subject} from the database.
-     *
-     * @param id
-     *          Unique identifier of the {@link Subject}
-     */
-    //void deleteSubject(Long id);
-    /**
-     * Finds {@link Subject} by its unique identifier.
-     *
-     * @param id
-     *          Unique identifier of the {@link Subject}
-     * @return {@link Subject} matching the <code>id</code>
-     * @throws DataNotFoundException
-     *          If no {@link Subject} matches the <code>id</code>
-     *
-     */
-    //Subject findSubjectById(Long id) throws DataNotFoundException;
-    /**
-     * Finds a {@link Subject} by its title.
-     *
-     * @param title
-     *          Title of the {@link Subject}
-     * @return {@link Subject} matching the title.
-     * @throws DataNotFoundException
-     *          If a {@link Subject} could not be found matching the title
-     */
-    //Subject findSubjectByTitle(String title) throws DataNotFoundException;
-    /**
      * Gets a {@link List} of {@link Subject}s with a given <code>parent</code>.
      *
      * @param parent
@@ -137,20 +101,6 @@ public interface MetaDataFacadeLocal {
 
     List<Subject> findTopLevelSubjects();
 
-    /**
-     * Gets a {@link List} of {@link Subject}s.
-     *
-     * @return {@link List} of {@link Subject}s.
-     */
-    //List<Subject> getSubjects();
-    /**
-     * Updates a {@link Subject} in the database.
-     *
-     * @param subject
-     *          {@link Subject} to update in the database
-     * @return Updated {@link Subject}
-     */
-    //Subject update(Subject subject);
     /**
      * Imports a NAR {@link KnowledgeItem} into the subject database.
      *
