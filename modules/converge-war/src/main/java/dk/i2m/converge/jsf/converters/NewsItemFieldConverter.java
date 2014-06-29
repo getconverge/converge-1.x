@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010 alc
+ *  Copyright (C) 2010 - 2014 Converge Consulting
  * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,36 +20,21 @@ import dk.i2m.converge.core.content.NewsItemField;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import javax.faces.convert.ConverterException;
 
 /**
+ * JSF Converter for {@link NewsItemField} objects.
  *
- * @author alc
+ * @author Allan Lykke Christensen
  */
 public class NewsItemFieldConverter implements Converter {
 
     @Override
-    public Object getAsObject(FacesContext ctx, UIComponent comp, String value)
-            throws ConverterException {
+    public Object getAsObject(FacesContext ctx, UIComponent comp, String value) {
         return NewsItemField.valueOf(value);
     }
 
-    /**
-     * Converts the enumeration type to a unique string representation.
-     *
-     * @param ctx
-     *          Facelets context
-     * @param comp
-     *          Component using the converter
-     * @param obj
-     *          Object to convert
-     * @return String representation of the enumeration type
-     * @throws javax.faces.convert.ConverterException
-     *          If the convertion failed
-     */
     @Override
-    public String getAsString(FacesContext ctx, UIComponent comp, Object obj)
-            throws ConverterException {
+    public String getAsString(FacesContext ctx, UIComponent comp, Object obj) {
         if (obj == null) {
             return null;
         }
