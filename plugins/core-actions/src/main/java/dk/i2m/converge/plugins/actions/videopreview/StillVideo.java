@@ -37,16 +37,12 @@ import javax.imageio.ImageIO;
  */
 public class StillVideo {
 
+    private static final Logger LOG = Logger.getLogger(StillVideo.class.getName());
     private int width = 200;
-
     private long grabAt = -1;
-
     private String inputFilename = "";
-
     private int mVideoStreamIndex = -1;
-
     private boolean gotStill = false;
-
     private byte[] stillShot = null;
 
     /**
@@ -66,8 +62,8 @@ public class StillVideo {
      * number of sections into the video.
      *
      * @param grabAt Seconds into the video to grab the image
-     * @param width  Size of the extracted still video
-     * @param input  File location of the video
+     * @param width Size of the extracted still video
+     * @param input File location of the video
      */
     public StillVideo(long grabAt, int width, String input) {
         this.grabAt = grabAt;
@@ -112,7 +108,7 @@ public class StillVideo {
      * still image.
      *
      * @return {@code true} if a still image is available in
-     *         {@link StillVideo#getStill()} otherwise {@code false}
+     * {@link StillVideo#getStill()} otherwise {@code false}
      */
     public boolean isStillAvailable() {
         return gotStill;
@@ -170,7 +166,7 @@ public class StillVideo {
             try {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-                
+
                 int origWidth = image.getWidth();
 
                 if (origWidth > width && width != 0) {
@@ -195,7 +191,8 @@ public class StillVideo {
                 stillShot = baos.toByteArray();
                 baos.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                LOG.log(Level.WARNING, "Could not write the PNG image");
+                LOG.log(Level.FINEST, "", e);
             }
         }
     }
