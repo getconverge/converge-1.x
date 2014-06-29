@@ -22,6 +22,8 @@ import dk.i2m.converge.core.contacts.ContactAddress;
 import dk.i2m.converge.core.contacts.ContactEmail;
 import dk.i2m.converge.core.contacts.ContactPhone;
 import dk.i2m.converge.ejb.facades.ContactsFacadeLocal;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.DataModel;
@@ -34,19 +36,15 @@ import javax.faces.model.ListDataModel;
  */
 public class Contacts {
 
-    @EJB private ContactsFacadeLocal contactsFacade;
-
+    @EJB
+    private ContactsFacadeLocal contactsFacade;
     private DataModel contacts = null;
-
     private Contact selectedContact = null;
-
     private ContactPhone selectedContactPhone = new ContactPhone();
-
     private ContactPhone moveContactPhone = new ContactPhone();
-
     private ContactEmail selectedContactEmail = new ContactEmail();
-
     private ContactAddress selectedContactAddress = new ContactAddress();
+    private static final Logger LOG = Logger.getLogger(Contacts.class.getName());
 
     public DataModel getContacts() {
         if (contacts == null) {
@@ -95,8 +93,7 @@ public class Contacts {
     /**
      * Event handler for adding a new phone number to a contact.
      *
-     * @param event
-     *          Event that invoked the handler
+     * @param event Event that invoked the handler
      */
     public void onSavePhone(ActionEvent event) {
         if (selectedContactPhone != null) {
@@ -127,7 +124,8 @@ public class Contacts {
                 selectedContact = contactsFacade.findById(selectedContact.getId());
 
             } catch (DataNotFoundException ex) {
-                ex.printStackTrace();
+                LOG.log(Level.WARNING, "Could not Save Contact Address, Contact ID was not found in the Database {0}", selectedContact.getId());
+                LOG.log(Level.FINEST, "", ex);
             }
         }
     }
@@ -153,7 +151,8 @@ public class Contacts {
             selectedContact = contactsFacade.findById(selectedContact.getId());
 
         } catch (DataNotFoundException ex) {
-            ex.printStackTrace();
+            LOG.log(Level.WARNING, "Could not Delete Contact Email, Contact ID was not found in the Database {0}", selectedContact.getId());
+            LOG.log(Level.FINEST, "", ex);
         }
     }
 
@@ -164,7 +163,8 @@ public class Contacts {
             selectedContact = contactsFacade.findById(selectedContact.getId());
 
         } catch (DataNotFoundException ex) {
-            ex.printStackTrace();
+            LOG.log(Level.WARNING, "Could not Delete Contact Address, Contact ID  was not found in the Database {0}", selectedContact.getId());
+            LOG.log(Level.FINEST, "", ex);
         }
     }
 
