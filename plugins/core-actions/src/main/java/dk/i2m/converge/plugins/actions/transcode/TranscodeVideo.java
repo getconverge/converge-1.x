@@ -23,6 +23,8 @@ import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.mediatool.event.*;
 import com.xuggle.xuggler.*;
 import java.awt.image.BufferedImage;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Transcodes a video from one format to another.
@@ -36,6 +38,7 @@ public class TranscodeVideo {
     private int width;
     private int height;
     private IMediaWriter writer;
+    private static final Logger LOG = Logger.getLogger(TranscodeVideo.class.getName());
 
     public TranscodeVideo(String input, String output) {
         this.input = input;
@@ -69,7 +72,8 @@ public class TranscodeVideo {
         try {
             while (mediaReader.readPacket() == null) ;
         } catch (Throwable t) {
-            t.printStackTrace();
+            LOG.log(Level.WARNING, "Could NOT read Media Content");
+            LOG.log(Level.FINEST, "",t);
         }
     }
     
