@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010 Interactive Media Management
+ *  Copyright (C) 2010 - 2014 Converge Consulting
  * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,15 +26,16 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 
 /**
+ * JSF Converter for {@link EventCategory}.
  *
  * @author Allan Lykke Christensen
  */
 public class EventCategoryConverter implements Converter {
 
-    private static final Logger log = Logger.getLogger(EventCategoryConverter.class.
+    private static final Logger LOG = Logger.getLogger(EventCategoryConverter.class.
             getName());
 
-    private CalendarFacadeLocal calendarFacade;
+    private final CalendarFacadeLocal calendarFacade;
 
     public EventCategoryConverter(CalendarFacadeLocal calendarFacade) {
         this.calendarFacade = calendarFacade;
@@ -46,7 +47,7 @@ public class EventCategoryConverter implements Converter {
         try {
             return calendarFacade.findEventCategoryById(Long.valueOf(value));
         } catch (DataNotFoundException ex) {
-            log.log(Level.WARNING, "No matching event category", ex);
+            LOG.log(Level.WARNING, "No matching event category [{0}]", value);
             return null;
         }
     }
