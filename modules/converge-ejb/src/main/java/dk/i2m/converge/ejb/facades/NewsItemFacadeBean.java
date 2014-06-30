@@ -50,34 +50,33 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
 
     private static final Logger LOG = Logger.getLogger(NewsItemFacadeBean.class.
             getName());
-
-    @EJB private ConfigurationServiceLocal cfgService;
-
-    @EJB private DaoServiceLocal daoService;
-
-    @EJB private UserFacadeLocal userFacade;
-
-    @EJB private UserServiceLocal userService;
-
-    @EJB private NotificationServiceLocal notificationService;
-
-    @EJB private OutletFacadeLocal outletFacade;
-
-    @EJB private SearchEngineLocal searchEngine;
-
-    @EJB private PluginContextBeanLocal pluginContext;
-
-    @EJB private SystemFacadeLocal systemFacade;
-
-    @Resource private SessionContext ctx;
+    
+    @EJB
+    private ConfigurationServiceLocal cfgService;
+    @EJB
+    private DaoServiceLocal daoService;
+    @EJB
+    private UserFacadeLocal userFacade;
+    @EJB
+    private UserServiceLocal userService;
+    @EJB
+    private NotificationServiceLocal notificationService;
+    @EJB
+    private OutletFacadeLocal outletFacade;
+    @EJB
+    private SearchEngineLocal searchEngine;
+    @EJB
+    private PluginContextBeanLocal pluginContext;
+    @Resource
+    private SessionContext ctx;
 
     /**
      * Starts a new {@link NewsItem}.
      *
      * @param newsItem {@link NewsItem} to start.
      * @return Started {@link NewsItem}
-     * @throws WorkflowStateTransitionException If the workflow could not be started for the
-     * <code>newsItem</code>
+     * @throws WorkflowStateTransitionException If the workflow could not be
+     * started for the <code>newsItem</code>
      */
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -118,6 +117,8 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
             throw new DuplicateExecutionException("NewsItem #"
                     + newsItem.getId() + " already exist");
         } catch (DataNotFoundException ex) {
+            LOG.log(Level.WARNING, "News Item ID Does NOT Exist");
+            LOG.log(Level.FINEST, "", ex);
         }
 
         String uid = ctx.getCallerPrincipal().getName();
@@ -194,8 +195,8 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
      * Promotes the {@link NewsItem} in the workflow.
      *
      * @param newsItem {@link NewsItem} to promote
-     * @param step     Unique identifier of the next step
-     * @param comment  Comment from the sender
+     * @param step Unique identifier of the next step
+     * @param comment Comment from the sender
      * @return Promoted {@link NewsItem}
      * @throws WorkflowStateTransitionException If the next step is not legal
      */
@@ -293,7 +294,9 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
         return newsItem;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public NewsItem step(NewsItem newsItem, WorkflowState state, String comment)
             throws WorkflowStateTransitionException {
@@ -341,8 +344,7 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
     /**
      * Finds the current assignments of a given user.
      * <p/>
-     * @param username
-* Username of the user
+     * @param username Username of the user
      * @return {@link List} of current assignments
      */
     @Override
@@ -400,7 +402,9 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
         }
     }
 
-    /** {@inheritDoc } */
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public List<NewsItem> findByActiveUser(String username) {
         List<NewsItem> items = new ArrayList<NewsItem>();
@@ -525,18 +529,20 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
             }
         } catch (DataNotFoundException ex) {
             LOG.log(Level.WARNING, "Unknown user #{0}", new Object[]{username});
+            LOG.log(Level.FINEST, "", ex);
         }
 
         return deleted;
     }
 
     /**
-     * Determine if the given user is the original owner of the
-     * given {@link NewsItem}.
+     * Determine if the given user is the original owner of the given
+     * {@link NewsItem}.
      * <p/>
-     * @param item     {@link NewsItem} to check
+     * @param item {@link NewsItem} to check
      * @param username Username of the {@link UserAccount} to check
-     * @return {@code true} if {@code username} is the original owner of {@code item}
+     * @return {@code true} if {@code username} is the original owner of
+     * {@code item}
      */
     private boolean isOriginalOwner(NewsItem item, String username) {
         WorkflowState start = item.getOutlet().getWorkflow().getStartState();
@@ -557,7 +563,9 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
         return false;
     }
 
-    /** {@inheritDoc } */
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public List<NewsItem> findByStateAndOutlet(WorkflowState state,
             Outlet outlet) {
@@ -567,7 +575,9 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
                 params);
     }
 
-    /** {@inheritDoc } */
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public List<NewsItem> findByStateAndOutlet(String stateName, Outlet outlet) {
         Map params = QueryBuilder.with("outlet", outlet).and("stateName",
@@ -576,7 +586,9 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
                 NewsItem.FIND_BY_OUTLET_AND_STATE_NAME, params);
     }
 
-    /** {@inheritDoc } */
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public List<NewsItem> findByStateAndOutlet(WorkflowState state,
             Outlet outlet, int start, int results) {
@@ -586,7 +598,9 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
                 params, start, results);
     }
 
-    /** {@inheritDoc } */
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public boolean isNewsItemPublished(final Long newsItemId) throws
             DataNotFoundException {
@@ -600,7 +614,9 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
         }
     }
 
-    /** {@inheritDoc } */
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public List<NewsItem> findAssignmentsByOutlet(Outlet selectedOutlet) {
         Map<String, Object> params = QueryBuilder.with("outlet", selectedOutlet).
@@ -609,7 +625,9 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
                 params);
     }
 
-    /** {@inheritDoc } */
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public boolean deleteNewsItem(Long id) {
         try {
@@ -631,7 +649,9 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
         }
     }
 
-    /** {@inheritDoc } */
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public boolean deleteNewsItem(Long id, boolean safe) {
         if (safe) {
@@ -653,13 +673,17 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public NewsItemActor addActorToNewsItem(NewsItemActor actor) {
         return daoService.create(actor);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public NewsItem removeActorFromNewsItem(NewsItemActor actor) {
         Long newsItemId = actor.getNewsItem().getId();
@@ -672,7 +696,9 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ContentItemPermission getPermission(Long newsItemId, String username) {
         try {
@@ -734,7 +760,9 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
         return ContentItemPermission.UNAUTHORIZED;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<NewsItem> findVersions(Long newsItemId) {
         try {
@@ -752,7 +780,9 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
         return daoService.findWithNamedQuery(NewsItem.FIND_VERSIONS, parameters);
     }
 
-    /** {@inheritDoc } */
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public NewsItem save(NewsItem newsItem) throws LockingException {
         try {
@@ -766,7 +796,9 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
         }
     }
 
-    /** {@inheritDoc } */
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public NewsItem findNewsItemById(Long id) throws DataNotFoundException {
         return daoService.findById(NewsItem.class, id);
@@ -778,14 +810,18 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
         return daoService.findById(NewsItemPlacement.class, id);
     }
 
-    /** {@inheritDoc } */
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public boolean isCheckedOut(Long id) {
         return !daoService.findWithNamedQuery(NewsItem.FIND_CHECKED_IN_NEWS_ITEM,
                 QueryBuilder.with("id", id).parameters()).isEmpty();
     }
 
-    /** {@inheritDoc } */
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public NewsItem checkin(NewsItem newsItem) throws LockingException {
 
@@ -870,8 +906,10 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
      * Checks-out a {@link NewsItem} from the database.
      *
      * @param id Unique identifier of the {@link NewsItem}
-     * @return Checked-out {@link NewsItem} in a {@link NewsItemHolder} matching the given {@code id}
-     * @throws DataNotFoundException If no {@link NewsItem} could be found with the given {@code id}
+     * @return Checked-out {@link NewsItem} in a {@link NewsItemHolder} matching
+     * the given {@code id}
+     * @throws DataNotFoundException If no {@link NewsItem} could be found with
+     * the given {@code id}
      */
     @Override
     public NewsItemHolder checkout(Long id) throws DataNotFoundException {
@@ -967,7 +1005,9 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
                 checkedOut, pullbackAvailable, fieldVisibility);
     }
 
-    /** {@inheritDoc } */
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public boolean revokeLock(final Long id) {
         int affected = daoService.executeQuery(NewsItem.REVOKE_LOCK,
@@ -980,7 +1020,9 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
         }
     }
 
-    /** {@inheritDoc } */
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public int revokeLocks(final String username) {
         try {
@@ -996,13 +1038,17 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
         }
     }
 
-    /** {@inheritDoc } */
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public int revokeAllLocks() {
         return daoService.executeQuery(NewsItem.REVOKE_ALL_LOCKS);
     }
 
-    /** {@inheritDoc } */
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public void pullback(Long id) throws LockingException,
             WorkflowStateTransitionException {
@@ -1070,32 +1116,42 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
         }
     }
 
-    /** {@inheritDoc } */
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public MediaItem create(MediaItem mediaItem) {
         mediaItem.setCreated(java.util.Calendar.getInstance());
         return daoService.create(mediaItem);
     }
 
-    /** {@inheritDoc } */
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public NewsItemMediaAttachment create(NewsItemMediaAttachment attachment) {
         return daoService.create(attachment);
     }
 
-    /** {@inheritDoc } */
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public NewsItemMediaAttachment update(NewsItemMediaAttachment attachment) {
         return daoService.update(attachment);
     }
 
-    /** {@inheritDoc } */
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public void deleteMediaAttachmentById(Long id) {
         daoService.delete(NewsItemMediaAttachment.class, id);
     }
 
-    /** {@inheritDoc } */
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public NewsItem findNewsItemFromArchive(Long id) throws
             DataNotFoundException {
