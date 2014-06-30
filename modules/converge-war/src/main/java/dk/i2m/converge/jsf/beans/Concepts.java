@@ -260,6 +260,8 @@ public class Concepts {
             fctx.responseComplete();
         } catch (IOException ex) {
             ex.printStackTrace();
+            log.log(Level.WARNING, "Writing the Excel Document was NOT Successfull");
+            log.log(Level.FINEST, "", ex);
         }
     }
 
