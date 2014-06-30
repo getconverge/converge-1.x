@@ -20,6 +20,8 @@ import dk.i2m.converge.core.security.Privilege;
 import dk.i2m.converge.core.security.SystemPrivilege;
 import dk.i2m.converge.ejb.facades.UserFacadeLocal;
 import dk.i2m.converge.core.DataNotFoundException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -30,6 +32,7 @@ import javax.faces.convert.Converter;
  * @author Allan Lykke Christensen
  */
 public class SystemPrivilegeConverter implements Converter {
+    private static final Logger LOG = Logger.getLogger(SystemPrivilegeConverter.class.getName());
 
     private UserFacadeLocal userFacade;
 
@@ -37,15 +40,25 @@ public class SystemPrivilegeConverter implements Converter {
         this.userFacade = userFacade;
     }
 
+    /**
+     *
+     * @param fc
+     * @param uic
+     * @param string
+     * @return
+     */
+    @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String string) {
         try {
             return userFacade.findPrivilegeById(string);
         } catch (DataNotFoundException ex) {
-            ex.printStackTrace();
+            LOG.log(Level.WARNING, "Pririvilegde ID was not Found In the Database");
+            LOG.log(Level.FINEST, "",ex);
             return null;
         }
     }
 
+    @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object o) {
         if (o instanceof Privilege) {
             return ((Privilege) o).getId().name();
