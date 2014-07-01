@@ -82,10 +82,8 @@ public class UserActivity {
         List<NewsItem> used = new ArrayList<NewsItem>();
         for (NewsItem item : submitted) {
             for (NewsItemMediaAttachment attachment : item.getMediaAttachments()) {
-//                if (attachment.getMediaItem().getOwner().equals(user)) {
                 used.add(item);
                 break;
-//                }
             }
         }
         return used;
@@ -109,7 +107,6 @@ public class UserActivity {
         List<NewsItem> used = new ArrayList<NewsItem>();
         for (NewsItem item : submitted) {
             for (NewsItemMediaAttachment attachment : item.getMediaAttachments()) {
-                //              if (attachment.getMediaItem().getOwner().equals(user)) {
                 if (!item.getPlacements().isEmpty()) {
 
                     for (NewsItemPlacement p : item.getPlacements()) {
@@ -121,7 +118,6 @@ public class UserActivity {
 
                 }
                 break;
-//                }
             }
         }
         return used;
