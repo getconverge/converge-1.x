@@ -19,6 +19,8 @@ package dk.i2m.converge.core.utils;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Comparator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -29,6 +31,8 @@ import org.apache.commons.beanutils.PropertyUtils;
  * @author Allan Lykke Christensen
  */
 public class BeanComparator implements Comparator<Object>, Serializable {
+    
+    private static final Logger LOG = Logger.getLogger(BeanComparator.class.getName());
 
     /** Field to sort by. */
     private String sortField = "";
@@ -91,11 +95,11 @@ public class BeanComparator implements Comparator<Object>, Serializable {
             field1 = PropertyUtils.getNestedProperty(o1, this.sortField);
             field2 = PropertyUtils.getNestedProperty(o2, this.sortField);
         } catch (NoSuchMethodException e) {
-            System.err.println(this.sortField + " does not exist.");
+            LOG.log(Level.SEVERE, "{0} does not exist.", this.sortField);
         } catch (IllegalAccessException e) {
-            System.err.println("Access restricted to " + this.sortField);
+            LOG.log(Level.SEVERE, "Access restricted to {0}", this.sortField);
         } catch (InvocationTargetException e) {
-            System.err.println(this.sortField + " could not be invoked.");
+            LOG.log(Level.SEVERE, "{0} could not be invoked.", this.sortField);
         }
 
 
@@ -115,12 +119,11 @@ public class BeanComparator implements Comparator<Object>, Serializable {
                 result = (Integer) MethodUtils.invokeMethod(
                         field1, "compareTo", field2);
             } catch (NoSuchMethodException e) {
-                System.err.println("Bean (" + field1.getClass().getName() +
-                        ") does not contain a compareTo method.");
+                LOG.log(Level.SEVERE, "Bean ({0}) does not contain a compareTo method.", field1.getClass().getName());
             } catch (IllegalAccessException e) {
-                System.err.println("Access to compareTo is restricted.");
+                LOG.log(Level.SEVERE, "Access to compareTo is restricted.");
             } catch (InvocationTargetException e) {
-                System.err.println("compareTo could not be invoked.");
+                LOG.log(Level.SEVERE, "compareTo could not be invoked.");
             }
         }
 
