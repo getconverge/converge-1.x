@@ -350,7 +350,6 @@ public class JoomlaConnection {
             Object[] params = new Object[]{username, password};
 
             client.executeAsync(XMLRPC_METHOD_LIST_CATEGORIES, params, callback);
-            //Object[] cats = (Object[]) client.execute(XMLRPC_METHOD_LIST_CATEGORIES, params);
 
             logger.log(Level.INFO, "Calling {0} and waiting for response (Timeout: {1} seconds)", new Object[]{XMLRPC_METHOD_LIST_CATEGORIES, callTimeout});
             Object[] cats = (Object[]) callback.waitForResponse();
@@ -401,7 +400,6 @@ public class JoomlaConnection {
             Object[] params = new Object[]{username, password, subfolder, filename, filedata};
 
             client.executeAsync(XMLRPC_METHOD_NEW_MEDIA, params, callback);
-            //String location = (String) client.execute(XMLRPC_METHOD_NEW_MEDIA, params);
 
             String location = (String) callback.waitForResponse();
 
