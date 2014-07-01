@@ -273,9 +273,7 @@ public class SearchEngineBean implements SearchEngineLocal {
             solrQuery.addFacetField(IndexField.LOCATION.getName());
             solrQuery.addFacetField(IndexField.POINT_OF_INTEREST.getName());
 
-//            for (UserRole userRole : userFacade.getUserRoles()) {
-//                solrQuery.addFacetField(userRole.getName());
-//            }
+
 
             solrQuery.addFilterQuery(filterQueries);
             solrQuery.setFacetMinCount(1);
