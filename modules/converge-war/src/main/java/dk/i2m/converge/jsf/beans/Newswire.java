@@ -71,7 +71,6 @@ public class Newswire {
 
     private NewswireService selectedService;
 
-    //private String search = "";
     private DataModel newsService = null;
 
     private DataModel news = null;
@@ -106,7 +105,6 @@ public class Newswire {
 
     private String basketTag = "";
 
-    //  private String searchType = "type:Story";
     private SearchResults results = new SearchResults();
 
     private List<String> filterQueries = new ArrayList<String>();
