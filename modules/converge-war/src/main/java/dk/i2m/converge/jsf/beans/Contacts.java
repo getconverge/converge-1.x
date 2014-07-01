@@ -106,8 +106,7 @@ public class Contacts {
     public void onSaveEmail(ActionEvent event) {
         if (selectedContactEmail != null) {
             selectedContactEmail.setContact(selectedContact);
-            //selectedContactEmail = contactsFacade.create(selectedContactEmail);
-            //selectedContactEmail = new ContactEmail();
+            
             selectedContact.getEmails().add(selectedContactEmail);
 
             selectedContact = contactsFacade.update(selectedContact);
@@ -134,14 +133,7 @@ public class Contacts {
         selectedContact.getPhones().remove(selectedContactPhone);
         selectedContact = contactsFacade.update(selectedContact);
 
-//        contactsFacade.deleteContactPhone(selectedContactPhone.getId());
-//        selectedContactPhone = new ContactPhone();
-//        try {
-//            selectedContact = contactsFacade.findById(selectedContact.getId());
-//
-//        } catch (DataNotFoundException ex) {
-//            ex.printStackTrace();
-//        }
+
     }
 
     public void onDeleteContactEmail(ActionEvent event) {
