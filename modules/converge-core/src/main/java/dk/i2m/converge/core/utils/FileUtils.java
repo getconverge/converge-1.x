@@ -190,9 +190,7 @@ public class FileUtils {
         byte[] array = tmpOut.toByteArray();
 
         //Lines below used to test if file is corrupt
-        //FileOutputStream fos = new FileOutputStream("C:\\abc.pdf");
-        //fos.write(array);
-        //fos.close();
+       
 
         return array;
     }
