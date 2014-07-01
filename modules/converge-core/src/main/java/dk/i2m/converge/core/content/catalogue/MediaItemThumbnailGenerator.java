@@ -52,7 +52,7 @@ public class MediaItemThumbnailGenerator {
             throw new ThumbnailGeneratorException("MediaItem is null");
         }
 
-        String contentType = null; // = mediaItem.getContentType();
+        String contentType = null; 
 
         if (contentType == null) {
             throw new UnknownMediaItemException("Content type not set on media item");
