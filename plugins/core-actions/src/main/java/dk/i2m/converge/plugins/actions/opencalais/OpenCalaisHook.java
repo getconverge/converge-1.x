@@ -62,9 +62,7 @@ public class OpenCalaisHook extends CatalogueHook {
             CatalogueHookInstance instance) throws CatalogueEventException {
 
         // Check that we only re-act to the Upload of new renditions
-//        if (event.getType() != CatalogueEvent.Event.UploadRendition) {
-//            return;
-//        }
+
 
         instanceProperties = instance.getPropertiesAsMap();
 
