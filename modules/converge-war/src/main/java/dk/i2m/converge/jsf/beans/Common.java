@@ -360,21 +360,7 @@ public class Common {
         return map;
     }
 
-//    private Map<String, Concept> getMetadataTypeWithType(Class clazz) {
-//        List<Concept> concepts = metaDataFacade.findConceptByType(clazz);
-//        Map<String, Concept> map = new LinkedHashMap<String, Concept>();
-//
-//
-//        String typeName = JsfUtils.getResourceBundle().getString(clazz.getName()
-//                + "_NAME");
-//
-//        for (Concept concept : concepts) {
-//            String label = concept.getName() + " (" + typeName + ")";
-//            map.put(StringUtils.abbreviate(label, 40), concept);
-//        }
-//
-//        return map;
-//    }
+
     public String getApplicationVersion() {
         return systemFacade.getApplicationVersion();
     }
