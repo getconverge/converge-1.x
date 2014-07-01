@@ -233,7 +233,6 @@ public class ReportingFacadeBean implements ReportingFacadeLocal {
 
         wb.setRepeatingRowsAndColumns(0, 0, 0, 0, 0);
         wb.setPrintArea(0, 0, 8, 0, overviewSheetRow);
-        //overviewSheet.setFitToPage(true);        
         overviewSheet.setAutobreaks(true);
         overviewSheet.getPrintSetup().setFitWidth((short) 1);
         overviewSheet.getPrintSetup().setFitHeight((short) 500);
