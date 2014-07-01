@@ -494,7 +494,6 @@ public class NewswireServiceBean implements NewswireServiceLocal {
                     values.put(e2.getKey(), e2.getValue());
                 }
 
-//                String type = (String) values.get("type");
 
                 SearchResult hit = new SearchResult();
 
