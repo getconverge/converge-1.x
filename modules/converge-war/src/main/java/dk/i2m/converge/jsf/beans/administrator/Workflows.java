@@ -156,12 +156,7 @@ public class Workflows extends BaseBean {
     public void setSelectedWorkflowStep(WorkflowStep selectedWorkflowStep) {
         this.selectedWorkflowStep = selectedWorkflowStep;
 
-//        if (selectedWorkflowStep.getValidation() != null) {
-//            workflowStepRequiredFields = new ArrayList<NewsItemField>();
-//            for (WorkflowStepValidation validation : selectedWorkflowStep.getValidation()) {
-//                workflowStepRequiredFields.add(validation.getField());
-//            }
-//        }
+
     }
 
     public String getSelectedWorkflowStepTab() {
@@ -445,12 +440,7 @@ public class Workflows extends BaseBean {
      */
     public void onSaveWorkflowStep(ActionEvent event) {
         if (isWorkflowStepAddMode()) {
-//            for (NewsItemField nif : this.workflowStepRequiredFields) {
-//                WorkflowStepValidation validation = new WorkflowStepValidation();
-//                validation.setField(nif);
-//                validation.setWorkflowStep(selectedWorkflowStep);
-//                selectedWorkflowStep.getValidation().add(validation);
-//            }
+
 
             selectedWorkflowStep = workflowFacade.createWorkflowStep(
                     selectedWorkflowStep);
@@ -458,16 +448,7 @@ public class Workflows extends BaseBean {
                     Bundle.i18n.name(),
                     "administrator_Workflows_WORKFLOW_STEP_CREATED");
         } else {
-//            // Remove existing validation
-//            selectedWorkflowStep.getValidation().clear();
-//
-//            // Add new validation
-//            for (NewsItemField nif : this.workflowStepRequiredFields) {
-//                WorkflowStepValidation validation = new WorkflowStepValidation();
-//                validation.setField(nif);
-//                validation.setWorkflowStep(selectedWorkflowStep);
-//                selectedWorkflowStep.getValidation().add(validation);
-//            }
+
 
             selectedWorkflowStep = workflowFacade.updateWorkflowStep(
                     selectedWorkflowStep);
@@ -477,7 +458,6 @@ public class Workflows extends BaseBean {
         }
 
 
-        // Update the workflow state (as it will not have different steps)
         try {
             selectedWorkflowState =
                     workflowFacade.findWorkflowStateById(selectedWorkflowState.
