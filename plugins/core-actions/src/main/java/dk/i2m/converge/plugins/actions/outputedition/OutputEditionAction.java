@@ -245,7 +245,6 @@ public class OutputEditionAction implements EditionAction {
                     templateAttributes.put(TEMPLATE_TAG_NEWS_ITEM_PLACEMENT, p);
                     String outputText = compileTemplate(outputNewsItemTemplate, templateAttributes);
                     String newsItemFilename = compileTemplate(outputNewsItemFilename, templateAttributes);
-                    //String newsItemFilename = "" + p.getStart() + "-" + p.getPosition() + "-" + ni.getId() + "." + outputNewsItemFormat;
                     File newsItemOutput = new File(outputLocation, newsItemFilename);
                     try {
                         FileUtils.writeStringToFile(newsItemOutput, outputText);
