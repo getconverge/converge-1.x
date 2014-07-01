@@ -95,10 +95,7 @@ public class SpellCheckerServlet extends HttpServlet {
                 // If there are no spelling mistakes, TinyMCE pops up a lame
                 // dialog that blocks for entry on Safari - therefore add a
                 // dummy misspelledword
-                //List<String> modifiedOutput = new ArrayList<String>(Arrays.asList(output));
-
-                //modifiedOutput.add("xyzq");
-                //output = modifiedOutput.toArray(new String[modifiedOutput.size()]);
+                
             } else if (METHOD_GET_SUGGESTIONS.equalsIgnoreCase(cmd)) {
                 textToCheck = request.getJSONArray(PARAMS).getString(1);
                 output = sc.getSuggestions(textToCheck);
