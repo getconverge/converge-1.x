@@ -346,8 +346,6 @@ public class MetaDataFacadeBean implements MetaDataFacadeLocal {
             for (Class type : types) {
                 if (c.getClass().equals(type)) {
                     matches.add(c);
-//                } else {
-//                    logger.log(Level.INFO, "Concept ("+ c.getFullTitle() +") of class {0} is not equal to class {1}", new Object[]{c.getClass().getName(), type.getName()});
                 }
             }
         }
@@ -563,13 +561,10 @@ public class MetaDataFacadeBean implements MetaDataFacadeLocal {
             row.getCell(col).setCellStyle(style);
         }
 
-//        row.createCell(col+1).setCellValue(concept.getId());
-//        row.getCell(col+1).setCellStyle(style);
+
         row.createCell(col + 1).setCellValue(concept.getName());
         row.getCell(col + 1).setCellStyle(style);
-        //row.createCell(col+2).setCellValue(concept.getDefinition());
-        //row.getCell(col+2).setCellStyle(style);
-
+        
         for (dk.i2m.converge.core.metadata.Concept c : concept.getNarrower()) {
             generateChildRows(overviewSheet, style, c, rowNumber++, indent + 1);
         }
