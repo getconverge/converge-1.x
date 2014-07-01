@@ -215,7 +215,7 @@ public class CropRendition {
         try {
             // Calculate the scale of the crop selection depending on the size of the image in the browser
             BufferedImage src = ImageIO.read(new URL(sourceMediaItemRendition.getAbsoluteFilename()));
-            int originalW = src.getWidth(); //sourceMediaItemRendition.getWidth();
+            int originalW = src.getWidth(); 
             float increase = (float) originalW / (float) getTargetWidth();
             int calcCropX = (int) (getCropX() * (increase));
             int calcCropY = (int) (getCropY() * (increase));
