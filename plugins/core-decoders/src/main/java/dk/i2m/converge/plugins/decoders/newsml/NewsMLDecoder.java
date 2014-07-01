@@ -549,23 +549,7 @@ public class NewsMLDecoder implements NewswireDecoder {
                                                 trim());
 
 
-//                                            List<NewsLine> newsLines = c.getNewsLines().getNewsLine();
-//                                            StringBuilder summary = new StringBuilder();
-//
-//                                            for (NewsLine nl : newsLines) {
-//                                                for (NewsLineText line : nl.getNewsLineText()) {
-//                                                    for (Object objLine : line.getContent()) {
-//                                                        summary.append(objLine).append(" ");
-//                                                    }
-//                                                }
-//                                            }
-//                                            for (ByLine bl : c.getNewsLines().getByLine()) {
-//                                                for (Object objLine : bl.getContent()) {
-//                                                    summary.append(objLine).append(" ");
-//                                                }
-//                                            }
-//
-//                                            newswireItem.setSummary(summary.toString().trim());
+
 
                                         for (ContentItem ci :
                                                 picComponent.getContentItem()) {
