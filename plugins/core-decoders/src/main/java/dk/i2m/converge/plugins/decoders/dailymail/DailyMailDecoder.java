@@ -153,7 +153,6 @@ public class DailyMailDecoder implements NewswireDecoder {
         workingDirectory.append(newswire.getId());
         workingDirectory.append(File.separator);
 
-        //List<NewswireItem> result = new ArrayList<NewswireItem>();
         this.properties = newswire.getPropertiesMap();
 
         if (this.properties.containsKey(CHARSET)) {
