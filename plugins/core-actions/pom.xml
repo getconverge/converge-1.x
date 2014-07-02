@@ -4,7 +4,7 @@
     <parent>
         <artifactId>plugins</artifactId>
         <groupId>dk.i2m.converge</groupId>
-        <version>1.1.13-SNAPSHOT</version>
+        <version>1.1.11</version>
     </parent>
     <groupId>dk.i2m.converge.plugins</groupId>
     <artifactId>core-actions</artifactId>
