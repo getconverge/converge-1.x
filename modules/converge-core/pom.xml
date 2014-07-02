@@ -4,7 +4,7 @@
     <parent>
         <artifactId>modules</artifactId>
         <groupId>dk.i2m.converge</groupId>
-        <version>1.1.12-SNAPSHOT</version>
+        <version>1.1.12</version>
     </parent>
     <artifactId>converge-core</artifactId>
     <name>Converge - Core</name>
