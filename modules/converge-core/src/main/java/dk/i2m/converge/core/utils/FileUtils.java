@@ -91,7 +91,7 @@ public class FileUtils {
      *          If the {@link InputStream} could not be read.
      */
     public static byte[] getBytes(InputStream is) throws IOException {
-        byte out[] = new byte[is.available()];
+        byte[] out = new byte[is.available()];
 
         int bytesread = 0;
         int i;

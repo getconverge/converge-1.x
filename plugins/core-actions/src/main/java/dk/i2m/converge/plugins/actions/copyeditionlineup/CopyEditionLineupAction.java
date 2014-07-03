@@ -96,7 +96,7 @@ public class CopyEditionLineupAction implements EditionAction {
                 Property key = Property.valueOf(property.getKey());
                 if (Property.SECTION_MAPPING == key) {
                     String sectionMappingValue = property.getValue();
-                    String mappings[] = sectionMappingValue.split(";");
+                    String[] mappings = sectionMappingValue.split(";");
                     if (mappings.length != 2) {
                         continue;
                     }
