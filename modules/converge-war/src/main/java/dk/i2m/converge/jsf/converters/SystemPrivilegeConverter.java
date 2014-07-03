@@ -63,7 +63,7 @@ public class SystemPrivilegeConverter implements Converter {
         if (o instanceof Privilege) {
             return ((Privilege) o).getId().name();
         } else {
-            System.out.println("Not instance of Privilege: " + o.getClass().
+            LOG.log(Level.WARNING, "Not instance of Privilege: {0}", o.getClass().
                     getName());
             return "";
         }

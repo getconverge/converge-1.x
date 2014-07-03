@@ -22,7 +22,7 @@ import dk.i2m.converge.core.security.UserAccount;
 import dk.i2m.converge.core.workflow.Outlet;
 import dk.i2m.converge.ejb.facades.*;
 import dk.i2m.converge.jsf.components.tags.DialogAssignment;
-import dk.i2m.converge.utils.CalendarUtils;
+import dk.i2m.converge.core.utils.CalendarUtils;
 import dk.i2m.jsf.JsfUtils;
 import java.text.MessageFormat;
 import java.util.ArrayList;

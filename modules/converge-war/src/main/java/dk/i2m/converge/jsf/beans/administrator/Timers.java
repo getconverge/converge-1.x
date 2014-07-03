@@ -16,12 +16,9 @@
  */
 package dk.i2m.converge.jsf.beans.administrator;
 
-import dk.i2m.converge.core.BackgroundTask;
 import dk.i2m.converge.domain.SystemTimer;
-import dk.i2m.converge.ejb.facades.SystemFacadeLocal;
 import dk.i2m.converge.ejb.services.PeriodicTimer;
 import dk.i2m.converge.ejb.services.TimerServiceLocal;
-import java.util.List;
 import javax.ejb.EJB;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.DataModel;

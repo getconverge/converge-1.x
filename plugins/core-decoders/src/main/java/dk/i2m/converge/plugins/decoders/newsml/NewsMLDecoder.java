@@ -31,7 +31,7 @@ import dk.i2m.converge.core.search.SearchEngineIndexingException;
 import dk.i2m.converge.core.utils.FileExtensionFilter;
 import dk.i2m.converge.core.utils.FileUtils;
 import dk.i2m.converge.core.utils.StringUtils;
-import dk.i2m.converge.nar.newsml.v1_0.*;
+import com.getconverge.nar.newsml.v1_0.*;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -612,7 +612,7 @@ public class NewsMLDecoder implements NewswireDecoder {
                                         for (ContentItem picContentItem :
                                                 picComponent.getContentItem()) {
                                             if (picContentItem.getHref() != null) {
-                                                for (dk.i2m.converge.nar.newsml.v1_0.Property p :
+                                                for (com.getconverge.nar.newsml.v1_0.Property p :
                                                         picContentItem.
                                                         getCharacteristics().
                                                         getProperty()) {

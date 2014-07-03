@@ -3,7 +3,7 @@
     <parent>
         <artifactId>modules</artifactId>
         <groupId>dk.i2m.converge</groupId>
-        <version>1.1.11-SNAPSHOT</version>
+        <version>1.1.12-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>converge-ejb</artifactId>
@@ -42,6 +42,8 @@
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
+
+
 
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
@@ -246,7 +248,11 @@
             <version>5.1.6</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>com.getconverge.nar</groupId>
+            <artifactId>converge-nar</artifactId>
+            <version>1.0</version>
+        </dependency>
         <dependency>
             <groupId>javaee</groupId>
             <artifactId>javaee-api</artifactId>

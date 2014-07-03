@@ -16,12 +16,10 @@
  */
 package dk.i2m.converge.web.servlets;
 
-import dk.i2m.commons.FilePackage;
 import dk.i2m.commons.HttpUtils;
 import dk.i2m.converge.core.DataNotFoundException;
 import dk.i2m.converge.ejb.services.NewswireServiceLocal;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;

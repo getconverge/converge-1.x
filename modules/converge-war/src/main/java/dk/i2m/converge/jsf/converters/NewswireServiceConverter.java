@@ -17,9 +17,7 @@
 package dk.i2m.converge.jsf.converters;
 
 import dk.i2m.converge.core.newswire.NewswireService;
-import dk.i2m.converge.core.workflow.Section;
 import dk.i2m.converge.core.DataNotFoundException;
-import dk.i2m.converge.ejb.facades.OutletFacadeLocal;
 import dk.i2m.converge.ejb.services.NewswireServiceLocal;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,9 +32,9 @@ import javax.faces.convert.Converter;
  */
 public class NewswireServiceConverter implements Converter {
 
-    private static final Logger log = Logger.getLogger(NewswireServiceConverter.class.getName());
+    private static final Logger LOG = Logger.getLogger(NewswireServiceConverter.class.getName());
 
-    private NewswireServiceLocal newswireService;
+    private final NewswireServiceLocal newswireService;
 
     public NewswireServiceConverter(NewswireServiceLocal newswireService) {
         this.newswireService = newswireService;
@@ -51,7 +49,7 @@ public class NewswireServiceConverter implements Converter {
         try {
             return newswireService.findById(Long.valueOf(value));
         } catch (DataNotFoundException ex) {
-            log.log(Level.WARNING, "No matching newswire section");
+            LOG.log(Level.WARNING, "No matching newswire section");
             return null;
         }
     }

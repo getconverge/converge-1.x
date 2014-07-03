@@ -20,7 +20,7 @@ import dk.i2m.converge.core.DataNotFoundException;
 import dk.i2m.converge.core.metadata.Subject;
 import dk.i2m.converge.core.metadata.Concept;
 import dk.i2m.converge.core.metadata.ConceptOutput;
-import dk.i2m.converge.nar.newsml.g2.power.KnowledgeItem;
+import com.getconverge.nar.newsml.g2.power.KnowledgeItem;
 import java.util.List;
 import javax.ejb.Local;
 

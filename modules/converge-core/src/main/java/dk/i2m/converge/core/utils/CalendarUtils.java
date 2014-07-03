@@ -30,15 +30,14 @@ public class CalendarUtils {
      * Non-instantiable class.
      */
     private CalendarUtils() {
+        throw new UnsupportedOperationException();
     }
 
-    /**
+/**
      * Determines the first date given a week number and year.
      *
-     * @param weekNumber
-     *          Week number
-     * @param year
-     *          Year
+     * @param weekNumber Week number
+     * @param year Year
      * @return {@link Calendar} containing the first day of the week
      */
     public static Calendar findStartOfWeek(int weekNumber, int year) {
@@ -48,19 +47,17 @@ public class CalendarUtils {
         start.set(Calendar.WEEK_OF_YEAR, weekNumber);
 
         while (start.get(Calendar.WEEK_OF_YEAR) == weekNumber) {
-            start.roll(Calendar.DAY_OF_MONTH, false);
+            start.add(Calendar.DAY_OF_MONTH, -1);
         }
-        start.roll(Calendar.DAY_OF_MONTH, true);
+        start.add(Calendar.DAY_OF_MONTH, 1);
         return start;
     }
 
     /**
      * Determines the end date given a week number and year.
      *
-     * @param weekNumber
-     *          Week number
-     * @param year
-     *          Year
+     * @param weekNumber Week number
+     * @param year Year
      * @return {@link Calendar} containing the last day of the week
      */
     public static Calendar findEndOfWeek(int weekNumber, int year) {
@@ -70,22 +67,185 @@ public class CalendarUtils {
         end.set(Calendar.WEEK_OF_YEAR, weekNumber);
 
         while (end.get(Calendar.WEEK_OF_YEAR) == weekNumber) {
-            end.roll(Calendar.DAY_OF_MONTH, true);
+            end.add(Calendar.DAY_OF_MONTH, 1);
         }
-        end.roll(Calendar.DAY_OF_MONTH, false);
+        end.add(Calendar.DAY_OF_MONTH, -1);
         return end;
     }
 
     /**
      * Creates a {@link Calendar} from a {@link Date}.
      *
-     * @param date
-     *          {@link Date} to convert
+     * @param date {@link Date} to convert
      * @return {@link Calendar} created from the <code>date</code>
      */
     public static Calendar toCalendar(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         return calendar;
+    }
+
+    /**
+     * Gets the first day of the year based on the given {@link Calendar}.
+     *
+     * @param c Calendar for which to get the first day of the year
+     * @return The first day of the year in the given {@link Calendar}
+     */
+    public static Calendar getFirstDayOfYear(Calendar c) {
+        Calendar result = (Calendar) c.clone();
+        result.set(Calendar.DAY_OF_MONTH, 1);
+        result.set(Calendar.MONTH, Calendar.JANUARY);
+        result.set(Calendar.HOUR_OF_DAY, 0);
+        result.set(Calendar.MINUTE, 0);
+        result.set(Calendar.SECOND, 0);
+        result.set(Calendar.MILLISECOND, 0);
+        return result;
+    }
+
+    /**
+     * Gets the last day of the year based on the given {@link Calendar}.
+     *
+     * @param c Calendar for which to get the last day of the year
+     * @return The last day of the year in the given {@link Calendar}
+     */
+    public static Calendar getLastDayOfYear(Calendar c) {
+        Calendar result = (Calendar) c.clone();
+        result.set(Calendar.DAY_OF_MONTH, 31);
+        result.set(Calendar.MONTH, Calendar.DECEMBER);
+        result.set(Calendar.HOUR_OF_DAY, 0);
+        result.set(Calendar.MINUTE, 0);
+        result.set(Calendar.SECOND, 0);
+        result.set(Calendar.MILLISECOND, 0);
+        return result;
+    }
+
+    /**
+     * Gets the first day of the month based on the given {@link Calendar}.
+     *
+     * @param c Calendar for which to get the first day of the month
+     * @return The first day of the month in the given {@link Calendar}
+     */
+    public static Calendar getFirstDayOfMonth(Calendar c) {
+        Calendar result = (Calendar) c.clone();
+        result.set(Calendar.DAY_OF_MONTH, 1);
+        result.set(Calendar.HOUR_OF_DAY, 0);
+        result.set(Calendar.MINUTE, 0);
+        result.set(Calendar.SECOND, 0);
+        result.set(Calendar.MILLISECOND, 0);
+        return result;
+    }
+
+    /**
+     * Gets the last day of the month based on the given {@link Calendar}.
+     *
+     * @param c Calendar for which to get the last day of the month
+     * @return The last day of the month in the given {@link Calendar}
+     */
+    public static Calendar getLastDayOfMonth(Calendar c) {
+        Calendar result = (Calendar) c.clone();
+        result.set(Calendar.DAY_OF_MONTH, 31);
+        result.set(Calendar.HOUR_OF_DAY, 0);
+        result.set(Calendar.MINUTE, 0);
+        result.set(Calendar.SECOND, 0);
+        result.set(Calendar.MILLISECOND, 0);
+        return result;
+    }
+
+    /**
+     * Gets the first day of the current month
+     *
+     * @return The first day of the current month
+     */
+    public static Calendar getFirstDayOfMonth() {
+        Calendar today = Calendar.getInstance();
+        return getFirstDayOfMonth(today);
+    }
+
+    /**
+     * Gets the last day of the current month
+     *
+     * @return The last day of the current month
+     */
+    public static Calendar getLastDayOfMonth() {
+        Calendar today = Calendar.getInstance();
+        return getLastDayOfMonth(today);
+    }
+
+    /**
+     * Gets the first day of the week based on the given {@link Calendar}.
+     *
+     * @param c Calendar for which to get the first day of the week
+     * @return The first day of the week in the given {@link Calendar}
+     */
+    public static Calendar getFirstDayOfWeek(Calendar c) {
+        int week = c.get(java.util.Calendar.WEEK_OF_YEAR);
+        int year = c.get(java.util.Calendar.YEAR);
+        return CalendarUtils.findStartOfWeek(week, year);
+    }
+
+    /**
+     * Gets the last day of the week based on the given {@link Calendar}.
+     *
+     * @param c Calendar for which to get the last day of the week
+     * @return The last day of the week in the given {@link Calendar}
+     */
+    public static Calendar getLastDayOfWeek(Calendar c) {
+        int week = c.get(java.util.Calendar.WEEK_OF_YEAR);
+        int year = c.get(java.util.Calendar.YEAR);
+        return CalendarUtils.findEndOfWeek(week, year);
+    }
+
+    /**
+     * Gets the start of the day based on the given {@link Calendar}.
+     *
+     * @param c Calendar for which to get the start of the day
+     * @return The start of the day for the given {@link Calendar}
+     */
+    public static Calendar getStartOfDay(Calendar c) {
+        Calendar result = (Calendar) c.clone();
+        result.set(Calendar.HOUR_OF_DAY, 0);
+        result.set(Calendar.MINUTE, 0);
+        result.set(Calendar.SECOND, 0);
+        result.set(Calendar.MILLISECOND, 0);
+        return result;
+    }
+
+    /**
+     * Gets the start of the day based on the given {@link Date}.
+     *
+     * @param d Date for which to get the start of the day
+     * @return The start of the day for the given {@link Date}
+     */
+    public static Calendar getStartOfDay(Date d) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(d);
+        return getStartOfDay(c);
+    }
+
+    /**
+     * Gets the end of the day based on the given {@link Calendar}.
+     *
+     * @param c Calendar for which to get the end of the day
+     * @return The end of the day for the given {@link Calendar}
+     */
+    public static Calendar getEndOfDay(Calendar c) {
+        Calendar result = (Calendar) c.clone();
+        result.set(Calendar.HOUR_OF_DAY, 23);
+        result.set(Calendar.MINUTE, 59);
+        result.set(Calendar.SECOND, 59);
+        result.set(Calendar.MILLISECOND, 999);
+        return result;
+    }
+
+    /**
+     * Gets the end of the day based on the given {@link Date}.
+     *
+     * @param d Date for which to get the end of the day
+     * @return The end of the day for the given {@link Date}
+     */
+    public static Calendar getEndOfDay(Date d) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(d);
+        return getEndOfDay(c);
     }
 }

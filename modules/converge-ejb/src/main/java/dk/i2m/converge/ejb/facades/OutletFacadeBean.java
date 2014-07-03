@@ -29,7 +29,7 @@ import dk.i2m.converge.ejb.messaging.EditionServiceMessageBean;
 import dk.i2m.converge.ejb.messaging.OutletServiceMessageBean;
 import dk.i2m.converge.ejb.services.DaoServiceLocal;
 import dk.i2m.converge.ejb.services.QueryBuilder;
-import dk.i2m.converge.utils.CalendarUtils;
+import dk.i2m.converge.core.utils.CalendarUtils;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;

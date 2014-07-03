@@ -17,6 +17,7 @@
 package dk.i2m.converge.jsf.beans;
 
 import dk.i2m.converge.core.DataNotFoundException;
+import dk.i2m.converge.core.annotations.OutletAction;
 import dk.i2m.converge.core.calendar.Event;
 import dk.i2m.converge.core.content.NewsItem;
 import dk.i2m.converge.core.content.NewsItemPlacement;
@@ -32,9 +33,8 @@ import dk.i2m.converge.jsf.components.tags.DialogAssignment;
 import dk.i2m.converge.jsf.components.tags.DialogEventSelection;
 import dk.i2m.converge.jsf.components.tags.UIEvent;
 import dk.i2m.converge.jsf.components.tags.UIEventListener;
-import dk.i2m.converge.utils.CalendarUtils;
+import dk.i2m.converge.core.utils.CalendarUtils;
 import dk.i2m.jsf.JsfUtils;
-import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.*;
 import java.util.logging.Level;

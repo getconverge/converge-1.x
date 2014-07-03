@@ -20,7 +20,7 @@ import dk.i2m.converge.core.calendar.Event;
 import dk.i2m.converge.core.content.NewsItem;
 import dk.i2m.converge.ejb.facades.CalendarFacadeLocal;
 import dk.i2m.converge.jsf.beans.Bundle;
-import dk.i2m.converge.utils.CalendarUtils;
+import dk.i2m.converge.core.utils.CalendarUtils;
 import dk.i2m.jsf.JsfUtils;
 import java.util.Calendar;
 import javax.faces.event.ActionEvent;
