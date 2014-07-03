@@ -63,9 +63,9 @@ import org.w3c.dom.NodeList;
 public class NewsMLDecoder implements NewswireDecoder {
 
     private static final Logger LOG = Logger.getLogger(NewsMLDecoder.class.getName());
-    private final static DateFormat NEWSML_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd'T'HHmmssZZZZ");
-    private final static String JAXB_CONTEXT = "dk.i2m.converge.nar.newsml.v1_0";
-    private ResourceBundle bundle = ResourceBundle.getBundle("dk.i2m.converge.plugins.decoders.newsml.Messages");
+    private static final DateFormat NEWSML_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd'T'HHmmssZZZZ");
+    private static final String JAXB_CONTEXT = "dk.i2m.converge.nar.newsml.v1_0";
+    private final ResourceBundle bundle = ResourceBundle.getBundle("dk.i2m.converge.plugins.decoders.newsml.Messages");
     /**
      * Properties made available by the decoder.
      */

@@ -195,7 +195,7 @@ public class Concepts {
 
             String xml = new String(fileData);
 
-            String languages[] = metaDataFacade.getLanguagesAvailableForImport(
+            String[] languages = metaDataFacade.getLanguagesAvailableForImport(
                     xml);
 
             for (String lang : languages) {

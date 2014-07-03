@@ -32,13 +32,13 @@ import javax.faces.convert.Converter;
  */
 public class EditionCandidateConverter implements Converter {
 
-    private final static Logger log = Logger.getLogger(EditionCandidateConverter.class.getName());
+    private static final Logger LOG = Logger.getLogger(EditionCandidateConverter.class.getName());
 
-    private final static String SEPARATOR = ";";
+    private static final String SEPARATOR = ";";
 
     private static String serialize(EditionCandidate ec) throws IOException {
         if (ec == null) {
-            log.log(Level.FINEST, "EditionCandidate is null. Serialized as empty string");
+            LOG.log(Level.FINEST, "EditionCandidate is null. Serialized as empty string");
             return "";
         }
 
@@ -76,17 +76,17 @@ public class EditionCandidateConverter implements Converter {
 
         String serialized = sb.toString();
 
-        log.log(Level.FINEST, "Serialized version of Edition Candidate: {0}", serialized);
+        LOG.log(Level.FINEST, "Serialized version of Edition Candidate: {0}", serialized);
 
         return serialized;
     }
 
     private static EditionCandidate deserialize(String serialized) {
         if (serialized.equalsIgnoreCase("")) {
-            log.log(Level.FINEST, "Serialized EditionCandidate is empty string");
+            LOG.log(Level.FINEST, "Serialized EditionCandidate is empty string");
             return null;
         }
-        log.log(Level.FINEST, "Deserializing EditionCandidate {0}", serialized);
+        LOG.log(Level.FINEST, "Deserializing EditionCandidate {0}", serialized);
 
         String[] values = serialized.split(SEPARATOR);
         EditionCandidate ec = new EditionCandidate();
