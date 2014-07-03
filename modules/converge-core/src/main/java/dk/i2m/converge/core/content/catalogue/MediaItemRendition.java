@@ -18,6 +18,7 @@ package dk.i2m.converge.core.content.catalogue;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.regex.Matcher;
 import javax.persistence.*;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.URIUtil;
@@ -506,7 +507,7 @@ public class MediaItemRendition implements Serializable {
                 getCatalogue().getWebAccess());
         absoluteFilename.append("/");
         if (!StringUtils.isBlank(getPath())) {
-            absoluteFilename.append(getPath().replaceAll(File.separator, "/"));
+            absoluteFilename.append(getPath().replaceAll(Matcher.quoteReplacement(File.separator), "/"));
             absoluteFilename.append("/");
         }
 
