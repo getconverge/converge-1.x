@@ -13,7 +13,7 @@ import dk.i2m.converge.core.reporting.activity.ActivityReport;
 import dk.i2m.converge.core.reporting.activity.UserActivity;
 import dk.i2m.converge.core.security.UserRole;
 import dk.i2m.converge.ejb.facades.ReportingFacadeLocal;
-import dk.i2m.converge.utils.CalendarUtils;
+import dk.i2m.converge.core.utils.CalendarUtils;
 import dk.i2m.jsf.JsfUtils;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -38,7 +38,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class ReportActivity {
 
-    @EJB private ReportingFacadeLocal reportingFacade;
+    @EJB
+    private ReportingFacadeLocal reportingFacade;
 
     private UserRole userRole = null;
 
@@ -114,22 +115,17 @@ public class ReportActivity {
 
     /**
      * Determines if a generated report is available.
-     * 
+     *
      * @return {@code true} if a report is available, otherwise {@code false}
      */
     public boolean isReportAvailable() {
-        if (this.generatedReport != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return this.generatedReport != null;
     }
 
     /**
      * Event handler for generating the on-screen report.
-     * 
-     * @param event 
-     *          Event that invoked the handler
+     *
+     * @param event Event that invoked the handler
      */
     public void onGenerateReport(ActionEvent event) {
         this.generatedReport = reportingFacade.generateActivityReport(startDate, endDate, userRole, userRoleSubmitter);
@@ -137,11 +133,10 @@ public class ReportActivity {
     }
 
     /**
-     * Event handler for downloading the generated report as a
-     * Microsoft Excel spreadsheet.
-     * 
-     * @param event 
-     *          Event that invoked the handler
+     * Event handler for downloading the generated report as a Microsoft Excel
+     * spreadsheet.
+     *
+     * @param event Event that invoked the handler
      */
     public void onDownloadXls(ActionEvent event) {
 
@@ -167,10 +162,9 @@ public class ReportActivity {
     }
 
     /**
-     * Utility method for generating the name of the file
-     * that will be sent back to the user as the name of
-     * the Excel report.
-     * 
+     * Utility method for generating the name of the file that will be sent back
+     * to the user as the name of the Excel report.
+     *
      * @return Filename of the XLS report
      */
     private String getDownloadXlsFilename() {

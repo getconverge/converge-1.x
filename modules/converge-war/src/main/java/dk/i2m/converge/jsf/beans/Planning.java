@@ -33,7 +33,7 @@ import dk.i2m.converge.jsf.components.tags.DialogAssignment;
 import dk.i2m.converge.jsf.components.tags.DialogEventSelection;
 import dk.i2m.converge.jsf.components.tags.UIEvent;
 import dk.i2m.converge.jsf.components.tags.UIEventListener;
-import dk.i2m.converge.utils.CalendarUtils;
+import dk.i2m.converge.core.utils.CalendarUtils;
 import dk.i2m.jsf.JsfUtils;
 import java.util.Calendar;
 import java.util.*;

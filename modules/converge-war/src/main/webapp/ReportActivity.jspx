@@ -51,7 +51,7 @@
                 <a4j:outputPanel rendered="#{reportActivity.report.rowCount > 0}">
                     <converge:moduleHeader moduleTitle="#{i18n.ReportActivity_OUTPUT}" />
                     <div class="moduleContent">
-
+                        <small>Time taken to generate report: #{reportActivity.timeTakenToGenerateReport/1000} seconds</small>
                         <h:panelGrid style="float: right; margin-bottom: 5px;" columns="2">
                             <h:commandLink actionListener="#{reportActivity.onDownloadXls}" >
                                 <h:graphicImage url="/images/mime/application/vnd.ms-excel.gif" />

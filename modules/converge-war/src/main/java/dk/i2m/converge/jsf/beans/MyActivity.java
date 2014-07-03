@@ -19,7 +19,7 @@ package dk.i2m.converge.jsf.beans;
 import dk.i2m.converge.core.reporting.activity.UserActivity;
 import dk.i2m.converge.core.security.UserAccount;
 import dk.i2m.converge.ejb.facades.ReportingFacadeLocal;
-import dk.i2m.converge.utils.CalendarUtils;
+import dk.i2m.converge.core.utils.CalendarUtils;
 import dk.i2m.jsf.JsfUtils;
 import java.util.Date;
 import javax.annotation.PostConstruct;

@@ -35,7 +35,7 @@ import dk.i2m.converge.jsf.beans.administrator.Catalogues;
 import dk.i2m.converge.jsf.model.MenuHelper;
 import dk.i2m.converge.jsf.model.MenuItem;
 import dk.i2m.converge.jsf.model.MenuItems;
-import dk.i2m.converge.utils.CalendarUtils;
+import dk.i2m.converge.core.utils.CalendarUtils;
 import dk.i2m.jsf.JsfUtils;
 import java.io.IOException;
 import java.util.*;
