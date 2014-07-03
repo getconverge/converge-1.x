@@ -43,6 +43,8 @@
             <scope>compile</scope>
         </dependency>
 
+
+
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
@@ -246,7 +248,11 @@
             <version>5.1.6</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>com.getconverge.nar</groupId>
+            <artifactId>converge-nar</artifactId>
+            <version>1.0</version>
+        </dependency>
         <dependency>
             <groupId>javaee</groupId>
             <artifactId>javaee-api</artifactId>

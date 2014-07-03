@@ -18,6 +18,7 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+        
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
@@ -74,6 +75,11 @@
             <artifactId>easymock</artifactId>
             <version>3.0</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.getconverge.nar</groupId>
+            <artifactId>converge-nar</artifactId>
+            <version>1.0</version>
         </dependency>
     </dependencies>
 
