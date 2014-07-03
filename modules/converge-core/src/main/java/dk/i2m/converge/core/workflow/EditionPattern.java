@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010 - 2011 Interactive Media Management
+ *  Copyright (C) 2010 - 2011 Allan Lykke Christensen
  * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,7 +31,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 
 /**
- * A pattern describing an edition that should automatically be created.
+ * A pattern describing an {@link dk.i2m.converge.core.workflow.Edition} that
+ * should automatically be created for an {@link Outlet}.
  *
  * @author Allan Lykke Christensen
  */
@@ -50,31 +51,24 @@ public class EditionPattern implements Serializable {
     @Column(name = "title")
     private String title;
 
-    /** Day of the pattern. Use days in {@link java.util.Calendar}. */
     @Column(name = "edition_date")
     private int day;
 
-    /** Start (hour) of the edition. */
     @Column(name = "start_hour")
     private int startHour;
 
-    /** Start (minute) of the edition. */
     @Column(name = "start_minute")
     private int startMinute;
 
-    /** End (hour) of the edition. */
     @Column(name = "end_hour")
     private int endHour;
 
-    /** End (minute) of the edition. */
     @Column(name = "end_minute")
     private int endMinute;
 
-    /** Automatic close edition hour. */
     @Column(name = "close_hour")
     private int closeHour;
 
-    /** Automatic close edition minute. */
     @Column(name = "close_minute")
     private int closeMinute;
 
@@ -99,22 +93,14 @@ public class EditionPattern implements Serializable {
     /**
      * Creates a new instance of {@link EditionPattern}.
      *
-     * @param day
-     *          Day
-     * @param startHour
-     *          Start hour
-     * @param startMinute
-     *          Start minute
-     * @param endHour
-     *          End hour
-     * @param endMinute
-     *          End minute
-     * @param closeHour
-     *          Hour when the edition should be closed
-     * @param closeMinute
-     *          Minute when the edition should be closed
-     * @param outlet
-     *          Outlet of the edition
+     * @param day Day
+     * @param startHour Start hour
+     * @param startMinute Start minute
+     * @param endHour End hour
+     * @param endMinute End minute
+     * @param closeHour Hour when the edition should be closed
+     * @param closeMinute Minute when the edition should be closed
+     * @param outlet Outlet of the edition
      */
     public EditionPattern(int day, int startHour, int startMinute, int endHour, int endMinute, int closeHour, int closeMinute, Outlet outlet) {
         this.day = day;
@@ -137,11 +123,10 @@ public class EditionPattern implements Serializable {
     }
 
     /**
-     * Sets the unique identifier of the pattern. This method should not
-     * be invoked manually as the identifier is automatically set by JPA.
+     * Sets the unique identifier of the pattern. This method should not be
+     * invoked manually as the identifier is automatically set by JPA.
      *
-     * @param id
-     *          Unique identifier of the pattern
+     * @param id Unique identifier of the pattern
      */
     public void setId(Long id) {
         this.id = id;
@@ -149,7 +134,7 @@ public class EditionPattern implements Serializable {
 
     /**
      * Gets the title of the pattern. The title identification purpose only.
-     * 
+     *
      * @return Title of the pattern
      */
     public String getTitle() {
@@ -158,9 +143,8 @@ public class EditionPattern implements Serializable {
 
     /**
      * Sets the title of the pattern. The title identification purpose only.
-     * 
-     * @param title
-     *          Title of the pattern
+     *
+     * @param title Title of the pattern
      */
     public void setTitle(String title) {
         this.title = title;
@@ -178,8 +162,7 @@ public class EditionPattern implements Serializable {
     /**
      * Sets the date and time from when this pattern is active.
      *
-     * @param activeFrom
-     *          Date and time from when this pattern is active
+     * @param activeFrom Date and time from when this pattern is active
      */
     public void setActiveFrom(Date activeFrom) {
         this.activeFrom = activeFrom;
@@ -190,7 +173,7 @@ public class EditionPattern implements Serializable {
      * is returned there is no expiration for this pattern.
      *
      * @return Date and time for when this pattern is no longer active, or
-     *         {@code null} if this pattern has no expiration
+     * {@code null} if this pattern has no expiration
      */
     public Date getActiveTo() {
         return activeTo;
@@ -200,50 +183,99 @@ public class EditionPattern implements Serializable {
      * Sets the date and time when this pattern should no longer be active. If
      * the pattern should not expire, set it to {@code null}.
      *
-     * @param activeTo
-     *          Date and time for when this pattern is no longer active, or
-     *         {@code null} if this pattern should not have an expiration time
+     * @param activeTo Date and time for when this pattern is no longer active,
+     * or {@code null} if this pattern should not have an expiration time
      */
     public void setActiveTo(Date activeTo) {
         this.activeTo = activeTo;
     }
 
+    /**
+     * Gets the automatic close edition hour.
+     *
+     * @return Automatic close edition hour
+     */
     public int getCloseHour() {
         return closeHour;
     }
 
+    /**
+     * Sets the automatic close edition hour.
+     *
+     * @param closeHour Automatic close edition hour
+     */
     public void setCloseHour(int closeHour) {
         this.closeHour = closeHour;
     }
 
+    /**
+     * Gets the automatic close edition minute.
+     *
+     * @return Automatic close edition minute
+     */
     public int getCloseMinute() {
         return closeMinute;
     }
 
+    /**
+     * Sets the automatic close edition minute.
+     *
+     * @param closeMinute Automatic close edition minute
+     */
     public void setCloseMinute(int closeMinute) {
         this.closeMinute = closeMinute;
     }
 
+    /**
+     * Gets the day of the pattern. Use days in {@link java.util.Calendar}.
+     *
+     * @return Day of the pattern
+     */
     public int getDay() {
         return day;
     }
 
+    /**
+     * Sets the day of the pattern. Use days in {@link java.util.Calendar}.
+     *
+     * @param day Day of the pattern
+     */
     public void setDay(int day) {
         this.day = day;
     }
 
+    /**
+     * Gets the end (hour) of the edition.
+     *
+     * @return End (hour) of the edition
+     */
     public int getEndHour() {
         return endHour;
     }
 
+    /**
+     * Sets the end (hour) of the edition.
+     *
+     * @param endHour End (hour) of the edition
+     */
     public void setEndHour(int endHour) {
         this.endHour = endHour;
     }
 
+    /**
+     * Gets the end (minute) of the edition.
+     *
+     * @return End (minute) of the edition
+     */
     public int getEndMinute() {
         return endMinute;
     }
 
+    /**
+     * Sets the end (minute) of the edition.
+     *
+     * @param endMinute End (minute) of the edition
+     */
     public void setEndMinute(int endMinute) {
         this.endMinute = endMinute;
     }
@@ -256,30 +288,48 @@ public class EditionPattern implements Serializable {
         this.outlet = outlet;
     }
 
+    /**
+     * Gets the start (hour) of the edition.
+     *
+     * @return Start (hour) of the edition
+     */
     public int getStartHour() {
         return startHour;
     }
 
+    /**
+     * Sets the start (hour) of the edition.
+     *
+     * @param startHour Start (hour) of the edition
+     */
     public void setStartHour(int startHour) {
         this.startHour = startHour;
     }
 
+    /**
+     * Gets the start (minute) of the edition.
+     *
+     * @return Start (minute) of the edition.
+     */
     public int getStartMinute() {
         return startMinute;
     }
 
+    /**
+     * Sets the start (minute) of the edition.
+     *
+     * @param startMinute Start (minute) of the edition.
+     */
     public void setStartMinute(int startMinute) {
         this.startMinute = startMinute;
     }
 
     /**
-     * Determines if the given date matches the start date of
-     * this pattern.
-     * 
-     * @param start
-     *          Start date of the edition
-     * @return {@code true} if {@code start} matches the start
-     *         date of this pattern, otherwise {@code false}
+     * Determines if the given date matches the start date of this pattern.
+     *
+     * @param start Start date of the edition
+     * @return {@code true} if {@code start} matches the start date of this
+     * pattern, otherwise {@code false}
      */
     public boolean isMatchPublicationDate(Date start) {
         if (start == null) {
@@ -289,22 +339,14 @@ public class EditionPattern implements Serializable {
         Calendar c = Calendar.getInstance();
         c.setTime(start);
 
-        if (c.get(Calendar.HOUR_OF_DAY) == getStartHour() && c.get(Calendar.MINUTE) == getStartMinute()) {
-            return true;
-        } else {
-            return false;
-        }
+        return c.get(Calendar.HOUR_OF_DAY) == getStartHour() && c.get(Calendar.MINUTE) == getStartMinute();
     }
 
     public boolean isMatchDay(Date day) {
         Calendar c = Calendar.getInstance();
         c.setTime(day);
 
-        if (getDay() == c.get(Calendar.DAY_OF_WEEK)) {
-            return true;
-        } else {
-            return false;
-        }
+        return getDay() == c.get(Calendar.DAY_OF_WEEK);
     }
 
     @Override
