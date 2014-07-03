@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Interactive Media Management
+ * Copyright (C) 2011 - 2014 Converge Consulting
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ import javax.ejb.Local;
 public interface ReportingFacadeLocal {
 
     dk.i2m.converge.core.reporting.activity.ActivityReport generateActivityReport(java.util.Date start, java.util.Date end, dk.i2m.converge.core.security.UserRole userRole, boolean submitter);
-    
+
     dk.i2m.converge.core.reporting.activity.UserActivity generateUserActivityReport(java.util.Date start, java.util.Date end, dk.i2m.converge.core.security.UserAccount user, boolean submitter);
 
     dk.i2m.converge.core.reporting.activity.UserActivitySummary generateUserActivitySummary(java.util.Date start, java.util.Date end, dk.i2m.converge.core.security.UserAccount user);
