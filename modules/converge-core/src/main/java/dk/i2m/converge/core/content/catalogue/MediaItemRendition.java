@@ -507,7 +507,7 @@ public class MediaItemRendition implements Serializable {
                 getCatalogue().getWebAccess());
         absoluteFilename.append("/");
         if (!StringUtils.isBlank(getPath())) {
-            absoluteFilename.append(getPath().replaceAll(Matcher.quoteReplacement(File.separator), "/"));
+            absoluteFilename.append(FilenameUtils.separatorsToUnix(getPath()));
             absoluteFilename.append("/");
         }
 

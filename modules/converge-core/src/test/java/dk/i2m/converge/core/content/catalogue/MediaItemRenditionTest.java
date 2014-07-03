@@ -32,28 +32,28 @@ import static org.junit.Assert.*;
  * @author fred
  */
 public class MediaItemRenditionTest {
-    
+
     public MediaItemRenditionTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
-    
+
     @Test
-    public void mediaItemRendition_getAbsolutePathAnyOs_correctAbsolutePathReturned() {
+    public void mediaItemRendition_getAbsolutePathWin_correctAbsolutePathReturned() {
         // Arrange
         String webAccesPath = "http://localhost:8282/photos";
         String path = "2014\\7\\3\\934151";
@@ -75,6 +75,29 @@ public class MediaItemRenditionTest {
         String expected = "http://localhost:8282/photos/2014/7/3/934151/3.png";
         assertEquals(expected, actual);
     }
-    
-    
+
+    @Test
+    public void mediaItemRendition_getAbsolutePathUnix_correctAbsolutePathReturned() {
+        // Arrange
+        String webAccesPath = "http://localhost:8282/photos";
+        String path = "2014/7/3/934151";
+        Catalogue catalogue = new Catalogue();
+        catalogue.setWebAccess(webAccesPath);
+        MediaItem mediaItem = new MediaItem();
+        mediaItem.setTitle("Test");
+        mediaItem.setCatalogue(catalogue);
+        MediaItemRendition rendition = new MediaItemRendition();
+        rendition.setPath(path);
+        rendition.setFilename("3.png");
+        rendition.setMediaItem(mediaItem);
+        mediaItem.getRenditions().add(rendition);
+
+        // Act
+        String actual = rendition.getAbsoluteFilename();
+
+        // Assert
+        String expected = "http://localhost:8282/photos/2014/7/3/934151/3.png";
+        assertEquals(expected, actual);
+    }
+
 }
