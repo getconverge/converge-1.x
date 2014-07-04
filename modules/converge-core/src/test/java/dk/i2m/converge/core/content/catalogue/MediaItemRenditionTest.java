@@ -96,4 +96,20 @@ public class MediaItemRenditionTest {
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void mediaItemRendition_renditionWithoutFilename_returnsHash() {
+        // Arrange
+        Catalogue c = new Catalogue();
+        MediaItem item = new MediaItem();
+        item.setCatalogue(c);
+        MediaItemRendition rendition = new MediaItemRendition();
+        rendition.setFilename(null);
+        rendition.setMediaItem(item);
+
+        // Act
+        String actual = rendition.getAbsoluteFilename();
+
+        // Assert
+        assertEquals("#", actual);
+    }
 }
