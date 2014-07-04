@@ -73,6 +73,14 @@
                         </div>
                     </c:if>
 
+                    <h:outputLink id="lnk-help" value="http://docs.getconverge.com/user" target="_blank" />
+                    <div class="subheader_tabs"
+                         onclick="document.getElementById('frmSubHeader:lnk-help').click();">
+                        <div class="left"></div>
+                        <div class="middle"> #{i18n.menu_HELP} </div>
+                        <div class="right"></div>
+                    </div>
+
                     <a4j:repeat value="#{userSession.submenuItems}" var="menuItem">
 
                         <h:commandLink action="#{menuItem.action}" styleClass="subheader_link" rendered="#{!menuItem.wikiPage}">
@@ -102,22 +110,22 @@
             <ui:insert name="pageBody" />
 
             <script type="text/javascript">
-                A4J.AJAX.onError = function(req,status,message){
+                A4J.AJAX.onError = function(req, status, message) {
                     window.status = "#{i18n.Generic_CONNECTION_ERROR_ERROR}: " + message;
                     openNotice(message);
                     return false;
                 }
 
-                A4J.AJAX.onExpired = function(loc,expiredMsg){
+                A4J.AJAX.onExpired = function(loc, expiredMsg) {
                     window.status = "#{i18n.Generic_CONNECTION_ERROR_SESSION_EXPIRED}: " + expiredMsg;
                     openNotice(message);
                     return false;
                 }
-                
+
                 function closeNotice() {
                     jQuery("#globalMessage").fadeOut("slow");
                 }
-                
+
                 function openNotice(message) {
                     jQuery("#globalMessageText").text(message);
                     jQuery("#globalMessage").fadeIn("slow");
@@ -148,7 +156,10 @@
                                 <rich:componentControl for="mpWikiPageEdit" operation="show" event="oncomplete" />
                             </a4j:commandLink>
 
-                            <h:commandLink actionListener="#{userSession.onDeleteWikiPage}" rendered="#{userSession.privileged['MANAGE_WIKI_PAGE']}" title="#{i18n.wiki_DELETE_BUTTON_TOOLTIP}" onclick="if (confirm('#{i18n.wiki_DELETE_CONFIRM}') != true){ return false; };">
+                            <h:commandLink actionListener="#{userSession.onDeleteWikiPage}" rendered="#{userSession.privileged['MANAGE_WIKI_PAGE']}" title="#{i18n.wiki_DELETE_BUTTON_TOOLTIP}" onclick="if (confirm('#{i18n.wiki_DELETE_CONFIRM}') != true) {
+                                        return false;
+                                    }
+                                    ;">
                                 <h:graphicImage value="#{i18n.resource_ICON_DELETE}"  />
                             </h:commandLink>
 
@@ -230,7 +241,8 @@
                         </h:panelGrid>
                         <h:panelGroup styleClass="dialogueButtons wikiEditDialogButtons" layout="block">
                             <h:commandLink value="#{i18n.Generic_SAVE}" styleClass="dialogButton" actionListener="#{userSession.onSaveWikiPage}" />
-                            <h:commandLink id="lnkCloseWikiPageEdit" styleClass="dialogButton" value="#{i18n.Generic_CLOSE}" onclick="#{rich:component('mpWikiPageEdit')}.hide(); return false;" />
+                            <h:commandLink id="lnkCloseWikiPageEdit" styleClass="dialogButton" value="#{i18n.Generic_CLOSE}" onclick="#{rich:component('mpWikiPageEdit')}.hide();
+                                    return false;" />
                         </h:panelGroup>
 
                     </h:panelGrid>
