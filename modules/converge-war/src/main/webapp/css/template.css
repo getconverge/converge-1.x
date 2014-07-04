@@ -1952,3 +1952,7 @@ div.metrics > span {margin-left:0.5em !important;}
     margin-top: 5px;
     margin-bottom: 5px;
 }
+
+.administration_system_table_label_column {
+    width: 170px;
+}

@@ -16,10 +16,6 @@
  */
 package dk.i2m.converge.core.content.catalogue;
 
-import java.io.File;
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.util.URIUtil;
-import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

@@ -15,12 +15,96 @@
         <ui:define name="title">#{i18n.administrator_Administration_PAGE_TITLE}</ui:define>
         <ui:define name="body">
             <converge:message for="frmAboutConverge" />
-            <h:form id="frmAboutConverge">
-                <converge:moduleHeader moduleTitle="#{i18n.administrator_Administration_ABOUT_CONVERGE}" />
-                <div class="moduleContent">
-                    <converge:appInfo />
-                </div>
-            </h:form>
+
+            <converge:moduleHeader moduleTitle="#{i18n.administrator_Administration_ABOUT_CONVERGE}" />
+            <div class="moduleContent">
+                <h:panelGrid style="width: 100%" columnClasses="center">
+                    <h:outputText value="#{i18n.Generic_APPLICATION_TITLE}" style="font-weight: bold;" />
+                    <h:outputText value="#{common.applicationVersion}" />
+                </h:panelGrid>
+            </div>
+
+            <converge:moduleSpacer />
+
+            <converge:moduleHeader moduleTitle="#{i18n.administrator_Administration_LICENSE}" />
+            <div class="moduleContent">
+                <h:panelGrid style="width: 100%" columnClasses="left">
+                    <h:outputText escape="false" value="#{i18n.Generic_LICENSE}" />
+                </h:panelGrid>
+            </div>
+
+            <converge:moduleSpacer />
+
+            <converge:moduleHeader moduleTitle="#{i18n.administrator_Administration_WEBSITES}"/>
+            <div class="moduleContent">
+                <h:panelGrid columns="2" columnClasses="left administration_system_table_label_column, left">
+
+                    <h:outputText value="#{i18n.administrator_Administration_WEBSITE_PRODUCT_INFORMATION}" />
+                    <h:outputLink value="#{i18n.administrator_Administration_WEBSITE_PRODUCT_INFORMATION_URL}"  title="#{i18n.administrator_Administration_WEBSITE_PRODUCT_INFORMATION_URL}" target="_blank">
+                        <h:outputText value="#{i18n.administrator_Administration_WEBSITE_PRODUCT_INFORMATION_URL}" />
+                    </h:outputLink>
+
+                    <h:outputText value="#{i18n.administrator_Administration_WEBSITE_ISSUE_TRACKING}" />
+                    <h:outputLink value="#{i18n.administrator_Administration_WEBSITE_ISSUE_TRACKING_URL}" title="#{i18n.administrator_Administration_WEBSITE_ISSUE_TRACKING_URL}" target="_blank">
+                        <h:outputText value="#{i18n.administrator_Administration_WEBSITE_ISSUE_TRACKING_URL}" />
+                    </h:outputLink>
+
+                    <h:outputText value="#{i18n.administrator_Administration_WEBSITE_USER_DOCUMENTATION}" />
+                    <h:outputLink value="#{i18n.administrator_Administration_WEBSITE_USER_DOCUMENTATION_URL}" title="#{i18n.administrator_Administration_WEBSITE_USER_DOCUMENTATION_URL}" target="_blank">
+                        <h:outputText value="#{i18n.administrator_Administration_WEBSITE_USER_DOCUMENTATION_URL}" />
+                    </h:outputLink>
+
+                    <h:outputText value="#{i18n.administrator_Administration_WEBSITE_DEVELOPER_DOCUMENTATION}" />
+                    <h:outputLink value="#{i18n.administrator_Administration_WEBSITE_DEVELOPER_DOCUMENTATION_URL}" title="#{i18n.administrator_Administration_WEBSITE_DEVELOPER_DOCUMENTATION_URL}" target="_blank">
+                        <h:outputText value="#{i18n.administrator_Administration_WEBSITE_DEVELOPER_DOCUMENTATION_URL}" />
+                    </h:outputLink>
+
+                    <h:outputText value="#{i18n.administrator_Administration_WEBSITE_CONTINUOUS_INTEGRATION}" />
+                    <h:outputLink value="#{i18n.administrator_Administration_WEBSITE_CONTINUOUS_INTEGRATION_URL}" title="#{i18n.administrator_Administration_WEBSITE_CONTINUOUS_INTEGRATION_URL}" target="_blank">
+                        <h:outputText value="#{i18n.administrator_Administration_WEBSITE_CONTINUOUS_INTEGRATION_URL}" />
+                    </h:outputLink>
+
+                    <h:outputText value="#{i18n.administrator_Administration_WEBSITE_SOURCE_CODE_QUALITY}" />
+                    <h:outputLink value="#{i18n.administrator_Administration_WEBSITE_SOURCE_CODE_QUALITY_URL}" title="#{i18n.administrator_Administration_WEBSITE_SOURCE_CODE_QUALITY_URL}" target="_blank">
+                        <h:outputText value="#{i18n.administrator_Administration_WEBSITE_SOURCE_CODE_QUALITY_URL}" />
+                    </h:outputLink>
+                </h:panelGrid>
+            </div>
+
+            <converge:moduleSpacer />
+
+            <converge:moduleHeader moduleTitle="#{i18n.System_TITLE}" />
+            <div class="moduleContent">
+
+                <h:panelGrid columns="2" columnClasses="left administration_system_table_label_column, left">
+                    <h:outputText value="#{i18n.System_OPERATING_SYSTEM}" />
+                    <h:outputText value="#{administrator_Administration.operatingSystem}" />
+                    <h:outputText value="#{i18n.System_JAVA_VERSION}" />
+                    <h:outputText value="#{administrator_Administration.javaVersion}" />
+                    <h:outputText value="#{i18n.System_START_TIME}" />
+                    <h:outputText value="#{administrator_Administration.startTime}">
+                        <f:convertDateTime pattern="#{i18n.Generic_FORMAT_DATE_AND_TIME}" timeZone="#{common.systemTimeZone}" />
+                    </h:outputText>
+                </h:panelGrid>
+            </div>
+
+            <converge:moduleSpacer />
+
+            <converge:moduleHeader moduleTitle="#{i18n.System_MEMORY_INFORMATION}" />
+            <div class="moduleContent">
+                <h:panelGrid columns="2" columnClasses="left administration_system_table_label_column, right">
+                    <h:outputText value="#{i18n.System_INFORMATION_MAX_MEMORY}" />
+                    <h:outputText value="#{administrator_Administration.maxMemory}">
+                        <f:convertNumber />
+                    </h:outputText>
+                    <h:outputText value="#{i18n.System_INFORMATION_USED_MEMORY}" />
+                    <h:outputText value="#{administrator_Administration.usedMemory}">
+                        <f:convertNumber />
+                    </h:outputText>
+                </h:panelGrid>
+            </div>
+
+
         </ui:define>
     </ui:composition>
 </jsp:root>
