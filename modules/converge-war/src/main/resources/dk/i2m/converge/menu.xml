@@ -76,12 +76,12 @@
         <role>ADMINISTRATOR</role>
 
         <children id="lnkAdministrationSystem" resetOnClick="false" sectionMenu="true">
-            <action>/administration/system</action>
+            <action>/administration/administration</action>
             <label>menu_SYSTEM</label>
             <role>ADMINISTRATOR</role>
             
             <children id="lnkAdministrationSystemSystem" resetOnClick="false" sectionMenu="false" resetSectionMenu="false">
-                <action>/administration/system</action>
+                <action>/administration/administration</action>
                 <label>menu_SYSTEM</label>
                 <role>ADMINISTRATOR</role>
             </children>
