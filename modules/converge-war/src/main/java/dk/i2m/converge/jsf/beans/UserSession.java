@@ -285,7 +285,7 @@ public class UserSession {
 
             try {
                 user = userFacade.findById(uid, true);
-                onRefreshUserActivity();
+                
                 for (SystemPrivilege p : SystemPrivilege.values()) {
                     privilegedOutlets.put(p.name(), user.getPrivilegedOutlets(p));
                     privileges.put(p.name(), user.isPrivileged(p));
@@ -293,6 +293,12 @@ public class UserSession {
 
                 if (user.getPreferredLocale() != null) {
                     setLocale(user.getPreferredLocale());
+                }
+                
+                // Only show user activity if you have the Reporting privilege.
+                // Needed until the CON-2 issue has been resolved
+                if (privileges.containsKey(SystemPrivilege.REPORTING.name())) {
+                    onRefreshUserActivity();
                 }
 
             } catch (DataNotFoundException ex) {
