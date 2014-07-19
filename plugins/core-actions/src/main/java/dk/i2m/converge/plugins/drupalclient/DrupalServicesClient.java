@@ -56,8 +56,7 @@ import org.apache.http.util.EntityUtils;
 import org.apache.tika.Tika;
 
 /**
- * API for communicating with Drupal Services. Example of using the client:
- * <code>
+ * API for communicating with Drupal Services. Example of using the client:  <code>
  *    DrupalServicesClient client = new DrupalServicesClient("http://mywebsite", "my_endpoint", "my_user", "my_password");
  *    if (client.login()) {
  *       // Logged in
@@ -273,16 +272,15 @@ public class DrupalServicesClient {
 
         HttpResponse response = getHttpClient().execute(method);
         int status = response.getStatusLine().getStatusCode();
-        StringWriter writer = new StringWriter();
-        IOUtils.copy(response.getEntity().getContent(), writer);
-        System.out.println(writer.toString());
         EntityUtils.consume(response.getEntity());
 
-        if (status == 200) {
-            return true;
-        } else {
-            return false;
+        if (LOG.isLoggable(Level.FINEST)) {
+            StringWriter writer = new StringWriter();
+            IOUtils.copy(response.getEntity().getContent(), writer);
+            LOG.log(Level.FINEST, "Response Content from Deleting: {0}", writer.toString());
         }
+
+        return status == 200;
     }
 
     /**
