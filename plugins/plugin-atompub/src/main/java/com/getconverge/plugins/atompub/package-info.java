@@ -17,7 +17,7 @@
 /**
  * Plug-in for uploading news items to an Atom Publishing compatible service.
  * The plug-in is implemented using the Apache Abdera library. The plug-in
- * consists of an <strong>Outlet Action</stron> implementing the
+ * consists of an <strong>Outlet Action</strong> implementing the
  * {@link dk.i2m.converge.core.plugin.EditionAction} interface and a
  * <em>Converter</em> that turns a
  * {@link dk.i2m.converge.core.content.NewsItemPlacement} into an Atom
