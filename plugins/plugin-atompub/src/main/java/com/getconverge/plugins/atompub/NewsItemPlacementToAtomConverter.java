@@ -23,7 +23,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import org.apache.abdera.Abdera;
 import org.apache.abdera.model.Entry;
-import org.apache.abdera.parser.ParseException;
 import org.w3c.tidy.Tidy;
 
 /**
@@ -33,6 +32,7 @@ import org.w3c.tidy.Tidy;
  */
 public class NewsItemPlacementToAtomConverter {
 
+    private static final String ENCODING = "UTF-8";
     private final Abdera atompub;
 
     public NewsItemPlacementToAtomConverter(Abdera atompub) {
@@ -61,8 +61,8 @@ public class NewsItemPlacementToAtomConverter {
 
     private String cleanupHtml(String story) {
         Tidy tidy = new Tidy();
-        tidy.setInputEncoding("UTF-8");
-        tidy.setOutputEncoding("UTF-8");
+        tidy.setInputEncoding(ENCODING);
+        tidy.setOutputEncoding(ENCODING);
         tidy.setPrintBodyOnly(true);
         tidy.setXmlOut(true);
         tidy.setSmartIndent(false);
