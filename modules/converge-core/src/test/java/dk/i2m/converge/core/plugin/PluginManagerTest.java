@@ -37,36 +37,42 @@ public class PluginManagerTest {
     @Test
     public void pluginManager_discoverNewswireDecoders_returnCorrectNumberOfDiscoveredNewswireDecoders() {
         PluginManager pm = PluginManager.getInstance();
+        pm.discover(ClasspathUrlFinder.findClassBase(getClass()));
         assertEquals("Incorrect number of newswire decoders discovered", 1, pm.getNewswireDecoders().size());
     }
 
     @Test
     public void pluginManager_discoverOutletActions_returnCorrectNumberOfEditionActions() {
         PluginManager pm = PluginManager.getInstance();
+        pm.discover(ClasspathUrlFinder.findClassBase(getClass()));
         assertEquals("Incorrect number of outlet actions discovered", 1, pm.getOutletActions().size());
     }
 
     @Test
     public void pluginManager_discoverWorkflowActions_returnCorrectNumberOfWorkflowActions() {
         PluginManager pm = PluginManager.getInstance();
+        pm.discover(ClasspathUrlFinder.findClassBase(getClass()));
         assertEquals("Incorrect number of workflow actions discovered", 1, pm.getWorkflowActions().size());
     }
 
     @Test
     public void pluginManager_discoverWorkflowValidators_returnCorrectNumberOfWorkflowValidators() {
         PluginManager pm = PluginManager.getInstance();
+        pm.discover(ClasspathUrlFinder.findClassBase(getClass()));
         assertEquals("Incorrect number of workflow validators discovered", 1, pm.getWorkflowValidators().size());
     }
 
     @Test
     public void pluginManager_discoverCatalogueActions_returnCorrectNumberOfCatalogueActions() {
         PluginManager pm = PluginManager.getInstance();
+        pm.discover(ClasspathUrlFinder.findClassBase(getClass()));
         assertEquals("Incorrect number of catalogue actions discovered", 1, pm.getCatalogueActions().size());
     }
 
     @Test
     public void pluginManager_discoverNewsItemActions_returnCorrectNumberOfNewsItemActions() {
         PluginManager pm = PluginManager.getInstance();
+        pm.discover(ClasspathUrlFinder.findClassBase(getClass()));
         assertEquals("Incorrect number of news item actions discovered", 1, pm.getNewsItemActions().size());
     }
 }

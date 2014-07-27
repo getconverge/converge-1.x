@@ -112,13 +112,14 @@ public final class PluginManager {
     public int discover() {
         return discover(ClasspathUrlFinder.findClassBase(getClass()));
     }
-    
+
     /**
      * Discovers available plug-ins.
      *
      * @return Number of plug-ins discovered
      */
     public int discover(URL url) {
+        LOG.log(Level.INFO, "Discovering plug-in in {0}", url.toString());
         int discoveredPlugins = 0;
         AnnotationDB db = new AnnotationDB();
 
@@ -142,11 +143,8 @@ public final class PluginManager {
 //                    LOG.log(Level.FINEST, "{0} was not found", newURL.toString());
 //                }
 //            }
-
-            
-        
-            //db.scanArchives(postClassPaths.toArray(new URL[postClassPaths.size()]));
-        try{
+        //db.scanArchives(postClassPaths.toArray(new URL[postClassPaths.size()]));
+        try {
             db.scanArchives(url);
 
             discoveredPlugins += discoverPlugins(db, dk.i2m.converge.core.annotations.NewswireDecoder.class, newswireDecoders);
