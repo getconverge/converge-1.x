@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Converge Consulting
+ * Copyright (C) 2014 Fred Ondieki, Allan Lykke Christensen
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,37 +16,16 @@
  */
 package dk.i2m.converge.core.content.catalogue;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
+ * Unit tests for {@link MediaItemRendition}.
  *
- * @author fred
+ * @author Fred Ondieki
+ * @author Allan Lykke Christensen
  */
 public class MediaItemRenditionTest {
-
-    public MediaItemRenditionTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() {
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
 
     @Test
     public void mediaItemRendition_getAbsolutePathWin_correctAbsolutePathReturned() {
