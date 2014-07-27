@@ -9,7 +9,7 @@
     <name>Plugin - AtomPub</name>
     <groupId>dk.i2m.converge.plugins</groupId>
     <artifactId>plugin-atompub</artifactId>
-    <description>Plugin for uploading news items to an AtomPub server.</description>
+    <description>Plug-in for uploading news items to an Atom Publishing compatible service.</description>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>

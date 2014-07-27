@@ -41,6 +41,7 @@ import org.apache.abdera.protocol.client.ClientResponse;
  * {@link EditionAction} for uploading news items to an AtomPub server.
  *
  * @author Allan Lykke Christensen
+ * @since 1.1.12
  */
 @OutletAction
 public class AtomPubEditionAction implements EditionAction {
@@ -61,6 +62,9 @@ public class AtomPubEditionAction implements EditionAction {
         PLUGIN_BUILD_TIME
     }
 
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public void execute(PluginContext ctx, Edition edition, OutletEditionAction action) {
         LOG.log(Level.INFO, "Executing {0} on Edition #{1} with {2} placements", new Object[]{getName(), edition.getId(), edition.getPlacements().size()});
@@ -69,6 +73,9 @@ public class AtomPubEditionAction implements EditionAction {
         }
     }
 
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public void executePlacement(PluginContext ctx, NewsItemPlacement placement, Edition edition, OutletEditionAction action) {
         LOG.log(Level.INFO, "Executing {0} on NewsItem #{1}", new Object[]{getName(), placement.getNewsItem().getId()});
@@ -91,16 +98,25 @@ public class AtomPubEditionAction implements EditionAction {
         }
     }
 
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public boolean isSupportEditionExecute() {
         return true;
     }
 
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public boolean isSupportPlacementExecute() {
         return true;
     }
 
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public Map<String, String> getAvailableProperties() {
         if (availableProperties == null) {
@@ -110,26 +126,41 @@ public class AtomPubEditionAction implements EditionAction {
         return availableProperties;
     }
 
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public String getName() {
         return bundle.getString(BundleKey.PLUGIN_NAME.name());
     }
 
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public String getAbout() {
         return bundle.getString(BundleKey.PLUGIN_ABOUT.name());
     }
 
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public String getDescription() {
         return bundle.getString(BundleKey.PLUGIN_DESCRIPTION.name());
     }
 
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public String getVendor() {
         return bundle.getString(BundleKey.PLUGIN_VENDOR.name());
     }
 
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public Date getDate() {
         try {
@@ -143,6 +174,9 @@ public class AtomPubEditionAction implements EditionAction {
         }
     }
 
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public ResourceBundle getBundle() {
         return this.bundle;

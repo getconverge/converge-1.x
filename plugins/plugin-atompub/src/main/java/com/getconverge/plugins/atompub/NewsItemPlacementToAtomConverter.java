@@ -35,6 +35,12 @@ public class NewsItemPlacementToAtomConverter {
     private static final String ENCODING = "UTF-8";
     private final Abdera atompub;
 
+    /**
+     * Creates a new instance of the {@link NewsItemPlacementToAtomConverter}.
+     *
+     * @param atompub Intantiated {@link Abdera} API used for creating the Atom
+     * {@link Entry}
+     */
     public NewsItemPlacementToAtomConverter(Abdera atompub) {
         this.atompub = atompub;
     }
