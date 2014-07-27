@@ -102,6 +102,19 @@ public class AtomPubEditionActionTest {
     }
 
     @Test
+    public void atomPubEditionAction_instance_samePropertiesAvailableOnMultipleInvocations() {
+        // Arrange
+        AtomPubEditionAction plugin = new AtomPubEditionAction();
+
+        // Act
+        Map<String, String> firstInvocation = plugin.getAvailableProperties();
+        Map<String, String> secondInvocation = plugin.getAvailableProperties();
+
+        // Assert
+        assertEquals(firstInvocation, secondInvocation);
+    }
+
+    @Test
     public void atomPubEditionAction_instance_serviceUrlPropertyAvailable() {
         // Arrange
         AtomPubEditionAction plugin = new AtomPubEditionAction();
