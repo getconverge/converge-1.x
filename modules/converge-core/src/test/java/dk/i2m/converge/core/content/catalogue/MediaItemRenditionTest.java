@@ -112,4 +112,17 @@ public class MediaItemRenditionTest {
         // Assert
         assertEquals("#", actual);
     }
+
+    @Test
+    public void mediaItemRendition_withoutMediaItem_returnsHash() {
+        // Arrange
+        MediaItemRendition rendition = new MediaItemRendition();
+        rendition.setMediaItem(null);
+
+        // Act
+        String actual = rendition.getAbsoluteFilename();
+
+        // Assert
+        assertEquals("#", actual);
+    }
 }
