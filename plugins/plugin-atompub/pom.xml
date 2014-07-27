@@ -6,7 +6,7 @@
         <artifactId>plugins</artifactId>
         <version>1.1.12-SNAPSHOT</version>
     </parent>
-    <name>Plugin - AtomPub</name>
+    <name>Plug-in - AtomPub</name>
     <groupId>dk.i2m.converge.plugins</groupId>
     <artifactId>plugin-atompub</artifactId>
     <description>Plug-in for uploading news items to an Atom Publishing compatible service.</description>
