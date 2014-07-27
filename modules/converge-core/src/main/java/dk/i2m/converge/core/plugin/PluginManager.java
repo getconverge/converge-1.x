@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.scannotation.AnnotationDB;
+import org.scannotation.ClasspathUrlFinder;
 
 /**
  * Singleton responsible for discovering available {@link Plugin}s.
@@ -108,37 +109,45 @@ public final class PluginManager {
         return newsItemActions;
     }
 
+    public int discover() {
+        return discover(ClasspathUrlFinder.findClassBase(getClass()));
+    }
+    
     /**
      * Discovers available plug-ins.
      *
      * @return Number of plug-ins discovered
      */
-    public int discover() {
+    public int discover(URL url) {
         int discoveredPlugins = 0;
         AnnotationDB db = new AnnotationDB();
 
-        try {
-            URLClassLoader cl = (URLClassLoader) getClass().getClassLoader();
-            URL[] preClassPaths = cl.getURLs();
+//        try {
+//            URLClassLoader cl = (URLClassLoader) getClass().getClassLoader();
+//            URL[] preClassPaths = cl.getURLs();
+//
+//            List<URL> postClassPaths = new ArrayList<URL>();
+//            for (URL url : preClassPaths) {
+//                URL newURL;
+//                if (url.toString().startsWith("/")) {
+//                    newURL = new URL("file:" + url.toString());
+//                } else {
+//                    newURL = url;
+//                }
+//
+//                try {
+//                    newURL.openStream();
+//                    postClassPaths.add(newURL);
+//                } catch (FileNotFoundException fnfe) {
+//                    LOG.log(Level.FINEST, "{0} was not found", newURL.toString());
+//                }
+//            }
 
-            List<URL> postClassPaths = new ArrayList<URL>();
-            for (URL url : preClassPaths) {
-                URL newURL;
-                if (url.toString().startsWith("/")) {
-                    newURL = new URL("file:" + url.toString());
-                } else {
-                    newURL = url;
-                }
-
-                try {
-                    newURL.openStream();
-                    postClassPaths.add(newURL);
-                } catch (FileNotFoundException fnfe) {
-                    LOG.log(Level.FINEST, "{0} was not found", newURL.toString());
-                }
-            }
-
-            db.scanArchives(postClassPaths.toArray(new URL[postClassPaths.size()]));
+            
+        
+            //db.scanArchives(postClassPaths.toArray(new URL[postClassPaths.size()]));
+        try{
+            db.scanArchives(url);
 
             discoveredPlugins += discoverPlugins(db, dk.i2m.converge.core.annotations.NewswireDecoder.class, newswireDecoders);
             discoveredPlugins += discoverPlugins(db, dk.i2m.converge.core.annotations.WorkflowAction.class, workflowActions);

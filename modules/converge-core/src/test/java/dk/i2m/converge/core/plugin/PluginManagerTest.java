@@ -19,6 +19,7 @@ package dk.i2m.converge.core.plugin;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.scannotation.ClasspathUrlFinder;
 
 /**
  * Unit tests for {@link PluginManager}.
@@ -30,7 +31,7 @@ public class PluginManagerTest {
     @Test
     public void pluginManager_discoverPlugins_returnCorrectNumberOfDiscoveredPlugins() throws Exception {
         PluginManager pm = PluginManager.getInstance();
-        assertEquals(6, pm.discover());
+        assertEquals(6, pm.discover(ClasspathUrlFinder.findClassBase(getClass())));
     }
 
     @Test
