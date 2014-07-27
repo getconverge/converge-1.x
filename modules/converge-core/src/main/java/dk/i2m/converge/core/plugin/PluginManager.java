@@ -146,6 +146,10 @@ public final class PluginManager {
         //db.scanArchives(postClassPaths.toArray(new URL[postClassPaths.size()]));
         try {
             db.scanArchives(url);
+            LOG.log(Level.INFO, "{0} different annotations found", db.getAnnotationIndex().size());
+            for (String key : db.getAnnotationIndex().keySet()) {
+                LOG.log(Level.INFO, "Annotation: {0} of {1} found", new Object[]{db.getAnnotationIndex().get(key).size(), key});
+            }
 
             discoveredPlugins += discoverPlugins(db, dk.i2m.converge.core.annotations.NewswireDecoder.class, newswireDecoders);
             discoveredPlugins += discoverPlugins(db, dk.i2m.converge.core.annotations.WorkflowAction.class, workflowActions);
