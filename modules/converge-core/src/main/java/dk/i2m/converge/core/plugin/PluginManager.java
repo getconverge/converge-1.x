@@ -17,8 +17,10 @@
  */
 package dk.i2m.converge.core.plugin;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -31,6 +33,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.scannotation.AnnotationDB;
 import org.scannotation.ClasspathUrlFinder;
+import org.scannotation.archiveiterator.Filter;
+import org.scannotation.archiveiterator.IteratorFactory;
+import org.scannotation.archiveiterator.StreamIterator;
 
 /**
  * Singleton responsible for discovering available {@link Plugin}s.
@@ -120,6 +125,32 @@ public final class PluginManager {
      */
     public int discover(URL url) {
         LOG.log(Level.INFO, "Discovering plug-in in {0}", url.toString());
+
+        Filter filter = new Filter() {
+            @Override
+            public boolean accepts(String filename) {
+                LOG.log(Level.INFO, "Include {0}", filename);
+                if (filename.endsWith(".class")) {
+                    if (filename.startsWith("/")) {
+                        filename = filename.substring(1);
+                    }
+                    LOG.log(Level.INFO, "Yes - Check {0}", filename);
+                    return true;
+                }
+                return false;
+            }
+        };
+
+        try {
+            StreamIterator it = IteratorFactory.create(url, filter);
+
+            InputStream stream;
+            while ((stream = it.next()) != null) {
+            }
+        } catch (IOException ex) {
+
+        }
+
         int discoveredPlugins = 0;
         AnnotationDB db = new AnnotationDB();
 
