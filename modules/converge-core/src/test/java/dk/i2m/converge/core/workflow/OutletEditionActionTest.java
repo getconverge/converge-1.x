@@ -82,4 +82,82 @@ public class OutletEditionActionTest {
         assertFalse(actionValid);
     }
 
+    @Test
+    public void outletEditionAction_validAction_returnActionIsValid() {
+        // Arrange
+        OutletEditionAction outletAction = new OutletEditionAction();
+        outletAction.setActionClass(DummyEditionAction.class.getName());
+
+        // Act
+        boolean actionValid = outletAction.isActionValid();
+
+        // Assert
+        assertTrue(actionValid);
+    }
+
+    @Test
+    public void outletEditionAction_plainInstance_returnCorrectToString() {
+        // Arrange
+        OutletEditionAction outletAction = new OutletEditionAction();
+        outletAction.setId(10L);
+        outletAction.setActionClass(DummyEditionAction.class.getName());
+
+        // Act
+        String actual = outletAction.toString();
+
+        // Assert
+        String expected = "dk.i2m.converge.core.workflow.OutletEditionAction[id=10]";
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void outletEditionAction_twoInstanceWithSameId_bothEqual() {
+        // Arrange
+        OutletEditionAction action1 = new OutletEditionAction();
+        action1.setId(10L);
+
+        OutletEditionAction action2 = new OutletEditionAction();
+        action2.setId(10L);
+
+        // Act
+        boolean a1EqualsA2 = action1.equals(action2);
+        boolean a2EqualsA1 = action2.equals(action1);
+
+        // Assert
+        assertTrue(a1EqualsA2);
+        assertTrue(a2EqualsA1);
+    }
+
+    @Test
+    public void outletEditionAction_twoInstanceWithDiffentId_notEqual() {
+        // Arrange
+        OutletEditionAction action1 = new OutletEditionAction();
+        action1.setId(1L);
+
+        OutletEditionAction action2 = new OutletEditionAction();
+        action2.setId(10L);
+
+        // Act
+        boolean a1EqualsA2 = action1.equals(action2);
+        boolean a2EqualsA1 = action2.equals(action1);
+
+        // Assert
+        assertFalse(a1EqualsA2);
+        assertFalse(a2EqualsA1);
+    }
+
+    @Test
+    public void outletEditionAction_twoDiffentTypes_notEqual() {
+        // Arrange
+        OutletEditionAction action = new OutletEditionAction();
+        action.setId(1L);
+
+        Long longType = 1L;
+
+        // Act
+        boolean actionEqualsLongType = action.equals(longType);
+
+        // Assert
+        assertFalse(actionEqualsLongType);
+    }
 }
