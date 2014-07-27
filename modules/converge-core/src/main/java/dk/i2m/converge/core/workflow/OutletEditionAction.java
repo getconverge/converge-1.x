@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2010 - 2013 Interactive Media Management
+ *  Copyright (C) 2014 Allan Lykke Christensen
  * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -36,9 +37,11 @@ import javax.persistence.Table;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
 /**
- * Action to be executed when an {@link Edition} of an {@link Outlet} is closed.
+ * Action to be executed when on an {@link Edition}. The action can configured
+ * for automatic invocation when the {@link Outlet} if the {@link Edition} is
+ * closed or manually by a user with sufficient privileges.
  *
- * @author <a href="mailto:allan@i2m.dk">Allan Lykke Christensen</a>
+ * @author <a href="mailto:allan@getconverge.com">Allan Lykke Christensen</a>
  */
 @Entity
 @Table(name = "outlet_edition_action")
@@ -136,7 +139,7 @@ public class OutletEditionAction implements Serializable {
      * {@link OutletEditionAction#getActionClass()}.
      *
      * @return Instance of the action
-     * @throws WorkflowActionException If the action could not be instantiated
+     * @throws EditionActionException If the action could not be instantiated
      */
     public EditionAction getAction() throws EditionActionException {
         try {
@@ -163,7 +166,7 @@ public class OutletEditionAction implements Serializable {
         try {
             getAction();
             return true;
-        } catch (Throwable t) {
+        } catch (EditionActionException ex) {
             return false;
         }
     }
@@ -197,10 +200,7 @@ public class OutletEditionAction implements Serializable {
             return false;
         }
         OutletEditionAction other = (OutletEditionAction) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override
