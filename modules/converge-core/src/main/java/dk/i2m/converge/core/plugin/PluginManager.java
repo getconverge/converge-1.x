@@ -17,10 +17,8 @@
  */
 package dk.i2m.converge.core.plugin;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -32,10 +30,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.scannotation.AnnotationDB;
-import org.scannotation.ClasspathUrlFinder;
-import org.scannotation.archiveiterator.Filter;
-import org.scannotation.archiveiterator.IteratorFactory;
-import org.scannotation.archiveiterator.StreamIterator;
 
 /**
  * Singleton responsible for discovering available {@link Plugin}s.
@@ -114,69 +108,56 @@ public final class PluginManager {
         return newsItemActions;
     }
 
-    public int discover() {
-        return discover(ClasspathUrlFinder.findClassBase(getClass()));
-    }
-
     /**
-     * Discovers available plug-ins.
+     * Discovers available plug-ins using the default classloader URLs.
      *
      * @return Number of plug-ins discovered
      */
-    public int discover(URL url) {
-        LOG.log(Level.INFO, "Discovering plug-in in {0}", url.toString());
-
-        Filter filter = new Filter() {
-            @Override
-            public boolean accepts(String filename) {
-                LOG.log(Level.INFO, "Include {0}", filename);
-                if (filename.endsWith(".class")) {
-                    if (filename.startsWith("/")) {
-                        filename = filename.substring(1);
-                    }
-                    LOG.log(Level.INFO, "Yes - Check {0}", filename);
-                    return true;
-                }
-                return false;
-            }
-        };
-
+    public int discover() {
+        List<URL> postClassPaths = new ArrayList<URL>();
         try {
-            StreamIterator it = IteratorFactory.create(url, filter);
+            URLClassLoader cl = (URLClassLoader) getClass().getClassLoader();
+            URL[] preClassPaths = cl.getURLs();
 
-            InputStream stream;
-            while ((stream = it.next()) != null) {
+            for (URL url : preClassPaths) {
+                URL newURL;
+                if (url.toString().startsWith("/")) {
+                    newURL = new URL("file:" + url.toString());
+                } else {
+                    newURL = url;
+                }
+
+                try {
+                    newURL.openStream();
+                    postClassPaths.add(newURL);
+                } catch (FileNotFoundException fnfe) {
+                    LOG.log(Level.FINEST, "{0} was not found", newURL.toString());
+                }
             }
         } catch (IOException ex) {
+            LOG.log(Level.WARNING, "Could not obtain URLs for discovering plug-ins. {0}", ex.getMessage());
+            LOG.log(Level.FINEST, "", ex);
+        }
 
+        return discover(postClassPaths.toArray(new URL[postClassPaths.size()]));
+    }
+
+    /**
+     * Discovers available plug-ins using a given array of URLs.
+     *
+     * @param urls URLs where the {@link PluginManager} should look for URLs
+     * @return Number of plug-ins discovered
+     */
+    public int discover(URL... urls) {
+        for (URL url : urls) {
+            LOG.log(Level.INFO, "Discovering plug-ins in {0}", url.toString());
         }
 
         int discoveredPlugins = 0;
         AnnotationDB db = new AnnotationDB();
 
-//        try {
-//            URLClassLoader cl = (URLClassLoader) getClass().getClassLoader();
-//            URL[] preClassPaths = cl.getURLs();
-//
-//            List<URL> postClassPaths = new ArrayList<URL>();
-//            for (URL url : preClassPaths) {
-//                URL newURL;
-//                if (url.toString().startsWith("/")) {
-//                    newURL = new URL("file:" + url.toString());
-//                } else {
-//                    newURL = url;
-//                }
-//
-//                try {
-//                    newURL.openStream();
-//                    postClassPaths.add(newURL);
-//                } catch (FileNotFoundException fnfe) {
-//                    LOG.log(Level.FINEST, "{0} was not found", newURL.toString());
-//                }
-//            }
-        //db.scanArchives(postClassPaths.toArray(new URL[postClassPaths.size()]));
         try {
-            db.scanArchives(url);
+            db.scanArchives(urls);
             LOG.log(Level.INFO, "{0} different annotations found", db.getAnnotationIndex().size());
             for (String key : db.getAnnotationIndex().keySet()) {
                 LOG.log(Level.INFO, "Annotation: {0} of {1} found", new Object[]{db.getAnnotationIndex().get(key).size(), key});
