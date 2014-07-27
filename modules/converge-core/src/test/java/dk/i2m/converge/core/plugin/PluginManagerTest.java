@@ -32,6 +32,7 @@ public class PluginManagerTest {
     public void pluginManager_discoverPlugins_returnCorrectNumberOfDiscoveredPlugins() throws Exception {
         PluginManager pm = PluginManager.getInstance();
         assertEquals(6, pm.discover(ClasspathUrlFinder.findClassBase(getClass())));
+        assertEquals(6, pm.getPlugins().size());
     }
 
     @Test
