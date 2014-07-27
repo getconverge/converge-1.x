@@ -23,9 +23,9 @@
  * {@link dk.i2m.converge.core.content.NewsItemPlacement} into an Atom
  * {@link org.apache.abdera.model.Entry}.
  *
- * @see <a href="http://abdera.apache.org">Apache Abdera homepage</a>
  * @see <a
  * href="https://getconverge.atlassian.net/wiki/display/UD/AtomPub">AtomPub
  * Plugin User Documentation</a>
+ * @see <a href="http://abdera.apache.org">Apache Abdera homepage</a>
  */
 package com.getconverge.plugins.atompub;

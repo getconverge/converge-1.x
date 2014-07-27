@@ -26,7 +26,7 @@ import org.apache.abdera.model.Entry;
 import org.w3c.tidy.Tidy;
 
 /**
- * Type converter from {@link NewsItemPlacement} to Atom {@link Entry.
+ * Type converter from {@link NewsItemPlacement} to Atom {@link Entry}.
  *
  * @author Allan Lykke Christensen
  */
