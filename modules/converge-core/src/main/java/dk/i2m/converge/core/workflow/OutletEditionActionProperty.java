@@ -50,7 +50,8 @@ public class OutletEditionActionProperty implements Serializable {
     @Column(name = "property_key")
     private String key;
 
-    @Column(name = "property_value") @Lob
+    @Column(name = "property_value")
+    @Lob
     private String value;
 
     @javax.persistence.Version
@@ -58,6 +59,12 @@ public class OutletEditionActionProperty implements Serializable {
     private int versionIdentifier;
 
     public OutletEditionActionProperty() {
+    }
+
+    public OutletEditionActionProperty(OutletEditionAction outletEditionAction, String key, String value) {
+        this.outletEditionAction = outletEditionAction;
+        this.key = key;
+        this.value = value;
     }
 
     public Long getId() {
