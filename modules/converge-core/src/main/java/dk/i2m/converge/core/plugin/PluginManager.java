@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2010 - 2011 Interactive Media Management
+ *  Copyright (C) 2014 Allan Lykke Christensen
  * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -41,18 +42,21 @@ public final class PluginManager {
 
     private static final Logger LOG = Logger.getLogger(PluginManager.class.getName());
 
-    private Map<String, NewswireDecoder> newswireDecoders = new HashMap<String, NewswireDecoder>();
+    private final Map<String, NewswireDecoder> newswireDecoders = new HashMap<String, NewswireDecoder>();
 
-    private Map<String, WorkflowAction> workflowActions = new HashMap<String, WorkflowAction>();
+    private final Map<String, WorkflowAction> workflowActions = new HashMap<String, WorkflowAction>();
 
-    private Map<String, EditionAction> outletActions = new HashMap<String, EditionAction>();
+    private final Map<String, EditionAction> outletActions = new HashMap<String, EditionAction>();
 
-    private Map<String, WorkflowValidator> workflowValidators = new HashMap<String, WorkflowValidator>();
+    private final Map<String, WorkflowValidator> workflowValidators = new HashMap<String, WorkflowValidator>();
 
-    private Map<String, CatalogueHook> catalogueActions = new HashMap<String, CatalogueHook>();
+    private final Map<String, CatalogueHook> catalogueActions = new HashMap<String, CatalogueHook>();
 
-    private Map<String, NewsItemAction> newsItemActions = new HashMap<String, NewsItemAction>();
+    private final Map<String, NewsItemAction> newsItemActions = new HashMap<String, NewsItemAction>();
 
+    /**
+     * Private constructor for the singleton {@link PluginManager}.
+     */
     private PluginManager() {
         discover();
     }
@@ -99,7 +103,7 @@ public final class PluginManager {
     public Map<String, CatalogueHook> getCatalogueActions() {
         return catalogueActions;
     }
-    
+
     public Map<String, NewsItemAction> getNewsItemActions() {
         return newsItemActions;
     }
@@ -144,7 +148,8 @@ public final class PluginManager {
             discoveredPlugins += discoverPlugins(db, dk.i2m.converge.core.annotations.NewsItemAction.class, newsItemActions);
             LOG.log(Level.INFO, "{0} {0, choice, 0#plugins|1#plugin|2#plugins} discovered", discoveredPlugins);
         } catch (IOException ex) {
-            LOG.log(Level.SEVERE, "", ex);
+            LOG.log(Level.SEVERE, "Could not discover plug-ins. {0}", ex.getMessage());
+            LOG.log(Level.FINEST, "", ex);
         }
 
         return discoveredPlugins;
@@ -164,11 +169,14 @@ public final class PluginManager {
                     Plugin plugin = (Plugin) c.newInstance();
                     registry.put(plugin.getName(), plugin);
                 } catch (ClassNotFoundException e) {
-                    LOG.log(Level.SEVERE, "", e);
+                    LOG.log(Level.SEVERE, e.getMessage());
+                    LOG.log(Level.FINEST, "", e);
                 } catch (InstantiationException e) {
-                    LOG.log(Level.SEVERE, "", e);
+                    LOG.log(Level.SEVERE, e.getMessage());
+                    LOG.log(Level.FINEST, "", e);
                 } catch (IllegalAccessException e) {
-                    LOG.log(Level.SEVERE, "", e);
+                    LOG.log(Level.SEVERE, e.getMessage());
+                    LOG.log(Level.FINEST, "", e);
                 }
             }
         }

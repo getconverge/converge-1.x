@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2010 Interactive Media Manager
+ *  Copyright (C) 2014 Allan Lykke Christensen
  * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,45 +17,55 @@
  */
 package dk.i2m.converge.core.plugin;
 
-import dk.i2m.converge.core.plugin.PluginManager;
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Test cases for the {@link PluginManager}.
+ * Unit tests for {@link PluginManager}.
  *
  * @author Allan Lykke Christensen
  */
 public class PluginManagerTest {
 
     @Test
-    @Ignore(value="Seems that there is a classpath issues preventing the plugins to be discovered during tests but not in production")
-    public void testDiscoveryPlugins() throws Exception {
+    public void pluginManager_discoverPlugins_returnCorrectNumberOfDiscoveredPlugins() throws Exception {
         PluginManager pm = PluginManager.getInstance();
-        assertEquals("Incorrect number of plugins discovered", 4, pm.getPlugins().size());
+        assertEquals(6, pm.discover());
     }
 
     @Test
-    @Ignore
-    public void testDiscoveryNewswireDecoders() throws Exception {
+    public void pluginManager_discoverNewswireDecoders_returnCorrectNumberOfDiscoveredNewswireDecoders() {
         PluginManager pm = PluginManager.getInstance();
-        assertEquals("Incorrect number of newswire decoders discovered", 2, pm.getNewswireDecoders().size());
-        if (!pm.getNewswireDecoders().containsValue("dk.i2m.converge.plugins.newswires.DailyMailDecoder")) {
-            fail("Daily Mail Decoder not found by plug-in manager");
-        }
-        if (!pm.getNewswireDecoders().containsValue("dk.i2m.converge.plugins.newswires.RssDecoder")) {
-            fail("RSS Decodernot found by plug-in manager");
-        }
+        assertEquals("Incorrect number of newswire decoders discovered", 1, pm.getNewswireDecoders().size());
     }
 
     @Test
-    @Ignore
-    public void testDiscoveryWorkflowActions() throws Exception {
+    public void pluginManager_discoverOutletActions_returnCorrectNumberOfEditionActions() {
+        PluginManager pm = PluginManager.getInstance();
+        assertEquals("Incorrect number of outlet actions discovered", 1, pm.getOutletActions().size());
+    }
+
+    @Test
+    public void pluginManager_discoverWorkflowActions_returnCorrectNumberOfWorkflowActions() {
         PluginManager pm = PluginManager.getInstance();
         assertEquals("Incorrect number of workflow actions discovered", 1, pm.getWorkflowActions().size());
-        if (!pm.getWorkflowActions().containsValue("dk.i2m.converge.plugins.workflow.AlertAction")) {
-            fail("Alert Action was not discovered by plug-in manager");
-        }
+    }
+
+    @Test
+    public void pluginManager_discoverWorkflowValidators_returnCorrectNumberOfWorkflowValidators() {
+        PluginManager pm = PluginManager.getInstance();
+        assertEquals("Incorrect number of workflow validators discovered", 1, pm.getWorkflowValidators().size());
+    }
+
+    @Test
+    public void pluginManager_discoverCatalogueActions_returnCorrectNumberOfCatalogueActions() {
+        PluginManager pm = PluginManager.getInstance();
+        assertEquals("Incorrect number of catalogue actions discovered", 1, pm.getCatalogueActions().size());
+    }
+
+    @Test
+    public void pluginManager_discoverNewsItemActions_returnCorrectNumberOfNewsItemActions() {
+        PluginManager pm = PluginManager.getInstance();
+        assertEquals("Incorrect number of news item actions discovered", 1, pm.getNewsItemActions().size());
     }
 }
