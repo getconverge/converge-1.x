@@ -45,9 +45,9 @@ import org.apache.abdera.protocol.client.ClientResponse;
 @OutletAction
 public class AtomPubEditionAction implements EditionAction {
 
-    private final String PLUGIN_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-    private final ResourceBundle BUNDLE = ResourceBundle.getBundle("com.getconverge.plugins.atompub.Messages");
+    private static final String PLUGIN_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private static final Logger LOG = Logger.getLogger(AtomPubEditionAction.class.getName());
+    private final ResourceBundle bundle = ResourceBundle.getBundle("com.getconverge.plugins.atompub.Messages");
     private Map<String, String> availableProperties = null;
 
     enum Property {
@@ -112,29 +112,29 @@ public class AtomPubEditionAction implements EditionAction {
 
     @Override
     public String getName() {
-        return BUNDLE.getString(BundleKey.PLUGIN_NAME.name());
+        return bundle.getString(BundleKey.PLUGIN_NAME.name());
     }
 
     @Override
     public String getAbout() {
-        return BUNDLE.getString(BundleKey.PLUGIN_ABOUT.name());
+        return bundle.getString(BundleKey.PLUGIN_ABOUT.name());
     }
 
     @Override
     public String getDescription() {
-        return BUNDLE.getString(BundleKey.PLUGIN_DESCRIPTION.name());
+        return bundle.getString(BundleKey.PLUGIN_DESCRIPTION.name());
     }
 
     @Override
     public String getVendor() {
-        return BUNDLE.getString(BundleKey.PLUGIN_VENDOR.name());
+        return bundle.getString(BundleKey.PLUGIN_VENDOR.name());
     }
 
     @Override
     public Date getDate() {
         try {
             SimpleDateFormat format = new SimpleDateFormat(PLUGIN_DATE_FORMAT);
-            String date = BUNDLE.getString(BundleKey.PLUGIN_BUILD_TIME.name());
+            String date = bundle.getString(BundleKey.PLUGIN_BUILD_TIME.name());
             return format.parse(date);
         } catch (ParseException ex) {
             LOG.log(Level.WARNING, "{0}. Using todays date", ex.getMessage());
@@ -145,6 +145,6 @@ public class AtomPubEditionAction implements EditionAction {
 
     @Override
     public ResourceBundle getBundle() {
-        return this.BUNDLE;
+        return this.bundle;
     }
 }
