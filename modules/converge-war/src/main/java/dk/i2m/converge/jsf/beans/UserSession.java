@@ -58,25 +58,34 @@ import org.richfaces.event.UploadEvent;
  */
 public class UserSession {
 
-    private static final Logger LOG =
-            Logger.getLogger(UserSession.class.getName());
+    private static final Logger LOG
+            = Logger.getLogger(UserSession.class.getName());
 
-    @EJB private UserFacadeLocal userFacade;
+    @EJB
+    private UserFacadeLocal userFacade;
 
-    @EJB private CatalogueFacadeLocal catalogueFacade;
+    @EJB
+    private CatalogueFacadeLocal catalogueFacade;
 
-    @EJB private SystemFacadeLocal systemFacade;
+    @EJB
+    private SystemFacadeLocal systemFacade;
 
-    @EJB private ReportingFacadeLocal reportingFacade;
+    @EJB
+    private ReportingFacadeLocal reportingFacade;
 
-    @EJB private WikiFacadeBeanLocal wikiFacade;
+    @EJB
+    private WikiFacadeBeanLocal wikiFacade;
 
     private UserAccount user;
 
-    /** Menu items appearing on the page header. */
+    /**
+     * Menu items appearing on the page header.
+     */
     private List<MenuItem> items = new ArrayList<MenuItem>();
 
-    /** Sub-menu items. */
+    /**
+     * Sub-menu items.
+     */
     private List<MenuItem> submenuItems = new ArrayList<MenuItem>();
 
     private MenuItem administration = new MenuItem();
@@ -85,8 +94,8 @@ public class UserSession {
 
     private MenuItem sectionMenu;
 
-    private Map<String, List<Outlet>> privilegedOutlets =
-            new HashMap<String, List<Outlet>>();
+    private Map<String, List<Outlet>> privilegedOutlets
+            = new HashMap<String, List<Outlet>>();
 
     private Map<String, Boolean> privileges = new HashMap<String, Boolean>();
 
@@ -139,7 +148,7 @@ public class UserSession {
      * Determines if the user is an administrator.
      *
      * @return {@code true} if the user is an administrator, otherwise
-     *         {@code false}
+     * {@code false}
      */
     public boolean isAdministrator() {
         return isUserInRole("ADMINISTRATOR");
@@ -159,7 +168,7 @@ public class UserSession {
      *
      * @param role Name of the role
      * @return {@code true} if the user is in the given role, otherwise
-     *         {@code false}
+     * {@code false}
      */
     public boolean isUserInRole(String role) {
         FacesContext ctx = FacesContext.getCurrentInstance();
@@ -169,18 +178,18 @@ public class UserSession {
     /**
      * Determines if the current user is an editor of a catalogue.
      * <p/>
-     * @return {@code true} if the current user is an editor of a
-     * catalogue, otherwise {@code false}
+     * @return {@code true} if the current user is an editor of a catalogue,
+     * otherwise {@code false}
      */
     public boolean isCatalogueEditor() {
         return userFacade.isCatalogueEditor(getUser().getUsername());
     }
 
     /**
-     * Gets a {@link Map} of {@link Catalogues} with the {@link Catalogue} id
-     * in the key of the {@link Map}, and a {@link Boolean} value in the value
-     * of the {@link Map}. The {@link Boolean} value indicates if the current
-     * user is an editor for the given {@link Catalogue}.
+     * Gets a {@link Map} of {@link Catalogues} with the {@link Catalogue} id in
+     * the key of the {@link Map}, and a {@link Boolean} value in the value of
+     * the {@link Map}. The {@link Boolean} value indicates if the current user
+     * is an editor for the given {@link Catalogue}.
      * <p/>
      * @return {@link Map} of {@link Catalogues} indicator whether the current
      * user is an editor.
@@ -265,8 +274,8 @@ public class UserSession {
      * Fetches user information and authorisation. This method should only be
      * executed once per user session.
      *
-     * @throws UserSessionException If a user is not currently logged in or if the user could not be
-     * found in the database and directory
+     * @throws UserSessionException If a user is not currently logged in or if
+     * the user could not be found in the database and directory
      */
     private void fetchUser() throws UserSessionException {
         FacesContext ctx = FacesContext.getCurrentInstance();
@@ -285,7 +294,7 @@ public class UserSession {
 
             try {
                 user = userFacade.findById(uid, true);
-                
+
                 for (SystemPrivilege p : SystemPrivilege.values()) {
                     privilegedOutlets.put(p.name(), user.getPrivilegedOutlets(p));
                     privileges.put(p.name(), user.isPrivileged(p));
@@ -294,7 +303,7 @@ public class UserSession {
                 if (user.getPreferredLocale() != null) {
                     setLocale(user.getPreferredLocale());
                 }
-                
+
                 // Only show user activity if you have the Reporting privilege.
                 // Needed until the CON-2 issue has been resolved
                 if (privileges.containsKey(SystemPrivilege.REPORTING.name())) {
@@ -389,8 +398,7 @@ public class UserSession {
      * Determine if the current user is allowed to create new assignments.
      * <p/>
      * @return {@code true} if the current user is allowed to create either news
-     * items for outlets or media items for catalogues, otherwise
-     *         {@code false}
+     * items for outlets or media items for catalogues, otherwise {@code false}
      */
     public boolean isPrivilegedToCreateNewAssignments() {
         return !getPrivilegedOutlets().isEmpty() || !getMyCatalogues().isEmpty();
@@ -447,8 +455,8 @@ public class UserSession {
     }
 
     /**
-     * Refreshes the {@link UserActivitySummary} for the past two months.
-     * After executing this method, the activity summary is available in
+     * Refreshes the {@link UserActivitySummary} for the past two months. After
+     * executing this method, the activity summary is available in
      * {@link UserSession#getLastMonthActivity()} and
      * {@link UserSession#getThisMonthActivity()}.
      */
@@ -467,12 +475,12 @@ public class UserSession {
         java.util.Calendar thisMonthLastDay = CalendarUtils.getLastDayOfMonth(
                 thisMonth);
 
-        this.lastMonthActivity =
-                reportingFacade.generateUserActivitySummary(lastMonthFirstDay.
-                getTime(), lastMonthLastDay.getTime(), getUser());
-        this.thisMonthActivity =
-                reportingFacade.generateUserActivitySummary(thisMonthFirstDay.
-                getTime(), thisMonthLastDay.getTime(), getUser());
+        this.lastMonthActivity
+                = reportingFacade.generateUserActivitySummary(lastMonthFirstDay.
+                        getTime(), lastMonthLastDay.getTime(), getUser());
+        this.thisMonthActivity
+                = reportingFacade.generateUserActivitySummary(thisMonthFirstDay.
+                        getTime(), thisMonthLastDay.getTime(), getUser());
     }
 
     /**
@@ -539,8 +547,8 @@ public class UserSession {
 
             String workingDirectory = systemFacade.getProperty(
                     ConfigurationKey.WORKING_DIRECTORY) + System.getProperty(
-                    "file.separator") + "users" + System.getProperty(
-                    "file.separator");
+                            "file.separator") + "users" + System.getProperty(
+                            "file.separator");
             try {
                 byte[] uploadedFile = FileUtils.getBytes(tempFile);
                 byte[] thumb = ImageUtils.generateThumbnail(uploadedFile, 48, 48,
@@ -548,19 +556,16 @@ public class UserSession {
 
                 FileUtils.writeToFile(thumb, workingDirectory + user.getId()
                         + ".jpg");
-
-//                JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO, "profile_PHOTO_UPDATED_MSG");
             } catch (IOException ex) {
-                LOG.log(Level.WARNING, "", ex);
-//                JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_ERROR, "Could not read the uploaded file");
+                LOG.log(Level.WARNING, ex.getMessage());
+                LOG.log(Level.FINEST, "", ex);
             } catch (InterruptedException ex) {
-                LOG.log(Level.WARNING, "", ex);
-//                JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_ERROR, "Could not generate thumbnail from uploaded file. Please check the format of the file to ensure that it is an JPEG (RGB) file.");
+                LOG.log(Level.WARNING, ex.getMessage());
+                LOG.log(Level.FINEST, "", ex);
             }
 
         } else {
-            LOG.severe("RichFaces is not set-up to use tempFiles "
-                    + "for storing file uploads");
+            LOG.log(Level.SEVERE, "RichFaces is not set-up to use tempFiles for storing file uploads");
         }
     }
 
@@ -622,7 +627,7 @@ public class UserSession {
 
     /**
      * Event handler for preparation of a new wiki page.
-     * 
+     *
      * @param event Event that invoked the handler
      */
     public void onCreateWikiPage(ActionEvent event) {
@@ -645,12 +650,12 @@ public class UserSession {
         this.items.clear();
         this.submenuItems.clear();
         generateMenu();
-        
+
     }
 
     /**
      * Event handler for deleting the currently selected wiki page.
-     * 
+     *
      * @param event Event that invoked the handler
      */
     public void onDeleteWikiPage(ActionEvent event) {
