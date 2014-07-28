@@ -19,7 +19,6 @@ package dk.i2m.converge.jsf.beans;
 import dk.i2m.converge.core.workflow.Department;
 import dk.i2m.converge.core.workflow.Edition;
 import dk.i2m.converge.ejb.services.NewswireServiceLocal;
-import dk.i2m.converge.jsf.converters.NewsItemAuthorDisplayConverter;
 import dk.i2m.converge.jsf.converters.UserRoleConverter;
 import dk.i2m.converge.jsf.converters.WorkflowConverter;
 import dk.i2m.converge.jsf.converters.WorkflowStateConverter;
@@ -122,10 +121,6 @@ public class Converters {
 
     public Converter getFinancialMarketConverter() {
         return new FinancialMarketConverter(listingFacade);
-    }
-
-    public Converter getNewsItemAuthorDisplayConverter() {
-        return new NewsItemAuthorDisplayConverter();
     }
 
     /**
