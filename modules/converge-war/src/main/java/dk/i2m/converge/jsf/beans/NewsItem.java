@@ -123,14 +123,13 @@ public class NewsItem {
     private Date editionDate;
     private NewsItemPlacement selectedNewsItemPlacement;
     private EditionCandidate editionCandidate;
-    private Map<String, EditionCandidate> editionCandidates =
-            new LinkedHashMap<String, EditionCandidate>();
+    private Map<String, EditionCandidate> editionCandidates = new LinkedHashMap<String, EditionCandidate>();
     private Catalogue selectedCatalogue = null;
     private boolean showClosedEditions = false;
-    private Map<String, Concept> suggestedConcepts =
-            new LinkedHashMap<String, Concept>();
+    private Map<String, Concept> suggestedConcepts = new LinkedHashMap<String, Concept>();
     private List<Concept> selectedConcepts = new ArrayList<Concept>();
     private Long uploadedMediaItem = 0L;
+    private SearchResults lastSearch = new SearchResults();
 
     /**
      * Creates a new instance of {@link NewsItem}.
@@ -466,9 +465,9 @@ public class NewsItem {
                 this.newActor.setNewsItem(selectedNewsItem);
                 newsItemFacade.addActorToNewsItem(newActor);
                 try {
-                    selectedNewsItem =
-                            newsItemFacade.findNewsItemById(selectedNewsItem.
-                            getId());
+                    selectedNewsItem
+                            = newsItemFacade.findNewsItemById(selectedNewsItem.
+                                    getId());
                 } catch (DataNotFoundException ex) {
                     JsfUtils.createMessage("frmPage",
                             FacesMessage.SEVERITY_ERROR,
@@ -571,8 +570,8 @@ public class NewsItem {
 
         for (WorkflowStepValidator validator : selectedStep.getValidators()) {
             try {
-                dk.i2m.converge.core.plugin.WorkflowValidator workflowValidator =
-                        validator.getValidator();
+                dk.i2m.converge.core.plugin.WorkflowValidator workflowValidator
+                        = validator.getValidator();
                 workflowValidator.execute(selectedNewsItem, selectedStep,
                         validator);
             } catch (WorkflowValidatorException ex) {
@@ -618,8 +617,8 @@ public class NewsItem {
     }
 
     public Map<String, UserAccount> getRoleUsers() {
-        Map<String, UserAccount> users =
-                new LinkedHashMap<String, UserAccount>();
+        Map<String, UserAccount> users
+                = new LinkedHashMap<String, UserAccount>();
 
         if (newActor != null && newActor.getRole() != null) {
             List<UserAccount> accounts = userFacade.getMembers(
@@ -630,7 +629,6 @@ public class NewsItem {
                 users.put(user.getFullName(), user);
             }
         }
-
 
         return users;
     }
@@ -690,8 +688,8 @@ public class NewsItem {
      * state of the {@link NewsItem}
      */
     public Map<String, WorkflowStep> getAvailableWorkflowSteps() {
-        Map<String, WorkflowStep> steps =
-                new LinkedHashMap<String, WorkflowStep>();
+        Map<String, WorkflowStep> steps
+                = new LinkedHashMap<String, WorkflowStep>();
 
         for (WorkflowStep step : getSelectedNewsItem().getCurrentState().
                 getNextStates()) {
@@ -771,12 +769,7 @@ public class NewsItem {
             return false;
         }
 
-        switch (permission) {
-            case UNAUTHORIZED:
-                return false;
-            default:
-                return true;
-        }
+        return !(permission == ContentItemPermission.UNAUTHORIZED);
     }
 
     public boolean isPullbackAvailable() {
@@ -843,7 +836,6 @@ public class NewsItem {
     public void setSearchResults(DataModel searchResults) {
         this.searchResults = searchResults;
     }
-    private SearchResults lastSearch = new SearchResults();
 
     public SearchResults getLastSearch() {
         return lastSearch;
@@ -875,9 +867,9 @@ public class NewsItem {
                 for (SearchResult hit : realResults) {
                     hit.setLink(
                             MessageFormat.format(hit.getLink(),
-                            new Object[]{
-                                JsfUtils.getValueOfValueExpression(
-                                "#{facesContext.externalContext.request.contextPath}")}));
+                                    new Object[]{
+                                        JsfUtils.getValueOfValueExpression(
+                                                "#{facesContext.externalContext.request.contextPath}")}));
                 }
                 searchResults = new ListDataModel(realResults);
             }
@@ -1061,7 +1053,7 @@ public class NewsItem {
 
             List<EditionCandidate> editions = outletFacade.
                     findEditionCandidatesByDate(getSelectedNewsItemPlacement().
-                    getOutlet(), editionCal, showClosedEditions);
+                            getOutlet(), editionCal, showClosedEditions);
             Collections.sort(editions, new BeanComparator("publicationDate"));
             for (EditionCandidate e : editions) {
                 String label = "";
@@ -1115,7 +1107,7 @@ public class NewsItem {
         if (getUser().getDefaultSection() != null
                 && this.selectedNewsItemPlacement.getOutlet() != null
                 && getUser().getDefaultSection().getOutlet().equals(this.selectedNewsItemPlacement.
-                getOutlet())) {
+                        getOutlet())) {
             this.selectedNewsItemPlacement.setSection(getUser().
                     getDefaultSection());
         }
@@ -1224,7 +1216,6 @@ public class NewsItem {
                     item.getContentType(),
                     true);
 
-
             LOG.log(Level.FINE, "New media item rendition created: {0}",
                     mediaItemRendition.getId());
 
@@ -1250,9 +1241,9 @@ public class NewsItem {
         this.selectedNewsItemPlacement = selectedNewsItemPlacement;
         if (this.selectedNewsItemPlacement != null
                 && this.selectedNewsItemPlacement.getEdition() != null) {
-            this.editionCandidate =
-                    new EditionCandidate(this.selectedNewsItemPlacement.
-                    getEdition());
+            this.editionCandidate
+                    = new EditionCandidate(this.selectedNewsItemPlacement.
+                            getEdition());
         }
     }
 
