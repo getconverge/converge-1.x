@@ -135,7 +135,6 @@ public class FileUploadServlet extends HttpServlet {
             String mediaItemRenditionId = null;
 
             int ourMaxMemorySize = 10000000;
-            //int ourMaxRequestSize = 4000000000;
 
             // Create a factory for disk-based file items
             DiskFileItemFactory factory = new DiskFileItemFactory();
@@ -146,9 +145,6 @@ public class FileUploadServlet extends HttpServlet {
 
             // Create a new file upload handler
             ServletFileUpload upload = new ServletFileUpload(factory);
-
-            // Set overall request size constraint
-            //upload.setSizeMax(ourMaxRequestSize);
 
             // Parse the request
             if (request.getContentType() != null && request.getContentType().
