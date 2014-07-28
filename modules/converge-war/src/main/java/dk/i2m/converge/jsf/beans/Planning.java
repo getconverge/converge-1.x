@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2010 - 2012 Interactive Media Management
+ *  Copyright (C) 2014 Allan Lykke Christensen
  * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -109,7 +110,7 @@ public class Planning implements UIEventListener {
 
     private DataModel logEntries = new ListDataModel();
     
-    private ResourceBundle bundle = JsfUtils.getResourceBundle(Bundle.i18n.name());
+    private final ResourceBundle bundle = JsfUtils.getResourceBundle(Bundle.i18n.name());
 
     /**
      * Creates a new instance of {@link Planning}.
@@ -175,12 +176,6 @@ public class Planning implements UIEventListener {
             endDate.set(Calendar.HOUR_OF_DAY, 23);
             endDate.set(Calendar.MINUTE, 59);
             endDate.set(Calendar.SECOND, 59);
-
-//            selectedEdition = new Edition();
-//            selectedEdition.setOutlet(selectedOutlet);
-//            selectedEdition.setPublicationDate(startDate);
-//            selectedEdition.setExpirationDate(endDate);
-//            selectedEdition.setOpen(true);
 
             selectedEditionView = new EditionView(null, selectedOutlet.getId(),
                     selectedOutlet.getTitle(), true, startDate, endDate, null);
@@ -302,9 +297,7 @@ public class Planning implements UIEventListener {
 
     public void onNewEditionPlacement(ActionEvent event) {
         onNewAssignment(event);
-        //TODO (2010/10/08: dialogAssignment.getAssignment().setEdition(selectedEdition);
         dialogAssignment.onChangeEdition(null);
-//        dialogAssignment.getAssignment().setSection(selectedEditionSection);
     }
 
     public void onSaveEditionPlacement(ActionEvent event) {
@@ -334,11 +327,6 @@ public class Planning implements UIEventListener {
         if (selectedAssignment.getActors().isEmpty()) {
             newsItemFacade.deleteNewsItem(selectedAssignment.getId());
         } else {
-            // TODO (2010/10/08)
-//            selectedAssignment.setEdition(null);
-//            selectedAssignment.setSection(null);
-//            selectedAssignment.setPosition(0);
-//            selectedAssignment.setStart(0);
             try {
                 selectedAssignment = newsItemFacade.checkin(selectedAssignment);
             } catch (LockingException ex) {
@@ -479,11 +467,7 @@ public class Planning implements UIEventListener {
      * <code>false</code>
      */
     public boolean isEditionAvailable() {
-        if (selectedEditions == null || selectedEditions.isEmpty()) {
-            return false;
-        } else {
-            return true;
-        }
+        return selectedEditions != null && !selectedEditions.isEmpty();
     }
 
     /**
@@ -494,11 +478,7 @@ public class Planning implements UIEventListener {
      * <code>false</code>
      */
     public boolean isDateSelected() {
-        if (selectedDate == null) {
-            return false;
-        } else {
-            return true;
-        }
+        return selectedDate != null;
     }
 
     /**
