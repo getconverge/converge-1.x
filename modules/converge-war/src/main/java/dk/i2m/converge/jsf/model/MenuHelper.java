@@ -43,20 +43,18 @@ public class MenuHelper {
 
     /**
      * Gets an instance of {@link MenuHelper}.
-     * 
+     *
      * @return Instance of the {@link MenuHelper} singleton
      */
     public static MenuHelper getInstance() {
-//        if (instance == null) {
-            instance = new MenuHelper();
-//        }
+        instance = new MenuHelper();
         return instance;
     }
 
     /**
      * Gets all the available {@link MenuItems} of the application.
-     * 
-     * @return  {@link MenuItems} of the application
+     *
+     * @return {@link MenuItems} of the application
      */
     public MenuItems getMenuItems() {
         if (this.menuItems == null) {
