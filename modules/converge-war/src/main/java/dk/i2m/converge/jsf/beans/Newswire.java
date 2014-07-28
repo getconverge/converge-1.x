@@ -132,7 +132,7 @@ public class Newswire {
         setSortField("date");
         setSortOrder("false");
 
-        // Ignore search if user hasn't subscribed to any services;
+        // Ignore search if user hasn't subscribed to any services
         if (getUserAccount().getActiveNewswireServices().isEmpty()) {
             searchResults = new ListDataModel(new ArrayList());
             pages = new ListDataModel(new ArrayList());
@@ -517,7 +517,6 @@ public class Newswire {
         pages = new ListDataModel(new ArrayList());
 
         List<String> filters = new ArrayList<String>();
-        //   filters.add(searchType);
         filters.addAll(filterQueries);
         if (keyword.equalsIgnoreCase("")) {
             keyword = "*:*";
