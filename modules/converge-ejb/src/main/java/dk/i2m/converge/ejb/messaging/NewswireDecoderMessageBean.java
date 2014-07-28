@@ -71,7 +71,8 @@ public class NewswireDecoderMessageBean implements MessageListener {
             }
             fetchNewswire(newswireServiceId);
         } catch (JMSException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, ex.getMessage());
+            LOG.log(Level.FINEST, null, ex);
         }
     }
 
@@ -89,10 +90,11 @@ public class NewswireDecoderMessageBean implements MessageListener {
             daoService.update(service);
             pluginContext.log(LogSeverity.INFO, "Finished fetching newswire service: {0}", new Object[]{service.getSource()}, service, service.getId());
         } catch (DataNotFoundException ex) {
-//            LOG.log(Level.WARNING, ex.getMessage());
+            LOG.log(Level.WARNING, ex.getMessage());
             pluginContext.log(LogSeverity.WARNING, ex.getMessage(), NewswireService.class.getName(), "" + id);
         } catch (NewswireDecoderException ex) {
-            //LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, ex.getMessage());
+            LOG.log(Level.FINEST, null, ex);
             pluginContext.log(LogSeverity.SEVERE, ex.getMessage(), NewswireService.class.getName(), "" + id);
         } finally {
             systemFacade.removeBackgroundTask(taskId);
