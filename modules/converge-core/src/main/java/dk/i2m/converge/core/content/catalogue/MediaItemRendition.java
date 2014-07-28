@@ -18,7 +18,6 @@ package dk.i2m.converge.core.content.catalogue;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.regex.Matcher;
 import javax.persistence.*;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.URIUtil;
