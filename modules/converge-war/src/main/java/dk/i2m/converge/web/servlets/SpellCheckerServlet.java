@@ -63,7 +63,7 @@ public class SpellCheckerServlet extends HttpServlet {
     private static final String RESPONSE_ERROR = "error";
 
     /** Application logger. */
-    private static final Logger logger = Logger.getLogger(SpellCheckerServlet.class.getName());
+    private static final Logger LOG = Logger.getLogger(SpellCheckerServlet.class.getName());
 
     /**
      * Processes the JSON request received.
@@ -125,14 +125,15 @@ public class SpellCheckerServlet extends HttpServlet {
         try {
 
             JSONObject requestJSONdata = decode(request.getInputStream());
-            logger.log(Level.FINE, "Received request: {0}", requestJSONdata.toString());
+            LOG.log(Level.FINE, "Received request: {0}", requestJSONdata.toString());
 
             JSONObject jsonResponse = process(requestJSONdata);
-            logger.log(Level.FINE, "Generated response: {0}", jsonResponse.toString());
+            LOG.log(Level.FINE, "Generated response: {0}", jsonResponse.toString());
 
             response.getOutputStream().print(jsonResponse.toString());
         } catch (JSONException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, ex.getMessage());
+            LOG.log(Level.FINEST, null, ex);
         }
     }
 
