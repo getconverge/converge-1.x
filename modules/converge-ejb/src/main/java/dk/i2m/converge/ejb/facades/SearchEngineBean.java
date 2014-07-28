@@ -91,7 +91,7 @@ public class SearchEngineBean implements SearchEngineLocal {
     private MetaDataServiceLocal metaDataService;
     @Resource
     private SessionContext ctx;
-    private DateFormat solrDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    private final DateFormat solrDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
     @Override
     public IndexQueueEntry addToIndexQueue(QueueEntryType type, Long id, QueueEntryOperation operation) {
@@ -157,33 +157,30 @@ public class SearchEngineBean implements SearchEngineLocal {
                     LOG.log(Level.FINEST, "", ex);
                 }
             } else {
-                switch (entry.getType()) {
-                    case NEWS_ITEM:
-                        try {
-                            NewsItem newsItem = newsItemFacade.findNewsItemById(entry.getEntryId());
-                            index(newsItem, solrServer);
-                            removeFromQueue(entry.getId());
-                        } catch (DataNotFoundException ex) {
-                            LOG.log(Level.WARNING, "NewsItem #{0} does not exist in the database. Skipping indexing.", entry.getEntryId());
-                            removeFromQueue(entry.getId());
-                        } catch (SearchEngineIndexingException ex) {
-                            LOG.log(Level.WARNING, "NewsItem #{0} could not be indexed. {1}", new Object[]{entry.getEntryId(), ex.getMessage()});
-                            LOG.log(Level.FINEST, "", ex);
-                        }
-                        break;
-                    case MEDIA_ITEM:
-                        try {
-                            MediaItem mediaItem = catalogueFacade.findMediaItemById(entry.getEntryId());
-                            index(mediaItem, solrServer);
-                            removeFromQueue(entry.getId());
-                        } catch (DataNotFoundException ex) {
-                            LOG.log(Level.WARNING, "MediaItem #{0} does not exist in the database. Skipping indexing.", entry.getEntryId());
-                            removeFromQueue(entry.getId());
-                        } catch (SearchEngineIndexingException ex) {
-                            LOG.log(Level.WARNING, "MediaItem #{0} could not be indexed. {1}", new Object[]{entry.getEntryId(), ex.getMessage()});
-                            LOG.log(Level.FINEST, "", ex);
-                        }
-                        break;
+                if (entry.getType() == QueueEntryType.NEWS_ITEM) {
+                    try {
+                        NewsItem newsItem = newsItemFacade.findNewsItemById(entry.getEntryId());
+                        index(newsItem, solrServer);
+                        removeFromQueue(entry.getId());
+                    } catch (DataNotFoundException ex) {
+                        LOG.log(Level.WARNING, "NewsItem #{0} does not exist in the database. Skipping indexing.", entry.getEntryId());
+                        removeFromQueue(entry.getId());
+                    } catch (SearchEngineIndexingException ex) {
+                        LOG.log(Level.WARNING, "NewsItem #{0} could not be indexed. {1}", new Object[]{entry.getEntryId(), ex.getMessage()});
+                        LOG.log(Level.FINEST, "", ex);
+                    }
+                } else if (entry.getType() == QueueEntryType.MEDIA_ITEM) {
+                    try {
+                        MediaItem mediaItem = catalogueFacade.findMediaItemById(entry.getEntryId());
+                        index(mediaItem, solrServer);
+                        removeFromQueue(entry.getId());
+                    } catch (DataNotFoundException ex) {
+                        LOG.log(Level.WARNING, "MediaItem #{0} does not exist in the database. Skipping indexing.", entry.getEntryId());
+                        removeFromQueue(entry.getId());
+                    } catch (SearchEngineIndexingException ex) {
+                        LOG.log(Level.WARNING, "MediaItem #{0} could not be indexed. {1}", new Object[]{entry.getEntryId(), ex.getMessage()});
+                        LOG.log(Level.FINEST, "", ex);
+                    }
                 }
             }
         }
@@ -272,8 +269,6 @@ public class SearchEngineBean implements SearchEngineLocal {
             solrQuery.addFacetField(IndexField.PERSON.getName());
             solrQuery.addFacetField(IndexField.LOCATION.getName());
             solrQuery.addFacetField(IndexField.POINT_OF_INTEREST.getName());
-
-
 
             solrQuery.addFilterQuery(filterQueries);
             solrQuery.setFacetMinCount(1);
@@ -700,7 +695,6 @@ public class SearchEngineBean implements SearchEngineLocal {
             note.append("Unknown");
         }
 
-
         note.append("<br/>");
 
         if (values.containsKey(IndexField.PLACEMENT.getName())) {
@@ -724,7 +718,6 @@ public class SearchEngineBean implements SearchEngineLocal {
         hit.setNote(note.toString());
         hit.setLink("{0}/NewsItemArchive.xhtml?id=" + id);
         hit.setType((String) values.get(IndexField.TYPE.getName()));
-
 
         return hit;
     }
