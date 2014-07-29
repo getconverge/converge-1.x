@@ -65,7 +65,7 @@ import org.apache.solr.common.SolrInputDocument;
 public class NewswireServiceBean implements NewswireServiceLocal {
 
     private static final Logger LOG = Logger.getLogger(NewswireServiceBean.class.getName());
-    private ResourceBundle msgs = ResourceBundle.getBundle("dk.i2m.converge.i18n.ServiceMessages");
+    private final ResourceBundle msgs = ResourceBundle.getBundle("dk.i2m.converge.i18n.ServiceMessages");
     @EJB
     private ConfigurationServiceLocal cfgService;
     @EJB
@@ -148,15 +148,14 @@ public class NewswireServiceBean implements NewswireServiceLocal {
      */
     @Override
     public List<NewswireItem> getNews() {
+        String currentUserName = ctx.getCallerPrincipal().getName();
         try {
-            UserAccount user = userFacade.findById(ctx.getCallerPrincipal().
-                    getName());
-            Map<String, Object> params = QueryBuilder.with("user", user).
-                    parameters();
-            return daoService.findWithNamedQuery(NewswireItem.FIND_BY_USER,
-                    params);
+            UserAccount user = userFacade.findById(currentUserName);
+            Map<String, Object> params = QueryBuilder.with("user", user).parameters();
+            return daoService.findWithNamedQuery(NewswireItem.FIND_BY_USER,params);
         } catch (DataNotFoundException ex) {
-            return Collections.EMPTY_LIST;
+            LOG.log(Level.FINE, "Current user [{0}] is unknown. {1}", new Object[]{currentUserName, ex.getMessage()});
+            return Collections.emptyList();
         }
     }
 
@@ -166,14 +165,12 @@ public class NewswireServiceBean implements NewswireServiceLocal {
     @Override
     public List<NewswireItem> getNews(Long newswireServiceId) {
         try {
-            NewswireService service = daoService.findById(NewswireService.class,
-                    newswireServiceId);
-            Map<String, Object> params = QueryBuilder.with("newswireService",
-                    service).parameters();
-            return daoService.findWithNamedQuery(NewswireItem.FIND_BY_SERVICE,
-                    params);
+            NewswireService service = daoService.findById(NewswireService.class, newswireServiceId);
+            Map<String, Object> params = QueryBuilder.with("newswireService",service).parameters();
+            return daoService.findWithNamedQuery(NewswireItem.FIND_BY_SERVICE, params);
         } catch (DataNotFoundException ex) {
-            return Collections.EMPTY_LIST;
+            LOG.log(Level.WARNING, "Requested newswire service [{0}] does not exist. {1}", new Object[]{newswireServiceId, ex.getMessage()});
+            return Collections.emptyList();
         }
     }
 
@@ -812,40 +809,15 @@ public class NewswireServiceBean implements NewswireServiceLocal {
 
             return servicesAvailable;
         } catch (DataNotFoundException ex) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 
     @Override
     public void dispatchBaskets() {
-        Long taskId = 0L;
-        taskId = systemFacade.createBackgroundTask(msgs.getString(
+        Long taskId = systemFacade.createBackgroundTask(msgs.getString(
                 "NewswireServiceBean_BASKET_DISPATCH_TASK"));
-        SimpleDateFormat dateFormat = new SimpleDateFormat(msgs.getString(
-                "Generic_FORMAT_DATE_AND_TIME"));
-        final String NL = System.getProperty("line.separator");
-        final String SENDER = cfgService.getString(
-                ConfigurationKey.NEWSWIRE_BASKET_MAIL);
-        final String HOME_URL = cfgService.getString(
-                ConfigurationKey.CONVERGE_HOME_URL);
-        final String LBL_READ_MORE = msgs.getString(
-                "NewswireServiceBean_BASKET_MAIL_READ_MORE");
-        final String LBL_BASKET_SUMMARY = msgs.getString(
-                "NewswireServiceBean_BASKET_MAIL_SUMMARY");
-        final String LBL_MATCHES = msgs.getString(
-                "NewswireServiceBean_BASKET_MAIL_MATCHES");
-        final String LBL_SEARCH_TERMS = msgs.getString(
-                "NewswireServiceBean_BASKET_MAIL_SEARCH_TERMS");
-        final String LBL_TAGS = msgs.getString(
-                "NewswireServiceBean_BASKET_MAIL_TAGS");
-        final String LBL_SERVICES = msgs.getString(
-                "NewswireServiceBean_BASKET_MAIL_SERVICES");
-        final String LBL_SERVICES_ALL = msgs.getString(
-                "NewswireServiceBean_BASKET_MAIL_SERVICES_ALL");
-        final String LBL_BASKET_SUBJECT = msgs.getString(
-                "NewswireServiceBean_BASKET_MAIL_SUBJECT");
 
-        Calendar now = Calendar.getInstance();
         List<NewswireBasket> baskets =
                 daoService.findWithNamedQuery(
                 NewswireBasket.FIND_BY_EMAIL_DISPATCH);
