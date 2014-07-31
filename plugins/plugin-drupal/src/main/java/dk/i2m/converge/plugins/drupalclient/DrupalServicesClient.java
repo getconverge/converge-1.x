@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 - 2013 Interactive Media Management
+ * Copyright (C) 2014 Allan Lykke Christensen
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,8 +57,7 @@ import org.apache.http.util.EntityUtils;
 import org.apache.tika.Tika;
 
 /**
- * API for communicating with Drupal Services. Example of using the client:
- * <code>
+ * API for communicating with Drupal Services. Example of using the client:  <code>
  *    DrupalServicesClient client = new DrupalServicesClient("http://mywebsite", "my_endpoint", "my_user", "my_password");
  *    if (client.login()) {
  *       // Logged in
@@ -129,6 +129,15 @@ public class DrupalServicesClient {
         this.connectionTimeout = connectionTimeout;
     }
 
+    /**
+     * Login to the define Drupal installation. Upon successful login the
+     * session id is stored in {@link #getSessionId() } and the session name is
+     * stored in {@link #getSessionName() }. The CSRF token is also obtained
+     * from the server and used in subsequent requests.
+     *
+     * @return {@code true} if the login was successful, otherwise {@code false}
+     * @throws DrupalServerConnectionException
+     */
     public boolean login() throws DrupalServerConnectionException {
         try {
             URIBuilder builder = new URIBuilder(this.hostname + "/" + this.endpoint + "/user/login");
@@ -141,10 +150,10 @@ public class DrupalServicesClient {
             method.setEntity(new UrlEncodedFormEntity(values, Consts.UTF_8));
             method.setHeader("Accept", "application/json");
 
-            //ResponseHandler<String> handler = new BasicResponseHandler();
             HttpResponse response = getHttpClient().execute(method);
+            int statusCode = response.getStatusLine().getStatusCode();
 
-            if (response.getStatusLine().getStatusCode() == 200) {
+            if (200 == statusCode) {
                 StringWriter writer = new StringWriter();
                 InputStream is = response.getEntity().getContent();
                 IOUtils.copy(is, writer);
@@ -164,10 +173,13 @@ public class DrupalServicesClient {
                 obtainSessionToken();
                 return true;
             } else {
+                EntityUtils.consume(response.getEntity());
                 // Examine the status code and determine if an exception should be thrown (e.g. 404 error)
                 return false;
             }
         } catch (IOException ex) {
+            LOG.log(Level.WARNING, ex.getMessage());
+            LOG.log(Level.FINEST, null, ex);
             throw new DrupalServerConnectionException("Could not login", ex);
         } catch (URISyntaxException ex) {
             throw new DrupalServerConnectionException("Could not login. Server URI incorrect.", ex);
@@ -194,6 +206,8 @@ public class DrupalServicesClient {
      * @param id Unique identifier of the {@code resource}
      * @return {@code true} if the {@code resource} with the given {@code id}
      * exists, otherwise @code false}
+     * @throws DrupalServerConnectionException If a connection to the server
+     * could not be established
      */
     public boolean exists(String resource, Long id) throws DrupalServerConnectionException {
         try {
@@ -241,9 +255,9 @@ public class DrupalServicesClient {
             String response = getHttpClient().execute(method, handler);
             return new Gson().fromJson(response, NodeInfo.class);
         } catch (IOException ex) {
-            throw new DrupalServerConnectionException("Could not create node", ex);
+            throw new DrupalServerConnectionException("Could not create node. " + ex.getMessage(), ex);
         } catch (URISyntaxException ex) {
-            throw new DrupalServerConnectionException("Could not create node. Invalid URI.", ex);
+            throw new DrupalServerConnectionException("Could not create node. Invalid URI. " + ex.getMessage(), ex);
         }
     }
 
@@ -320,9 +334,9 @@ public class DrupalServicesClient {
             LOG.log(Level.FINER, "Attach file response: {0}", response);
             return response;
         } catch (IOException ex) {
-            throw new DrupalServerConnectionException("Could not attach files.", ex);
+            throw new DrupalServerConnectionException("Could not attach files. " + ex.getMessage(), ex);
         } catch (URISyntaxException ex) {
-            throw new DrupalServerConnectionException("Could not attach files. Invalud URI. ", ex);
+            throw new DrupalServerConnectionException("Could not attach files. Invalud URI. " + ex.getMessage(), ex);
         }
     }
 

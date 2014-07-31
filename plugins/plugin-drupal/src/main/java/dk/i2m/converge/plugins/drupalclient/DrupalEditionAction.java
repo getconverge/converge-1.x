@@ -552,9 +552,9 @@ public class DrupalEditionAction implements EditionAction {
         params.add(new BasicNameValuePair("date", sdf.format(edition.getPublicationDate().getTime())));
         params.add(new BasicNameValuePair("title", StringUtils.left(StringEscapeUtils.escapeHtml(nip.getNewsItem().getTitle()), 255)));
         params.add(new BasicNameValuePair("language", "und"));
-        //params.add(new BasicNameValuePair("body[und][0][summary]", nip"This is the summary"));
         params.add(new BasicNameValuePair("body[und][0][value]", nip.getNewsItem().getStory()));
         params.add(new BasicNameValuePair("body[und][0][format]", "full_html"));
+        // CON-22 must be implemented here
         params.add(new BasicNameValuePair("field_author[und][0][value]", getAuthor(nip.getNewsItem())));
         params.add(new BasicNameValuePair("field_newsitem[und][0][value]", "" + nip.getNewsItem().getId()));
         params.add(new BasicNameValuePair("field_edition[und][0][value]", "" + nip.getEdition().getId()));

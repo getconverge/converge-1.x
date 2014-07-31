@@ -49,6 +49,12 @@
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <artifactId>plugin-drupal</artifactId>
+            <groupId>dk.i2m.converge.plugins</groupId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
         
         <dependency>
             <groupId>org.apache.pdfbox</groupId>

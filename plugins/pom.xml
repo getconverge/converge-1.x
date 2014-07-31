@@ -15,6 +15,7 @@
         <module>core-decoders</module>
         <module>core-actions</module>
         <module>plugin-atompub</module>
+        <module>plugin-drupal</module>
     </modules>
 
     <dependencies>
