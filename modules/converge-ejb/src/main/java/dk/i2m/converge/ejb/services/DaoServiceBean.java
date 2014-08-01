@@ -25,7 +25,6 @@ import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -103,7 +102,6 @@ public class DaoServiceBean implements DaoServiceLocal {
         if (id == null) {
             return;
         }
-        //Object ref = this.em.getReference(type, id);
         Object obj = this.em.find(type, id);
         if (obj != null) {
             this.em.remove(obj);
@@ -112,7 +110,7 @@ public class DaoServiceBean implements DaoServiceLocal {
 
     /** {@inheritDoc } */
     @Override
-    public <T> T update(T t) throws OptimisticLockException {
+    public <T> T update(T t) {
         return this.em.merge(t);
     }
 
