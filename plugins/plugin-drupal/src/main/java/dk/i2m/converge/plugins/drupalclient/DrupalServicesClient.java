@@ -35,7 +35,6 @@ import org.apache.http.Consts;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
@@ -292,11 +291,7 @@ public class DrupalServicesClient {
         System.out.println(writer.toString());
         EntityUtils.consume(response.getEntity());
 
-        if (status == 200) {
-            return true;
-        } else {
-            return false;
-        }
+        return status == 200;
     }
 
     /**
@@ -358,11 +353,10 @@ public class DrupalServicesClient {
      *
      * @param id Unique identifier of the node
      * @return {@link List} of files attached to the given node
-     * @throws HttpResponseException
      * @throws IOException
      * @throws URISyntaxException
      */
-    public List<DrupalFile> getNodeFiles(Long id) throws HttpResponseException, IOException, URISyntaxException {
+    public List<DrupalFile> getNodeFiles(Long id) throws IOException, URISyntaxException {
         String returnFileContents = "0";
         URIBuilder builder = new URIBuilder(this.hostname + "/" + this.endpoint + "/node/" + id + "/files/" + returnFileContents);
         HttpGet method = new HttpGet(builder.build());
