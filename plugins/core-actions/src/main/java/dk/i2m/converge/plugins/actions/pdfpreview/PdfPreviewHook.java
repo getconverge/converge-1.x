@@ -29,6 +29,7 @@ import dk.i2m.converge.core.utils.ImageUtils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -42,7 +43,7 @@ import java.util.*;
 @CatalogueAction
 public class PdfPreviewHook extends CatalogueHook {
 
-    private ResourceBundle bundle = ResourceBundle.getBundle(
+    private final ResourceBundle bundle = ResourceBundle.getBundle(
             "dk.i2m.converge.plugins.actions.pdfpreview.Messages");
 
     private Map<String, String> instanceProperties =
@@ -74,10 +75,6 @@ public class PdfPreviewHook extends CatalogueHook {
 
     private Boolean getPropertyAsBoolean(Property p) {
         return Boolean.parseBoolean(getProperty(p));
-    }
-
-    private Long getPropertyAsLong(Property p) {
-        return Long.valueOf(getProperty(p));
     }
 
     private Integer getPropertyAsInteger(Property p) {
@@ -234,7 +231,7 @@ public class PdfPreviewHook extends CatalogueHook {
             SimpleDateFormat format =
                     new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             return format.parse(bundle.getString("PLUGIN_BUILD_TIME"));
-        } catch (Exception ex) {
+        } catch (ParseException ex) {
             return Calendar.getInstance().getTime();
         }
     }
