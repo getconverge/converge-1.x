@@ -221,7 +221,7 @@ public class PluginContextBean implements PluginContextBeanLocal {
     @Override
     public MediaItemRendition createMediaItemRendition(File file,
             Long mediaItemId, Long renditionId, String filename,
-            String contentType) throws IllegalArgumentException, IOException {
+            String contentType) throws IOException {
         try {
             MediaItem mediaItem = catalogueFacade.findMediaItemById(mediaItemId);
             Rendition rendition = catalogueFacade.findRenditionById(renditionId);
