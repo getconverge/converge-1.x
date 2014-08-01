@@ -43,8 +43,8 @@ import javax.persistence.Temporal;
 @Entity
 @Table(name = "notification")
 @NamedQueries({
-    @NamedQuery(name = Notification.FIND_BY_USERNAME, query = "SELECT n FROM Notification n WHERE n.recipient.username = :username ORDER BY n.added DESC"),
-    @NamedQuery(name = Notification.COUNT_BY_USERNAME, query = "SELECT COUNT(n) FROM Notification n WHERE n.recipient.username = :username")
+    @NamedQuery(name = Notification.FIND_BY_USERNAME, query = "SELECT n FROM Notification n WHERE n.recipient.username = :" + Notification.QUERY_PARAM_USERNAME + " ORDER BY n.added DESC"),
+    @NamedQuery(name = Notification.COUNT_BY_USERNAME, query = "SELECT COUNT(n) FROM Notification n WHERE n.recipient.username = :" + Notification.QUERY_PARAM_USERNAME)
 })
 public class Notification implements Serializable {
 
@@ -55,6 +55,8 @@ public class Notification implements Serializable {
 
     /** Query for getting the count of notifications for a particular user by {@code username}. */
     public static final String COUNT_BY_USERNAME = "Notification.countByUsername";
+    
+    public static final String QUERY_PARAM_USERNAME = "username";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -162,11 +164,7 @@ public class Notification implements Serializable {
             return false;
         }
         final Notification other = (Notification) obj;
-        if (this.id != other.id
-                && (this.id == null || !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return this.id == other.id || (this.id != null && this.id.equals(other.id));
     }
 
     @Override

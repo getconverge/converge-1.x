@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2010 Interactive Media Management
+ * Copyright (C) 2014 Allan Lykke Christensen
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +25,6 @@ import dk.i2m.converge.core.security.SystemPrivilege;
 import dk.i2m.converge.core.security.UserAccount;
 import dk.i2m.converge.core.security.UserRole;
 import dk.i2m.converge.core.utils.BeanComparator;
-import dk.i2m.converge.ejb.services.ConfigurationServiceLocal;
 import dk.i2m.converge.ejb.services.DaoServiceLocal;
 import dk.i2m.converge.ejb.services.DirectoryException;
 import dk.i2m.converge.ejb.services.QueryBuilder;
@@ -48,28 +48,36 @@ import javax.naming.NamingException;
 public class UserFacadeBean implements UserFacadeLocal {
 
     private static final Logger LOG = Logger.getLogger(UserFacadeBean.class.getName());
+    private static final String SORT_BY_FULL_NAME = "fullName";
 
-    @EJB private UserServiceLocal userService;
+    @EJB
+    private UserServiceLocal userService;
 
-    @EJB private CatalogueFacadeLocal catalogueFacade;
+    @EJB
+    private CatalogueFacadeLocal catalogueFacade;
 
-    @EJB private DaoServiceLocal daoService;
+    @EJB
+    private DaoServiceLocal daoService;
 
-    @EJB private ConfigurationServiceLocal cfgService;
-
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<UserAccount> getMembers(Long outletId, SystemPrivilege privilege) {
         return userService.getMembers(outletId, privilege);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<UserAccount> getMembers(Long departmentId) {
         return userService.getMembers(departmentId);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UserAccount findById(String username) throws DataNotFoundException {
         try {
@@ -77,12 +85,15 @@ public class UserFacadeBean implements UserFacadeLocal {
         } catch (UserNotFoundException ex) {
             throw new DataNotFoundException(ex);
         } catch (DirectoryException ex) {
-            LOG.log(Level.SEVERE, ex.getMessage(), ex);
+            LOG.log(Level.SEVERE, ex.getMessage());
+            LOG.log(Level.FINEST, null, ex);
             return new UserAccount(username);
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UserAccount findByIdWithLocks(String username) throws DataNotFoundException {
         try {
@@ -93,12 +104,15 @@ public class UserFacadeBean implements UserFacadeLocal {
         } catch (UserNotFoundException ex) {
             throw new DataNotFoundException(ex);
         } catch (DirectoryException ex) {
-            LOG.log(Level.SEVERE, ex.getMessage(), ex);
+            LOG.log(Level.SEVERE, ex.getMessage());
+            LOG.log(Level.FINEST, null, ex);
             return new UserAccount(username);
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UserAccount findById(String username, boolean sync) throws DataNotFoundException {
 
@@ -117,13 +131,17 @@ public class UserFacadeBean implements UserFacadeLocal {
         return userAccount;
     }
 
-    /** {@inheritDoc } */
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public List<UserRole> getUserRoles() {
         return userService.getUserRoles();
     }
 
-    /** {@inheritDoc } */
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public UserRole findUserRoleById(final Long id) throws DataNotFoundException {
         return userService.findUserRoleById(id);
@@ -137,97 +155,107 @@ public class UserFacadeBean implements UserFacadeLocal {
     @Override
     public List<UserAccount> getUsers() {
         List<UserAccount> users = userService.findAll();
-        Collections.sort(users, new BeanComparator("fullName"));
+        Collections.sort(users, new BeanComparator(SORT_BY_FULL_NAME));
         return users;
     }
 
-    /** {@inheritDoc}  */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void update(UserRole userRole) {
         userService.update(userRole);
     }
 
-    /** {@inheritDoc}  */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UserRole create(UserRole userRole) {
         return userService.create(userRole);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void delete(UserRole userRole) {
         userService.delete(userRole);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Privilege findPrivilegeById(String id) throws DataNotFoundException {
         return userService.findPrivilegeById(id);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<UserAccount> getMembers(UserRole role) {
         List<UserAccount> members = userService.getRoleMembers(role.getId());
-        Collections.sort(members, new BeanComparator("fullName"));
+        Collections.sort(members, new BeanComparator(SORT_BY_FULL_NAME));
         return members;
     }
 
     /**
      * Gets all the {@Link Notification}S awaiting a given user.
      *
-     * @param username
-     *          Username of the {@link UserAccount}
+     * @param username Username of the {@link UserAccount}
      * @return {@link List} of awaiting {@link Notification}s
      */
     @Override
     public List<Notification> getNotifications(String username) {
-        Map<String, Object> params = QueryBuilder.with("username", username).parameters();
+        Map<String, Object> params = QueryBuilder.with(Notification.QUERY_PARAM_USERNAME, username).parameters();
         return daoService.findWithNamedQuery(Notification.FIND_BY_USERNAME, params);
     }
 
     /**
      * Gets user {@Link Notification}s in the given interval
      *
-     * @param username
-     *          Username of the {@link UserAccount}
-     * @param start
-     *          First record to fetch
-     * @param count
-     *          Number of records to fetch
+     * @param username Username of the {@link UserAccount}
+     * @param start First record to fetch
+     * @param count Number of records to fetch
      * @return {@link List} of awaiting {@link Notification}s
      */
     @Override
     public List<Notification> getNotifications(String username, int start, int count) {
-        Map<String, Object> params = QueryBuilder.with("username", username).parameters();
+        Map<String, Object> params = QueryBuilder.with(Notification.QUERY_PARAM_USERNAME, username).parameters();
         return daoService.findWithNamedQuery(Notification.FIND_BY_USERNAME, params, start, count);
     }
 
     /**
      * Gets the count of notifications awaiting a given user.
-     * 
-     * @param username
-     *          Username of the user
-     * @return  Count of notifications
+     *
+     * @param username Username of the user
+     * @return Count of notifications
      */
     @Override
     public Long getNotificationCount(String username) {
-        Map<String, Object> params = QueryBuilder.with("username", username).parameters();
+        Map<String, Object> params = QueryBuilder.with(Notification.QUERY_PARAM_USERNAME, username).parameters();
         try {
             return daoService.findObjectWithNamedQuery(Long.class, Notification.COUNT_BY_USERNAME, params);
         } catch (DataNotFoundException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, ex.getMessage());
+            LOG.log(Level.FINEST, null, ex);
             return 0L;
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void dismiss(Notification notification) {
         daoService.delete(Notification.class, notification.getId());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void dismiss(UserAccount user) {
         for (Notification notification : getNotifications(user.getUsername())) {
@@ -242,11 +270,10 @@ public class UserFacadeBean implements UserFacadeLocal {
 
     /**
      * Determines if the given user is a catalogue editor.
-     * 
-     * @param username
-     *          Username of the {@link UserAccount}
-     * @return {@code true} if the user is an editor of a writable
-     *         catalogue, otherwise {@code false}
+     *
+     * @param username Username of the {@link UserAccount}
+     * @return {@code true} if the user is an editor of a writable catalogue,
+     * otherwise {@code false}
      */
     @Override
     public boolean isCatalogueEditor(String username) {
@@ -277,9 +304,11 @@ public class UserFacadeBean implements UserFacadeLocal {
                         user = userService.syncWithDirectory(user);
                         userService.update(user);
                     } catch (UserNotFoundException ex) {
-                        LOG.log(Level.SEVERE, null, ex);
+                        LOG.log(Level.SEVERE, ex.getMessage());
+                        LOG.log(Level.FINEST, null, ex);
                     } catch (DirectoryException ex) {
-                        LOG.log(Level.SEVERE, null, ex);
+                        LOG.log(Level.SEVERE, ex.getMessage());
+                        LOG.log(Level.FINEST, null, ex);
                     }
 
                 } catch (DataNotFoundException ex) {
@@ -289,7 +318,8 @@ public class UserFacadeBean implements UserFacadeLocal {
                 }
             }
         } catch (NamingException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, ex.getMessage());
+            LOG.log(Level.FINEST, null, ex);
         }
     }
 }
