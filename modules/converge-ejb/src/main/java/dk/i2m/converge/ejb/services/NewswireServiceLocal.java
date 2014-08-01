@@ -44,9 +44,9 @@ public interface NewswireServiceLocal {
     /**
      * Gets the newswire items for a particular newswire service.
      *
-     * @param newswireServiceId
-* Unique identifier of the newswire service
-     * @return {@link List} of {@link NewswireItem}s for a given newswire service
+     * @param newswireServiceId Unique identifier of the newswire service
+     * @return {@link List} of {@link NewswireItem}s for a given newswire
+     * service
      */
     List<NewswireItem> getNews(Long newswireServiceId);
 
@@ -58,8 +58,8 @@ public interface NewswireServiceLocal {
     public List<NewswireService> getNewswireServices();
 
     /**
-     * Gets the {@link NewswireService}s in the database with a collection
-     * of subscribers and items.
+     * Gets the {@link NewswireService}s in the database with a collection of
+     * subscribers and items.
      *
      * @return {@link List} of {@link NewswireService}s in the database with
      * their subscribers and items.
@@ -69,63 +69,49 @@ public interface NewswireServiceLocal {
     /**
      * Gets a {@link NewswireService} from the database.
      *
-     * @param id
-* ID of the {@link NewswireService}
+     * @param id ID of the {@link NewswireService}
      * @return {@link NewswireService} matching the given id
-     * @throws DataNotFoundException
-* If the request {@link NewswireService} doesn't exist
+     * @throws DataNotFoundException If the request {@link NewswireService}
+     * doesn't exist
      */
     public NewswireService findById(Long id) throws DataNotFoundException;
 
     /**
      * Updates an existing {@link NewswireService} in the database.
      *
-     * @param newsFeed
-* {@link NewswireService} to update in the database
+     * @param newsFeed {@link NewswireService} to update in the database
      */
     public void update(NewswireService newsFeed);
 
     /**
      * Deletes an existing {@link NewswireService} from the database.
      *
-     * @param id
-* ID of the {@link NewswireService} to delete from the database
-     * @throws DataNotFoundException
-* If the {@link NewswireService} did not exist
+     * @param id ID of the {@link NewswireService} to delete from the database
+     * @throws DataNotFoundException If the {@link NewswireService} did not
+     * exist
      */
     public void delete(Long id) throws DataNotFoundException;
 
     /**
      * Creates a new {@link NewswireService} in the database.
      *
-     * @param newsFeed
-* {@link NewswireService} to create in the database
+     * @param newsFeed {@link NewswireService} to create in the database
      * @return Created {@link NewswireService}
      */
     public NewswireService create(NewswireService newsFeed);
-
-    //void downloadNewswireServicesSync();
 
     void downloadNewswireServices();
 
     void downloadNewswireService(Long id) throws DataNotFoundException;
 
-    /**
-     * Searches the subscribed {@link NewswireService}s.
-     * <p/>
-     * @param search Search phrase
-     * @return {@link List} of matching {@link NewswireItem}s
-     */
-    SearchResults search(String query, int start, int rows, String sortField,
-            boolean sortOrder, String... filterQueries);
+    SearchResults search(String query, int start, int rows, String sortField, boolean sortOrder, String... filterQueries);
 
     int emptyNewswireService(java.lang.Long newswireServiceId);
 
     /**
      * Finds {@link NewswireItem}s with a given external identifier.
      * <p/>
-     * @param externalId
-* External identifier of the {@link NewswireItem}s
+     * @param externalId External identifier of the {@link NewswireItem}s
      * @return {@link List} of {@link NewswireItem}s with the given external
      * identifier
      */
@@ -135,8 +121,7 @@ public interface NewswireServiceLocal {
     /**
      * Creates a new {@link NewswireItem} in the database.
      * <p/>
-     * @param item
-* {@link NewswireItem} to create
+     * @param item Ï{@link NewswireItem} to create
      * @return Created {@link NewswireItem}
      */
     NewswireItem create(NewswireItem item);
@@ -161,32 +146,26 @@ public interface NewswireServiceLocal {
 
     NewswireBasket createBasket(NewswireBasket basket);
 
-    dk.i2m.converge.core.newswire.NewswireBasket updateBasket(
-            dk.i2m.converge.core.newswire.NewswireBasket basket);
+    dk.i2m.converge.core.newswire.NewswireBasket updateBasket(dk.i2m.converge.core.newswire.NewswireBasket basket);
 
     void deleteBasket(dk.i2m.converge.core.newswire.NewswireBasket basket);
 
-    java.util.List<dk.i2m.converge.core.newswire.NewswireBasket> findBasketsByUser(
-            java.lang.Long userId);
+    java.util.List<dk.i2m.converge.core.newswire.NewswireBasket> findBasketsByUser(java.lang.Long userId);
 
     void dispatchBaskets();
 
-    NewswireItemAttachment findNewswireItemAttachmentById(Long id) throws
-            DataNotFoundException;
+    NewswireItemAttachment findNewswireItemAttachmentById(Long id) throws DataNotFoundException;
 
     void removeItem(Long id);
 
     void purgeNewswires();
 
-    void index(dk.i2m.converge.core.newswire.NewswireItem item) throws
-            dk.i2m.converge.core.search.SearchEngineIndexingException;
+    void index(dk.i2m.converge.core.newswire.NewswireItem item) throws dk.i2m.converge.core.search.SearchEngineIndexingException;
 
-    @javax.ejb.TransactionAttribute(value =
-    javax.ejb.TransactionAttributeType.REQUIRES_NEW)
+    @javax.ejb.TransactionAttribute(value = javax.ejb.TransactionAttributeType.REQUIRES_NEW)
     void stopProcessingNewswireService(java.lang.Long id);
 
-    @javax.ejb.TransactionAttribute(value =
-    javax.ejb.TransactionAttributeType.REQUIRES_NEW)
+    @javax.ejb.TransactionAttribute(value = javax.ejb.TransactionAttributeType.REQUIRES_NEW)
     public void startProcessingNewswireService(java.lang.Long id);
 
     boolean dispatchBasket(java.lang.Long id);
