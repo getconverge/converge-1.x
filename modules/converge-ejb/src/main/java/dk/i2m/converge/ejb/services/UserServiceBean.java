@@ -44,26 +44,26 @@ import org.apache.commons.lang.StringUtils;
 @Stateless(name = "UserServiceBean", mappedName = "ejb/UserServiceBean")
 public class UserServiceBean implements UserServiceLocal {
 
-    private static final Logger LOG = Logger.getLogger(UserServiceBean.class.
-            getName());
+    private static final Logger LOG = Logger.getLogger(UserServiceBean.class.getName());
+    private static final String EXCEPTION_MSG_COULD_NOT_CONNECT_TO_DIRECTORY = "Could not connect to directory";
 
     @EJB private DaoServiceLocal daoService;
 
     @EJB private ConfigurationServiceLocal cfgService;
 
     /** Identifier (user id) of an anonymous user. */
-    private final String ANONYMOUS_USER = "ANONYMOUS";
+    private final static String ANONYMOUS_USER = "ANONYMOUS";
 
-    private SearchControls sc = new SearchControls();
+    private final SearchControls sc = new SearchControls();
 
     private String groupOfUsers = "";
 
     private String groupOfAdministrators = "";
 
-    private Map<String, String> fieldMapping = new HashMap<String, String>();
+    private final Map<String, String> fieldMapping = new HashMap<String, String>();
 
     @PostConstruct
-    private void startup() {
+    public void startup() {
         setupUserMapping();
     }
 
@@ -72,11 +72,10 @@ public class UserServiceBean implements UserServiceLocal {
     public List<UserAccount> getMembers(Long departmentId) {
         List<UserAccount> members = new ArrayList<UserAccount>();
         try {
-            Department department = daoService.findById(Department.class,
-                    departmentId);
+            Department department = daoService.findById(Department.class, departmentId);
             members = department.getUserAccounts();
         } catch (DataNotFoundException ex) {
-            LOG.log(Level.FINE, "Invalid Department", ex);
+            LOG.log(Level.FINE, "Invalid Department. {0}" , ex.getMessage());
         }
         return members;
     }
@@ -210,12 +209,9 @@ public class UserServiceBean implements UserServiceLocal {
     /**
      * Determines if a given user exists in the LDAP directory.
      *
-     * @param id
-* Unique identifier of the user
-     * @return <
-     * code>true</code> if the {@link UserAccount} exists in the LDAP
-     * directory, otherwise
-     * <code>false</code>
+     * @param id Unique identifier of the user
+     * @return {@code true} if the {@link UserAccount} exists in the LDAP
+     * directory, otherwise {@code false}
      */
     @Override
     public boolean exists(String id) {
@@ -274,10 +270,10 @@ public class UserServiceBean implements UserServiceLocal {
             closeDirectoryConnection(dirCtx);
         } catch (CommunicationException e) {
             closeDirectoryConnection(dirCtx);
-            throw new DirectoryException("Could not connect to directory", e);
+            throw new DirectoryException(EXCEPTION_MSG_COULD_NOT_CONNECT_TO_DIRECTORY, e);
         } catch (NamingException e) {
             closeDirectoryConnection(dirCtx);
-            throw new DirectoryException("Could not connect to directory", e);
+            throw new DirectoryException(EXCEPTION_MSG_COULD_NOT_CONNECT_TO_DIRECTORY, e);
         }
 
 
@@ -288,6 +284,7 @@ public class UserServiceBean implements UserServiceLocal {
 
         return userAccount;
     }
+    
 
     /**
      * Finds a {@link UserAccount} by its unique identifier.
@@ -410,19 +407,6 @@ public class UserServiceBean implements UserServiceLocal {
         }
         user.setSurname(LdapUtils.validateAttribute(attrs.get(fieldSurname)));
 
-//        Attribute attr = attrs.get(fieldPhoto);
-//        if (attr != null) {
-//            try {
-//                user.setPhoto((byte[]) attr.get());
-//            } catch (ClassCastException e) {
-//                log.log(Level.WARNING, "LDAP connection is not configured to allow binary values for the field [" + fieldPhoto + "]", e);
-//            } catch (NoSuchElementException e) {
-//                log.log(Level.FINER, "Attribute did not exist", e);
-//            } catch (NamingException e) {
-//                log.log(Level.FINER, "Attribute value could not be obtained", e);
-//            }
-//        }
-
         String employmentType = LdapUtils.validateAttribute(attrs.get(
                 fieldEmploymentType));
         String feeType = LdapUtils.validateAttribute(attrs.get(fieldFeeType));
@@ -540,12 +524,10 @@ public class UserServiceBean implements UserServiceLocal {
      * user groups.
      *
      * @return Established connection to the used LDAP directory
-     * @throws NamingException
-* If the connection could not be established
+     * @throws NamingException If the connection could not be established
      */
     private DirContext getDirectoryConnection() throws NamingException {
         LOG.log(Level.FINE, "Opening directory connection");
-        DirContext dirContext = null;
 
         Properties p = new Properties();
         p.put(Context.INITIAL_CONTEXT_FACTORY,
@@ -585,9 +567,7 @@ public class UserServiceBean implements UserServiceLocal {
                     cfgService.getString(ConfigurationKey.LDAP_READ_TIMEOUT));
         }
 
-        dirContext = new InitialDirContext(p);
-
-        return dirContext;
+        return new InitialDirContext(p);
     }
 
     private void closeDirectoryConnection(DirContext dirContext) {
