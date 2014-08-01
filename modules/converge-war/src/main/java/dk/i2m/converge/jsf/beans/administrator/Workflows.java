@@ -313,7 +313,6 @@ public class Workflows extends BaseBean {
     public void onNewWorkflowStep(ActionEvent event) {
         selectedWorkflowStep = new WorkflowStep();
         selectedWorkflowStep.setFromState(selectedWorkflowState);
-//        workflowStepRequiredFields = new ArrayList<NewsItemField>();
     }
 
     public void onNewWorkflowStepAction(ActionEvent event) {
