@@ -29,7 +29,8 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.WordUtils;
 
 /**
- * Decoder for the Daily Mail newswire. Daily Mail is delivered via e-mail in a ZIP file containing structured plain text.
+ * Decoder for the Daily Mail newswire. Daily Mail is delivered via e-mail in a
+ * ZIP file containing structured plain text.
  *
  * @author Allan Lykke Christensen
  */
@@ -41,47 +42,70 @@ public class DailyMailDecoder implements NewswireDecoder {
      */
     public static final String TRANSPORT_IMAP = "imap";
 
-    /** IMAPS transport (secure). Possible value for {@link DailyMailDecoder#TRANSPORT}. */
+    /**
+     * IMAPS transport (secure). Possible value for
+     * {@link DailyMailDecoder#TRANSPORT}.
+     */
     public static final String TRANSPORT_IMAPS = "imaps";
 
-    /** How is the newswire fetched. For now only IMAP is supported. */
+    /**
+     * How is the newswire fetched. For now only IMAP is supported.
+     */
     public static final String TRANSPORT = "TRANSPORT";
 
-    /** IMAP server name or IP address. */
+    /**
+     * IMAP server name or IP address.
+     */
     public static final String TRANSPORT_IMAP_SERVER = "TRANSPORT.IMAP.SERVER";
 
-    /** IMAP server port. */
+    /**
+     * IMAP server port.
+     */
     public static final String TRANSPORT_IMAP_PORT = "TRANSPORT.IMAP.PORT";
 
-    /** IMAP user name. */
+    /**
+     * IMAP user name.
+     */
     public static final String TRANSPORT_IMAP_USERNAME = "TRANSPORT.IMAP.USERNAME";
 
-    /** IMAP password. */
+    /**
+     * IMAP password.
+     */
     public static final String TRANSPORT_IMAP_PASSWORD = "TRANSPORT.IMAP.PASSWORD";
 
-    /** IMAP folder containing the newswire mails. */
+    /**
+     * IMAP folder containing the newswire mails.
+     */
     public static final String TRANSPORT_IMAP_FOLDER_NEWSWIRE = "TRANSPORT.IMAP.FOLDER.NEWSWIRE";
 
-    /** IMAP folder to move the newswire once processed. */
+    /**
+     * IMAP folder to move the newswire once processed.
+     */
     public static final String TRANSPORT_IMAP_FOLDER_PROCESSED = "TRANSPORT.IMAP.FOLDER.PROCESSED";
 
-    /** Should IMAP mails be deleted after being processed or moved to the processed directory. */
+    /**
+     * Should IMAP mails be deleted after being processed or moved to the
+     * processed directory.
+     */
     public static final String TRANSPORT_IMAP_DELETE_PROCESSED = "TRANSPORT.IMAP.DELETE_PROCESSED";
 
-    /** Should IMAP mails be deleted after being processed or moved to the processed directory. */
+    /**
+     * Should IMAP mails be deleted after being processed or moved to the
+     * processed directory.
+     */
     public static final String CHARSET = "Charset";
 
     private static final String SCHEDULE_FILE_PREFIX = "schedule/dm";
 
     private static final Logger LOG = Logger.getLogger(DailyMailDecoder.class.getName());
 
-    private ResourceBundle bundle = ResourceBundle.getBundle("dk.i2m.converge.plugins.decoders.dailymail.Messages");
+    private final ResourceBundle bundle = ResourceBundle.getBundle("dk.i2m.converge.plugins.decoders.dailymail.Messages");
 
     private Map<String, String> availableProperties = null;
 
     private Map<String, String> properties = null;
 
-    private Calendar releaseDate = new GregorianCalendar(2011, Calendar.APRIL, 27, 7, 00);
+    private final Calendar releaseDate = new GregorianCalendar(2011, Calendar.APRIL, 27, 7, 00);
 
     private PluginContext pluginContext;
 
@@ -186,7 +210,6 @@ public class DailyMailDecoder implements NewswireDecoder {
                     Folder folder = store.getFolder(folder_newswire);
                     folder.open(Folder.READ_WRITE);
 
-
                     for (Message msg : folder.getMessages()) {
                         Calendar msgSent = Calendar.getInstance();
                         if (msg.getSentDate() != null) {
@@ -244,11 +267,14 @@ public class DailyMailDecoder implements NewswireDecoder {
                     folder.close(true);
                     store.close();
                 } catch (NoSuchProviderException ex) {
-                    LOG.log(Level.SEVERE, null, ex);
+                    LOG.log(Level.SEVERE, ex.getMessage());
+                    LOG.log(Level.FINEST, null, ex);
                 } catch (MessagingException ex) {
-                    LOG.log(Level.SEVERE, null, ex);
+                    LOG.log(Level.SEVERE, ex.getMessage());
+                    LOG.log(Level.FINEST, null, ex);
                 } catch (IOException ex) {
-                    LOG.log(Level.SEVERE, null, ex);
+                    LOG.log(Level.SEVERE, ex.getMessage());
+                    LOG.log(Level.FINEST, null, ex);
                 }
 
                 LOG.log(Level.FINE, "Starting to process attachments {0}", filesToProcess.size());
@@ -279,17 +305,14 @@ public class DailyMailDecoder implements NewswireDecoder {
         } else {
             LOG.log(Level.SEVERE, "Property '" + TRANSPORT + "' is missing");
         }
-        //return result;
     }
 
     /**
      * Detects a Daily Mail schedule file in a {@link ZipFile}.
-     * 
-     * @param zf
-     *          {@link ZipFile} containing the schedule file
+     *
+     * @param zf {@link ZipFile} containing the schedule file
      * @return Name of the {@link ZipEntry} containing the Daily Mail schedule
-     * @throws ScheduleNotFoundException
-     *          If no schedule file could be detected
+     * @throws ScheduleNotFoundException If no schedule file could be detected
      */
     private String detectSchedule(ZipFile zf) throws ScheduleNotFoundException {
         Enumeration<? extends ZipEntry> files = zf.entries();
@@ -307,13 +330,13 @@ public class DailyMailDecoder implements NewswireDecoder {
     /**
      * Decodes the newswire embodied in a zip file.
      *
-     * @param file
-     *          Full path and filename of the zip file containing the newswire
+     * @param file Full path and filename of the zip file containing the
+     * newswire
      * @return {@link List} of decoded newswire items.
      */
     private Map<String, NewswireItem> decodeZip(String file) {
-        Map<String, NewswireItem> foundItems =
-                new HashMap<String, NewswireItem>();
+        Map<String, NewswireItem> foundItems
+                = new HashMap<String, NewswireItem>();
         if (file.endsWith(".zip")) {
             ZipFile zf;
             try {
@@ -328,8 +351,8 @@ public class DailyMailDecoder implements NewswireDecoder {
                 }
 
             } catch (IOException ex) {
-                Logger.getLogger(DailyMailDecoder.class.getName()).log(
-                        Level.SEVERE, null, ex);
+                LOG.log(Level.SEVERE, ex.getMessage());
+                LOG.log(Level.FINEST, null, ex);
             }
         } else {
             LOG.log(Level.FINE, "{0} in not a zip file", file);
@@ -364,9 +387,11 @@ public class DailyMailDecoder implements NewswireDecoder {
             }
 
         } catch (IOException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, ex.getMessage());
+            LOG.log(Level.FINEST, null, ex);
         } catch (MessagingException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, ex.getMessage());
+            LOG.log(Level.FINEST, null, ex);
         }
         return filesToProcess;
     }
@@ -376,7 +401,7 @@ public class DailyMailDecoder implements NewswireDecoder {
         if (filename == null) {
             filename = File.createTempFile("" + Calendar.getInstance().
                     getTimeInMillis(), ".out").getName();
-        } // Do no overwrite existing file
+        }
         File folder = new File(path);
         if (!folder.exists()) {
             LOG.log(Level.INFO, "Temporary directory {0} does not exist", path);
@@ -411,14 +436,11 @@ public class DailyMailDecoder implements NewswireDecoder {
      * Reads the schedule file and returns a {@link Map} of discovered
      * {@link NewswireItem}s with their title and externalId set.
      *
-     * @param file
-     *          {@link ZipFile} containing the schedule file
-     * @param entry
-     *          {@link ZipEntry} containing the schedule file
-     * @param scheduleContent
-     *          {@link Map} of discovered {@link NewswireItem}s
-     * @throws ScheduleProcessingException
-     *          If the schedule file could not be read and processed correctly
+     * @param file {@link ZipFile} containing the schedule file
+     * @param entry {@link ZipEntry} containing the schedule file
+     * @param scheduleContent {@link Map} of discovered {@link NewswireItem}s
+     * @throws ScheduleProcessingException If the schedule file could not be
+     * read and processed correctly
      */
     private void readSchedule(Map<String, NewswireItem> scheduleContent,
             ZipFile file, ZipEntry entry) throws ScheduleProcessingException {
@@ -500,12 +522,16 @@ public class DailyMailDecoder implements NewswireDecoder {
                     }
                     br.close();
                 } catch (IOException ex) {
-                    LOG.log(Level.SEVERE, null, ex);
+                    LOG.log(Level.SEVERE, ex.getMessage());
+                    LOG.log(Level.FINEST, null, ex);
                 } finally {
                     try {
-                        br.close();
+                        if (br != null) {
+                            br.close();
+                        }
                     } catch (IOException ex) {
-                        LOG.log(Level.SEVERE, null, ex);
+                        LOG.log(Level.SEVERE, ex.getMessage());
+                        LOG.log(Level.FINEST, null, ex);
                     }
                 }
             } else {
