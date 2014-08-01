@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2011 Interactive Media Management
+ * Copyright (C) 2014 Allan Lykke Christensen
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,34 +26,25 @@ import dk.i2m.converge.core.security.UserRole;
  */
 public class MissingActorException extends WorkflowStateTransitionException {
 
-    private UserRole role;
+    private final UserRole role;
 
-    public MissingActorException() {
-        super();
-    }
-
-    public MissingActorException(String message) {
-        super(message);
-    }
-
+    /**
+     * Creates a new instance of {@link MissingActorException}.
+     *
+     * @param message Message to include in the exception
+     * @param role The {@link UserRole} that was missing
+     */
     public MissingActorException(String message, UserRole role) {
         super(message);
         this.role = role;
     }
 
-    public MissingActorException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public MissingActorException(Throwable cause) {
-        super(cause);
-    }
-
+    /**
+     * Gets the {@link UserRole} that was missing.
+     *
+     * @return Missing {@link UserRole}
+     */
     public UserRole getRole() {
         return role;
-    }
-
-    public void setRole(UserRole role) {
-        this.role = role;
     }
 }
