@@ -186,12 +186,6 @@ public class MetaDataService implements MetaDataServiceLocal {
 
             XMPMeta xmpMeta = XMPMetaFactory.parseFromString(xml);
 
-            //XMPIterator iterator = xmpMeta.iterator();
-            //while (iterator.hasNext()) {
-            //Object obj = iterator.next();
-            //logger.log(Level.INFO, "" + obj.getClass().getName() + " " + obj);
-            //}
-
             if (xmpMeta.doesPropertyExist(NS_PHOTOSHOP, "Headline")) {
                 XMPProperty headlineProperty = xmpMeta.getProperty(NS_PHOTOSHOP,
                         "Headline");
@@ -350,7 +344,7 @@ public class MetaDataService implements MetaDataServiceLocal {
 
             for (int i = 0; i < container.getNumStreams(); i++) {
                 IStream stream = container.getStream(i);
-                // Get the pre-configured decoder that can decode this stream;
+                // Get the pre-configured decoder that can decode this stream
                 IStreamCoder coder = stream.getStreamCoder();
 
                 for (String meta : stream.getMetaData().getKeys()) {
