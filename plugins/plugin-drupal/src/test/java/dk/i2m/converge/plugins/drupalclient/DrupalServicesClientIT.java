@@ -17,6 +17,8 @@
  */
 package dk.i2m.converge.plugins.drupalclient;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -201,7 +203,7 @@ public class DrupalServicesClientIT {
         // Act
         NodeInfo nodeInfo = client.createNode(entity);
         try {
-            String node = client.retrieveNode(nodeInfo.getId());
+            client.retrieveNode(nodeInfo.getId());
             // Assert
         } catch (IOException ex) {
             fail(ex.getMessage());
@@ -212,6 +214,49 @@ public class DrupalServicesClientIT {
         assertNotNull(nodeInfo.getId());
         assertNotNull(nodeInfo.getUri());
         assertTrue(nodeInfo.getUri().startsWith(DRUPAL_URL));
+    }
+
+    @Test
+    public void drupalServicesClient_createNodeWithPlacement_placementInfoStoredCorrectly() throws Exception {
+        // Arrange
+        String expectedStart = "10";
+        String expectedPosition = "2";
+        DrupalServicesClient client = new DrupalServicesClient(DRUPAL_URL, SERVICE_END_POINT, DRUPAL_UID, DRUPAL_PWD);
+        client.login();
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        Calendar publishOn = Calendar.getInstance();
+        publishOn.add(Calendar.HOUR_OF_DAY, 2);
+        params.add(new BasicNameValuePair("type", "newsitem"));
+        params.add(new BasicNameValuePair("date", DRUPAL_DATE_FORMAT.format(publishOn.getTime())));
+        params.add(new BasicNameValuePair("title", "Story created by integration test. Can be deleted"));
+        params.add(new BasicNameValuePair("language", "und"));
+        params.add(new BasicNameValuePair("body[und][0][summary]", "drupalServicesClient_createNodeWithPlacement_placementInfoStoredCorrectly"));
+        params.add(new BasicNameValuePair("body[und][0][value]", "This is the body. You can delete this story"));
+        params.add(new BasicNameValuePair("body[und][0][format]", "full_html"));
+        params.add(new BasicNameValuePair("publish_on", DRUPAL_DATE_FORMAT.format(publishOn.getTime())));
+        params.add(new BasicNameValuePair("field_author[und][0][value]", "Mr. Integration Tester"));
+        params.add(new BasicNameValuePair("field_converge_id[und][0][value]", "123456"));
+        params.add(new BasicNameValuePair("field_placement_start[und][0][value]", expectedStart));
+        params.add(new BasicNameValuePair("field_placement_position[und][0][value]", expectedPosition));
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, Charset.defaultCharset());
+
+        // Act
+        NodeInfo nodeInfo = client.createNode(entity);
+        String node = client.retrieveNode(nodeInfo.getId());
+        JsonParser parser = new JsonParser();
+        JsonObject jsonResponse = (JsonObject) parser.parse(node);
+        String startActual = jsonResponse.get("field_placement_start").getAsJsonObject()
+                .get("und").getAsJsonArray()
+                .get(0).getAsJsonObject()
+                .get("value").getAsString();
+        String positionActual = jsonResponse.get("field_placement_position").getAsJsonObject()
+                .get("und").getAsJsonArray()
+                .get(0).getAsJsonObject()
+                .get("value").getAsString();
+
+        // Assert
+        assertEquals(expectedStart, startActual);
+        assertEquals(expectedPosition, positionActual);
     }
 
     @Test
