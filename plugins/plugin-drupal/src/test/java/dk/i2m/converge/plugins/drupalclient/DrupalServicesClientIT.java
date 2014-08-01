@@ -215,6 +215,31 @@ public class DrupalServicesClientIT {
     }
 
     @Test
+    public void drupalServicesClient_deleteNode_nodeNoLongerExists() throws Exception {
+        // Arrange
+        DrupalServicesClient client = new DrupalServicesClient(DRUPAL_URL, SERVICE_END_POINT, DRUPAL_UID, DRUPAL_PWD);
+        client.login();
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("type", "newsitem"));
+        params.add(new BasicNameValuePair("date", DRUPAL_DATE_FORMAT.format(Calendar.getInstance().getTime())));
+        params.add(new BasicNameValuePair("title", "Story created for deletion by integration test"));
+        params.add(new BasicNameValuePair("language", "und"));
+        params.add(new BasicNameValuePair("body[und][0][summary]", "This is the summary of the story. You can delete this story."));
+        params.add(new BasicNameValuePair("body[und][0][value]", "This is the body. You can delete this story"));
+        params.add(new BasicNameValuePair("body[und][0][format]", "full_html"));
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, Charset.defaultCharset());
+        NodeInfo nodeInfo = client.createNode(entity);
+
+        // Act
+        boolean deleted = client.delete("node", nodeInfo.getId());
+        boolean exists = client.exists("node", nodeInfo.getId());
+
+        // Assert
+        assertTrue("True should have been returned from delete operation", deleted);
+        assertFalse("False should have been returned from exists operation", exists);
+    }
+
+    @Test
     public void drupalServicesClient_attachFile_filesAttached() throws Exception {
         // Arrange
         DrupalServicesClient client = new DrupalServicesClient(DRUPAL_URL, SERVICE_END_POINT, DRUPAL_UID, DRUPAL_PWD);
@@ -238,7 +263,7 @@ public class DrupalServicesClientIT {
         params.add(new BasicNameValuePair("field_placement_position[und][0]", "2"));
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, Charset.defaultCharset());
         NodeInfo nodeInfo = client.createNode(entity);
-        
+
         // Act
         List<FileInfo> files = new ArrayList<FileInfo>();
         URL url = getClass().getClassLoader().getResource("dk/i2m/converge/plugins/drupalclient/converge.gif");

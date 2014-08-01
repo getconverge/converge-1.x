@@ -34,6 +34,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.Consts;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -139,7 +140,7 @@ public class DrupalServicesClient {
      */
     public boolean login() throws DrupalServerConnectionException {
         try {
-            URIBuilder builder = new URIBuilder(this.hostname + "/" + this.endpoint + "/user/login");
+            URIBuilder builder = new URIBuilder(getHostnameWithEndpoint() + "/user/login");
 
             List<NameValuePair> values = new ArrayList<NameValuePair>();
             values.add(new BasicNameValuePair("username", this.username));
@@ -158,17 +159,7 @@ public class DrupalServicesClient {
                 IOUtils.copy(is, writer);
                 EntityUtils.consume(response.getEntity());
                 String jsonResponse = writer.toString();
-                LOG.log(Level.FINEST, jsonResponse);
-                JsonParser parser = new JsonParser();
-                try {
-                    JsonObject obj = (JsonObject) parser.parse(jsonResponse);
-                    this.sessionId = obj.get("sessid").getAsString();
-                    this.sessionName = obj.get("session_name").getAsString();
-                } catch (JsonSyntaxException ex) {
-                    throw new DrupalServerConnectionException("Unknown JSON response. " + jsonResponse, ex);
-                } catch (NullPointerException ex) {
-                    throw new DrupalServerConnectionException("sessid or session_name missing in JSON response", ex);
-                }
+                obtainSessionInfoFromJsonResponse(jsonResponse);
                 obtainSessionToken();
                 return true;
             } else {
@@ -187,7 +178,7 @@ public class DrupalServicesClient {
 
     public void logout() throws DrupalServerConnectionException {
         try {
-            HttpPost method = createHttpPost(this.hostname + "/" + this.endpoint + "/user/logout");
+            HttpPost method = createHttpPost(getHostnameWithEndpoint() + "/user/logout");
             ResponseHandler<String> handler = new BasicResponseHandler();
             getHttpClient().execute(method, handler);
         } catch (IOException ex) {
@@ -210,7 +201,7 @@ public class DrupalServicesClient {
      */
     public boolean exists(String resource, Long id) throws DrupalServerConnectionException {
         try {
-            HttpGet method = createHttpGet(this.hostname + "/" + this.endpoint + "/" + resource + "/" + id);
+            HttpGet method = createHttpGet(getHostnameWithEndpoint() + "/" + resource + "/" + id);
 
             HttpResponse response = getHttpClient().execute(method);
             int status = response.getStatusLine().getStatusCode();
@@ -233,7 +224,7 @@ public class DrupalServicesClient {
 
     public Long retrieveNodeIdFromResource(String resource, Long id) throws DrupalServerConnectionException, IOException {
         try {
-            URIBuilder builder = new URIBuilder(this.hostname + "/" + this.endpoint + "/" + resource + "/" + id);
+            URIBuilder builder = new URIBuilder(getHostnameWithEndpoint() + "/" + resource + "/" + id);
             HttpGet method = new HttpGet(builder.build());
 
             ResponseHandler<String> handler = new BasicResponseHandler();
@@ -247,7 +238,7 @@ public class DrupalServicesClient {
 
     public NodeInfo createNode(UrlEncodedFormEntity entity) throws DrupalServerConnectionException {
         try {
-            HttpPost method = createHttpPost(this.hostname + "/" + this.endpoint + "/node"); //
+            HttpPost method = createHttpPost(getHostnameWithEndpoint() + "/node");
             method.setEntity(entity);
 
             ResponseHandler<String> handler = new BasicResponseHandler();
@@ -261,7 +252,7 @@ public class DrupalServicesClient {
     }
 
     public String retrieveNode(Long id) throws URISyntaxException, IOException {
-        URIBuilder builder = new URIBuilder(this.hostname + "/" + this.endpoint + "/node/" + id);
+        URIBuilder builder = new URIBuilder(getHostnameWithEndpoint() + "/node/" + id);
         HttpGet method = new HttpGet(builder.build());
 
         ResponseHandler<String> handler = new BasicResponseHandler();
@@ -271,7 +262,7 @@ public class DrupalServicesClient {
     }
 
     public String updateNode(Long id, UrlEncodedFormEntity entity) throws URISyntaxException, IOException {
-        HttpPut method = createHttpPut(this.hostname + "/" + this.endpoint + "/node/" + id);
+        HttpPut method = createHttpPut(getHostnameWithEndpoint() + "/node/" + id);
         method.setEntity(entity);
 
         ResponseHandler<String> handler = new BasicResponseHandler();
@@ -279,19 +270,30 @@ public class DrupalServicesClient {
         return response;
     }
 
+    /**
+     * Deletes an existing node.
+     *
+     * @param resource Type of resource to delete, e.g. {@code node} or
+     * {@code newsitem}
+     * @param id Unique identifier of the resource to delete
+     * @return {@code true} if the node was deleted otherwise {@code false}
+     * @throws URISyntaxException If the constructed delete URI was incorrect
+     * @throws IOException If an unexpected response was received from Drupal
+     */
     public boolean delete(String resource, Long id) throws URISyntaxException, IOException {
-        URIBuilder builder = new URIBuilder(this.hostname + "/" + this.endpoint + "/" + resource + "/" + id);
-        LOG.log(Level.FINE, "Deleting: {0}", builder.build());
-        HttpDelete method = new HttpDelete(builder.build());
-
+        HttpDelete method = createHttpDelete(getHostnameWithEndpoint() + "/" + resource + "/" + id);
         HttpResponse response = getHttpClient().execute(method);
-        int status = response.getStatusLine().getStatusCode();
+        StatusLine statusLine = response.getStatusLine();
         StringWriter writer = new StringWriter();
         IOUtils.copy(response.getEntity().getContent(), writer);
-        System.out.println(writer.toString());
         EntityUtils.consume(response.getEntity());
 
-        return status == 200;
+        if (200 == statusLine.getStatusCode()) {
+            return true;
+        } else {
+            LOG.log(Level.WARNING, "{0} with id #{1} was not deleted. {2} {3}", new Object[]{resource, id, statusLine.getStatusCode(), statusLine.getReasonPhrase()});
+            return false;
+        }
     }
 
     /**
@@ -321,7 +323,7 @@ public class DrupalServicesClient {
             entity.addPart("field_name", new StringBody(fieldName));
             entity.addPart("attach", new StringBody("0"));
 
-            HttpPost method = createHttpPost(this.hostname + "/" + this.endpoint + "/node/" + id + "/attach_file");
+            HttpPost method = createHttpPost(getHostnameWithEndpoint() + "/node/" + id + "/attach_file");
             method.setEntity(entity);
 
             ResponseHandler<String> handler = new BasicResponseHandler();
@@ -358,7 +360,7 @@ public class DrupalServicesClient {
      */
     public List<DrupalFile> getNodeFiles(Long id) throws IOException, URISyntaxException {
         String returnFileContents = "0";
-        URIBuilder builder = new URIBuilder(this.hostname + "/" + this.endpoint + "/node/" + id + "/files/" + returnFileContents);
+        URIBuilder builder = new URIBuilder(getHostnameWithEndpoint() + "/node/" + id + "/files/" + returnFileContents);
         HttpGet method = new HttpGet(builder.build());
 
         ResponseHandler<String> handler = new BasicResponseHandler();
@@ -449,6 +451,20 @@ public class DrupalServicesClient {
         }
     }
 
+    private void obtainSessionInfoFromJsonResponse(String jsonResponse) throws DrupalServerConnectionException {
+        LOG.log(Level.FINEST, jsonResponse);
+        JsonParser parser = new JsonParser();
+        try {
+            JsonObject obj = (JsonObject) parser.parse(jsonResponse);
+            this.sessionId = obj.get("sessid").getAsString();
+            this.sessionName = obj.get("session_name").getAsString();
+        } catch (JsonSyntaxException ex) {
+            throw new DrupalServerConnectionException("Unknown JSON response. " + jsonResponse, ex);
+        } catch (NullPointerException ex) {
+            throw new DrupalServerConnectionException("sessid or session_name missing in JSON response", ex);
+        }
+    }
+
     private HttpPost createHttpPost(String url) throws URISyntaxException {
         URIBuilder builder = new URIBuilder(url);
         HttpPost method = new HttpPost(builder.build());
@@ -470,9 +486,21 @@ public class DrupalServicesClient {
         return method;
     }
 
+    private HttpDelete createHttpDelete(String url) throws URISyntaxException {
+        URIBuilder builder = new URIBuilder(url);
+        HttpDelete method = new HttpDelete(builder.build());
+        method.setHeader(HEADER_X_CSRF_TOKEN, getCsrfToken());
+        return method;
+    }
+
+    private String getHostnameWithEndpoint() {
+        return this.hostname + "/" + this.endpoint;
+    }
+
     @Override
     protected void finalize() throws Throwable {
         getHttpClient().getConnectionManager().shutdown();
         super.finalize();
     }
+
 }
