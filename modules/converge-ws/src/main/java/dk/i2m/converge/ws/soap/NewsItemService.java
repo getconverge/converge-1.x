@@ -47,36 +47,40 @@ public class NewsItemService {
 
     private static final Logger LOG = Logger.getLogger(NewsItemService.class.
             getName());
+    private static final String USER_IS_NOT_AUTHENTICATED = "User is not authenticated";
 
-    @EJB private NewsItemFacadeLocal newsItemFacade;
+    @EJB
+    private NewsItemFacadeLocal newsItemFacade;
 
-    @EJB private CatalogueFacadeLocal mediaDatabaseFacade;
+    @EJB
+    private OutletFacadeLocal outletFacade;
 
-    @EJB private OutletFacadeLocal outletFacade;
+    @EJB
+    private UserFacadeLocal userFacade;
 
-    @EJB private UserFacadeLocal userFacade;
+    @EJB
+    private MetaDataFacadeLocal metaDataFacade;
 
-    @EJB private MetaDataFacadeLocal metaDataFacade;
-
-    @Resource private WebServiceContext context;
+    @Resource
+    private WebServiceContext context;
 
     /**
-     * Starts the workflow of a new {@link dk.i2m.converge.core.content.NewsItem}.
+     * Starts the workflow of a new
+     * {@link dk.i2m.converge.core.content.NewsItem}.
      *
-     * @param outletId
-* Unique identifier of the Outlet where to place the news item
-     * @param title
-   * Title of the news item
+     * @param outletId Unique identifier of the Outlet where to place the news
+     * item
+     * @param title Title of the news item
      * @return Unique identifier of the new news item
-     * @throws WorkflowStateTransitionException * If the workflow could not be started
+     * @throws WorkflowStateTransitionException * If the workflow could not be
+     * started
      */
     @WebMethod(operationName = "start")
     public Long start(@WebParam(name = "outletId") Long outletId,
             @WebParam(name = "title") String title) throws
             WorkflowStateTransitionException {
         if (context.getUserPrincipal() == null) {
-            throw new WorkflowStateTransitionException(
-                    "User is not authenticated");
+            throw new WorkflowStateTransitionException(USER_IS_NOT_AUTHENTICATED);
         }
 
         String username = context.getUserPrincipal().getName();
@@ -99,11 +103,11 @@ public class NewsItemService {
                     + " has not been configured properly");
         }
 
-        dk.i2m.converge.core.content.NewsItem newsItem =
-                new dk.i2m.converge.core.content.NewsItem();
+        dk.i2m.converge.core.content.NewsItem newsItem
+                = new dk.i2m.converge.core.content.NewsItem();
         dk.i2m.converge.core.workflow.Workflow workflow = outlet.getWorkflow();
-        dk.i2m.converge.core.content.NewsItemActor nia =
-                new dk.i2m.converge.core.content.NewsItemActor();
+        dk.i2m.converge.core.content.NewsItemActor nia
+                = new dk.i2m.converge.core.content.NewsItemActor();
 
         nia.setRole(workflow.getStartState().getActorRole());
         nia.setUser(userAccount);
@@ -124,10 +128,10 @@ public class NewsItemService {
      * @return {@link List} of complete {@link NewsItem}s in the given edition
      */
     @WebMethod(operationName = "getNewsItemsForEdition")
-    public List<dk.i2m.converge.ws.model.NewsItem> getNewsItemsForEdition(@WebParam(name =
-            "editionId") Long id) {
-        List<dk.i2m.converge.ws.model.NewsItem> newsItems =
-                new ArrayList<dk.i2m.converge.ws.model.NewsItem>();
+    public List<dk.i2m.converge.ws.model.NewsItem> getNewsItemsForEdition(@WebParam(name
+            = "editionId") Long id) {
+        List<dk.i2m.converge.ws.model.NewsItem> newsItems
+                = new ArrayList<dk.i2m.converge.ws.model.NewsItem>();
         try {
             Edition edition = outletFacade.findEditionById(id);
             for (NewsItemPlacement placement : edition.getPlacements()) {
@@ -136,7 +140,8 @@ public class NewsItemService {
                 }
             }
         } catch (DataNotFoundException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, ex.getMessage());
+            LOG.log(Level.FINEST, null, ex);
         }
 
         return newsItems;
@@ -145,16 +150,16 @@ public class NewsItemService {
     /**
      * Gets the assignments for the authenticated user.
      *
-     * @return {@link List} of {@link NewsItem}s representing
-     * the current assignments of the authenticated user
+     * @return {@link List} of {@link NewsItem}s representing the current
+     * assignments of the authenticated user
      */
     @WebMethod(operationName = "getAssignments")
     public List<dk.i2m.converge.ws.model.NewsItem> getAssignments() {
-        List<dk.i2m.converge.ws.model.NewsItem> output =
-                new ArrayList<dk.i2m.converge.ws.model.NewsItem>();
+        List<dk.i2m.converge.ws.model.NewsItem> output
+                = new ArrayList<dk.i2m.converge.ws.model.NewsItem>();
 
         if (context.getUserPrincipal() == null) {
-            LOG.log(Level.WARNING, "User is not authenticated");
+            LOG.log(Level.WARNING, USER_IS_NOT_AUTHENTICATED);
             return output;
         }
 
@@ -163,7 +168,7 @@ public class NewsItemService {
 
         List<InboxView> assignments = newsItemFacade.findInbox(username);
         LOG.log(Level.INFO, "{0} items for {1}", new Object[]{assignments.size(),
-                    username});
+            username});
 
         for (InboxView assignment : assignments) {
             try {
@@ -171,17 +176,16 @@ public class NewsItemService {
                 dk.i2m.converge.core.content.NewsItem newsItem = newsItemFacade.
                         findNewsItemById(assignment.getId());
 
-                for (dk.i2m.converge.core.content.NewsItemPlacement nip :
-                        newsItem.getPlacements()) {
+                for (dk.i2m.converge.core.content.NewsItemPlacement nip
+                        : newsItem.getPlacements()) {
                     dk.i2m.converge.ws.model.NewsItem ni = ModelConverter.
                             toNewsItem(nip);
                     output.add(ni);
                 }
 
             } catch (DataNotFoundException ex) {
-                LOG.log(Level.SEVERE,
-                        "NewsItem in InboxView could not be found in database",
-                        ex);
+                LOG.log(Level.SEVERE, "NewsItem in InboxView could not be found in database. {0}", ex.getMessage());
+                LOG.log(Level.FINEST, null, ex);
             }
         }
 
@@ -191,16 +195,16 @@ public class NewsItemService {
     /**
      * Gets the privileged outlets for the authenticated user.
      *
-     * @return {@link List} of privileged {@link Outlet}s for the
-     * authenticated user
+     * @return {@link List} of privileged {@link Outlet}s for the authenticated
+     * user
      */
     @WebMethod(operationName = "getOutlets")
     public List<dk.i2m.converge.ws.model.Outlet> getOutlets() {
-        List<dk.i2m.converge.ws.model.Outlet> output =
-                new ArrayList<dk.i2m.converge.ws.model.Outlet>();
+        List<dk.i2m.converge.ws.model.Outlet> output
+                = new ArrayList<dk.i2m.converge.ws.model.Outlet>();
 
         if (context.getUserPrincipal() == null) {
-            LOG.log(Level.WARNING, "User is not authenticated");
+            LOG.log(Level.WARNING, USER_IS_NOT_AUTHENTICATED);
             return output;
         }
 
@@ -209,7 +213,8 @@ public class NewsItemService {
         try {
             userAccount = userFacade.findById(username);
         } catch (DataNotFoundException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, ex.getMessage());
+            LOG.log(Level.FINEST, null, ex);
             return output;
         }
 
@@ -223,10 +228,10 @@ public class NewsItemService {
 
     @WebMethod(operationName = "addNewsItemToEdition")
     public void addNewsItemToEdition(
-            @WebParam(name = "newsItemId") Long newsItemId, @WebParam(name =
-            "editionId") Long editionId,
-            @WebParam(name = "sectionId") Long sectionId, @WebParam(name =
-            "start") Integer start,
+            @WebParam(name = "newsItemId") Long newsItemId, @WebParam(name
+                    = "editionId") Long editionId,
+            @WebParam(name = "sectionId") Long sectionId, @WebParam(name
+                    = "start") Integer start,
             @WebParam(name = "position") Integer position) throws
             DataNotFoundException {
         Section section = null;
@@ -237,6 +242,8 @@ public class NewsItemService {
         try {
             section = outletFacade.findSectionById(sectionId);
         } catch (DataNotFoundException ex) {
+            LOG.log(Level.SEVERE, ex.getMessage());
+            LOG.log(Level.FINEST, null, ex);
         }
 
         NewsItemPlacement placement = new NewsItemPlacement();
@@ -251,37 +258,34 @@ public class NewsItemService {
     }
 
     @WebMethod(operationName = "addConceptToNewsItem")
-    public void addConceptToNewsItem(
-            @WebParam(name = "newsItemId") Long newsItemId, @WebParam(name =
-            "conceptId") Long conceptId) {
+    public void addConceptToNewsItem(@WebParam(name = "newsItemId") Long newsItemId, @WebParam(name = "conceptId") Long conceptId) {
         try {
             NewsItemHolder newsItemHolder = newsItemFacade.checkout(newsItemId);
-
             Concept concept = metaDataFacade.findConceptById(conceptId);
             newsItemHolder.getNewsItem().getConcepts().add(concept);
-            //newsItemFacade.save(newsItemHolder.getNewsItem());
             newsItemFacade.checkin(newsItemHolder.getNewsItem());
-
         } catch (LockingException ex) {
-            Logger.getLogger(NewsItemService.class.getName()).log(Level.SEVERE,
-                    null, ex);
+            LOG.log(Level.SEVERE, ex.getMessage());
+            LOG.log(Level.FINEST, null, ex);
         } catch (DataNotFoundException ex) {
-            Logger.getLogger(NewsItemService.class.getName()).log(Level.SEVERE,
-                    null, ex);
+            LOG.log(Level.SEVERE, ex.getMessage());
+            LOG.log(Level.FINEST, null, ex);
         }
-
     }
 
     /**
-     * Checks out a {@link NewsItem} using its unique identifier. Upon
-     * checking out the {@link NewsItem} it becomes locked for editing
-     * by other users.
+     * Checks out a {@link NewsItem} using its unique identifier. Upon checking
+     * out the {@link NewsItem} it becomes locked for editing by other users.
      *
      * @param id Unique identifier of the {@link NewsItem}
-     * @return {@link dk.i2m.converge.ws.model.NewsItem} matching the unique identifier
-     * @throws NewsItemNotFoundException If the requested {@link NewsItem} could not be found
-     * @throws NewsItemLockingException  If the requested {@link NewsItem} is locked by another user
-     * @throws NewsItemReadOnlyException If the requested {@link NewsItem} is not in a state for being checked out
+     * @return {@link dk.i2m.converge.ws.model.NewsItem} matching the unique
+     * identifier
+     * @throws NewsItemNotFoundException If the requested {@link NewsItem} could
+     * not be found
+     * @throws NewsItemLockingException If the requested {@link NewsItem} is
+     * locked by another user
+     * @throws NewsItemReadOnlyException If the requested {@link NewsItem} is
+     * not in a state for being checked out
      */
     @WebMethod(operationName = "checkout")
     public dk.i2m.converge.ws.model.NewsItem checkout(Long id) throws
@@ -290,7 +294,7 @@ public class NewsItemService {
         dk.i2m.converge.ws.model.NewsItem output = null;
 
         if (context.getUserPrincipal() == null) {
-            LOG.log(Level.WARNING, "User is not authenticated");
+            LOG.log(Level.WARNING, USER_IS_NOT_AUTHENTICATED);
             return output;
         }
         try {
@@ -327,16 +331,19 @@ public class NewsItemService {
     /**
      * Checks in a {@link NewsItem}.
      *
-     * @param newsItem {@link dk.i2m.converge.ws.model.NewsItem} News item to check-in
-     * @throws NewsItemNotFoundException If a corresponding {@link NewsItem} could not be found
-     * @throws NewsItemLockingException  If the corresponding {@link NewsItem} is not locked, one can only check-in an item that has been checked-out
+     * @param newsItem {@link dk.i2m.converge.ws.model.NewsItem} News item to
+     * check-in
+     * @throws NewsItemNotFoundException If a corresponding {@link NewsItem}
+     * could not be found
+     * @throws NewsItemLockingException If the corresponding {@link NewsItem} is
+     * not locked, one can only check-in an item that has been checked-out
      */
     @WebMethod(operationName = "checkin")
     public void checkin(dk.i2m.converge.ws.model.NewsItem newsItem) throws
             NewsItemLockingException, NewsItemNotFoundException {
 
         if (context.getUserPrincipal() == null) {
-            LOG.log(Level.WARNING, "User is not authenticated");
+            LOG.log(Level.WARNING, USER_IS_NOT_AUTHENTICATED);
         }
         try {
             dk.i2m.converge.core.content.NewsItem ni = newsItemFacade.
@@ -360,10 +367,11 @@ public class NewsItemService {
     /**
      * Workflow step for the given NewsItem.
      *
-     * @param newsItemId   Unique identifier of the {@link NewsItem} to step
+     * @param newsItemId Unique identifier of the {@link NewsItem} to step
      * @param workflowStep Unique identifier of the workflow step to take
-     * @param comment      Comment to attach to the workflow step
-     * @throws NewsItemNotFoundException If a corresponding {@link NewsItem} could not be found
+     * @param comment Comment to attach to the workflow step
+     * @throws NewsItemNotFoundException If a corresponding {@link NewsItem}
+     * could not be found
      * @throws NewsItemWorkflowException If the workflow step is illegal
      */
     @WebMethod(operationName = "step")
@@ -373,7 +381,7 @@ public class NewsItemService {
             NewsItemNotFoundException, NewsItemWorkflowException {
 
         if (context.getUserPrincipal() == null) {
-            LOG.log(Level.WARNING, "User is not authenticated");
+            LOG.log(Level.WARNING, USER_IS_NOT_AUTHENTICATED);
         }
 
         try {
