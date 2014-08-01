@@ -20,7 +20,6 @@ import dk.i2m.converge.core.DataNotFoundException;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.Local;
-import javax.persistence.OptimisticLockException;
 
 /**
  * Local interface for the Data Access Object Service.
@@ -185,11 +184,8 @@ public interface DaoServiceLocal {
      * @param t
      *       Entity to update
      * @return Updated entity
-     * @throws OptimisticLockException
-     *          If <code>t</code> is outdated, and updated prior
-     *          to the call of this method
      */
-     <T> T update(T t) throws OptimisticLockException;
+     <T> T update(T t);
 
     /**
      * Executes a query on the database and returns the number of records affected.
