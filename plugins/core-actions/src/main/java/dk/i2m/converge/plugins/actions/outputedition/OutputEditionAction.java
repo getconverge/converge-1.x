@@ -31,6 +31,7 @@ import dk.i2m.converge.core.workflow.OutletEditionAction;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import org.antlr.stringtemplate.StringTemplate;
@@ -52,7 +53,7 @@ public class OutputEditionAction implements EditionAction {
     
     private static final DateFormat DATE_PARSER = new SimpleDateFormat(
             "yyyy-MM-dd HH:mm:ss");
-    private ResourceBundle bundle = ResourceBundle.getBundle(
+    private final ResourceBundle bundle = ResourceBundle.getBundle(
             "dk.i2m.converge.plugins.actions.outputedition.Messages");
     private Map<String, String> availableProperties = null;
     private Map<String, String> instanceProperties =
@@ -339,7 +340,7 @@ public class OutputEditionAction implements EditionAction {
     public Date getDate() {
         try {
             return DATE_PARSER.parse(bundle.getString("PLUGIN_BUILD_TIME"));
-        } catch (Exception ex) {
+        } catch (ParseException ex) {
             return Calendar.getInstance().getTime();
         }
     }
@@ -374,14 +375,6 @@ public class OutputEditionAction implements EditionAction {
 
     private Boolean getPropertyAsBoolean(Property p) {
         return Boolean.parseBoolean(getProperty(p));
-    }
-
-    private Long getPropertyAsLong(Property p) {
-        return Long.valueOf(getProperty(p));
-    }
-
-    private Integer getPropertyAsInteger(Property p) {
-        return Integer.valueOf(getProperty(p));
     }
 
     /**
