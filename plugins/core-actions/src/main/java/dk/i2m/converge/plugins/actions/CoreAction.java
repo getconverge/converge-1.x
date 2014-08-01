@@ -20,6 +20,7 @@ import dk.i2m.converge.core.logging.LogSeverity;
 import dk.i2m.converge.core.plugin.EditionAction;
 import dk.i2m.converge.core.plugin.PluginContext;
 import dk.i2m.converge.core.workflow.OutletEditionAction;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -37,7 +38,7 @@ public abstract class CoreAction implements EditionAction {
         PLUGIN_BUILD_TIME
     }
 
-    private final String PLUG_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    private final static String PLUG_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     private Map<String, String> availableProperties = null;
 
@@ -83,7 +84,7 @@ public abstract class CoreAction implements EditionAction {
             SimpleDateFormat format = new SimpleDateFormat(PLUG_DATE_FORMAT);
             String date = bundle.getString(BundleKey.PLUGIN_BUILD_TIME.name());
             return format.parse(date);
-        } catch (Exception ex) {
+        } catch (ParseException ex) {
             return Calendar.getInstance().getTime();
         }
     }
