@@ -40,7 +40,7 @@ import org.apache.tika.Tika;
 @CatalogueAction
 public class TranscodeHook extends CatalogueHook {
 
-    private ResourceBundle bundle = ResourceBundle.getBundle(
+    private final ResourceBundle bundle = ResourceBundle.getBundle(
             "dk.i2m.converge.plugins.actions.transcode.Messages");
 
     private Map<String, String> instanceProperties =
@@ -268,10 +268,6 @@ public class TranscodeHook extends CatalogueHook {
         log(severity, msg, new Object[]{});
     }
 
-    private void log(LogSeverity severity, String msg, Object param) {
-        log(severity, msg, new Object[]{param});
-    }
-
     private void log(LogSeverity severity, String msg, Object[] params) {
         this.pluginCtx.log(severity, bundle.getString(msg), params,
                 this.hookInstance,
@@ -288,10 +284,6 @@ public class TranscodeHook extends CatalogueHook {
 
     private Boolean getPropertyAsBoolean(Property p) {
         return Boolean.parseBoolean(getProperty(p));
-    }
-
-    private Long getPropertyAsLong(Property p) {
-        return Long.valueOf(getProperty(p));
     }
 
     private Integer getPropertyAsInteger(Property p) {
