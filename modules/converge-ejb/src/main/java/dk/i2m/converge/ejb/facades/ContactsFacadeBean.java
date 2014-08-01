@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2010 Interactive Media Management
+ *  Copyright (C) 2014 Allan Lykke Christensen
  * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -44,13 +45,20 @@ import javax.ejb.Stateless;
 @Stateless
 public class ContactsFacadeBean implements ContactsFacadeLocal {
 
-    private static final Logger log = Logger.getLogger(ContactsFacadeBean.class.getName());
+    private static final Logger LOG = Logger.getLogger(ContactsFacadeBean.class.getName());
+    private static final String LOG_MSG_COULD_NOT_CONTACT_USER_DIRECTORY = "Could not contact user directory. {0}";
+    private static final String LOG_MSG_COULD_NOT_FIND_CONTACT_CREATOR = "Could not find contact creator. {0}";
+    private static final String LOG_MSG_COULD_NOT_FIND_CONTACT_UPDATER = "Could not find contact updater. {0}";
+    private static final String LOG_MSG_X_DELETED_CONTACT_Y = "{0} deleted contact #{1}";
 
-    @EJB private DaoServiceLocal daoService;
+    @EJB
+    private DaoServiceLocal daoService;
 
-    @EJB private UserServiceLocal userService;
+    @EJB
+    private UserServiceLocal userService;
 
-    @Resource private SessionContext ctx;
+    @Resource
+    private SessionContext ctx;
 
     @Override
     public List<Contact> getContacts() {
@@ -76,9 +84,11 @@ public class ContactsFacadeBean implements ContactsFacadeLocal {
         try {
             user = userService.findById(uid);
         } catch (UserNotFoundException ex) {
-            log.log(Level.WARNING, "Could not find contact creator", ex);
+            LOG.log(Level.WARNING, LOG_MSG_COULD_NOT_FIND_CONTACT_CREATOR, ex.getMessage());
+            LOG.log(Level.FINEST, null, ex);
         } catch (DirectoryException ex) {
-            log.log(Level.WARNING, "Could not contact user directory", ex);
+            LOG.log(Level.WARNING, LOG_MSG_COULD_NOT_CONTACT_USER_DIRECTORY, ex.getMessage());
+            LOG.log(Level.FINEST, null, ex);
         }
 
         Calendar now = Calendar.getInstance();
@@ -96,9 +106,11 @@ public class ContactsFacadeBean implements ContactsFacadeLocal {
         try {
             user = userService.findById(uid);
         } catch (UserNotFoundException ex) {
-            log.log(Level.WARNING, "Could not find contact updater", ex);
+            LOG.log(Level.WARNING, LOG_MSG_COULD_NOT_FIND_CONTACT_UPDATER, ex.getMessage());
+            LOG.log(Level.FINEST, null, ex);
         } catch (DirectoryException ex) {
-            log.log(Level.WARNING, "Could not contact user directory", ex);
+            LOG.log(Level.WARNING, LOG_MSG_COULD_NOT_CONTACT_USER_DIRECTORY, ex.getMessage());
+            LOG.log(Level.FINEST, null, ex);
         }
 
         Calendar now = Calendar.getInstance();
@@ -113,7 +125,7 @@ public class ContactsFacadeBean implements ContactsFacadeLocal {
     public void delete(Long id) {
         String uid = ctx.getCallerPrincipal().getName();
         daoService.delete(Contact.class, id);
-        log.log(Level.INFO, "{0} deleted contact #{1}", new Object[]{uid, id});
+        LOG.log(Level.INFO, LOG_MSG_X_DELETED_CONTACT_Y, new Object[]{uid, id});
     }
 
     @Override
