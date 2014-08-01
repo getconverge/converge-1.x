@@ -22,7 +22,6 @@ import java.util.Locale;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import javax.faces.convert.ConverterException;
 import org.apache.commons.lang.LocaleUtils;
 
 /**
@@ -33,17 +32,14 @@ import org.apache.commons.lang.LocaleUtils;
 public class LocaleConverter implements Converter {
 
     @Override
-    public Object getAsObject(FacesContext ctx, UIComponent comp, String value)
-            throws ConverterException {
+    public Object getAsObject(FacesContext ctx, UIComponent comp, String value) {
         String localeValue = value.replaceAll("-", "_");
-
         Locale locale = LocaleUtils.toLocale(localeValue);
         return locale;
     }
 
     @Override
-    public String getAsString(FacesContext ctx, UIComponent comp, Object obj)
-            throws ConverterException {
+    public String getAsString(FacesContext ctx, UIComponent comp, Object obj) {
         Locale locale = (Locale) obj;
         return locale.toString();
     }
