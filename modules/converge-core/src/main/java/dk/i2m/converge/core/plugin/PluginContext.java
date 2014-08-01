@@ -242,8 +242,7 @@ public interface PluginContext {
     dk.i2m.converge.core.content.catalogue.MediaItemRendition createMediaItemRendition(
             java.io.File file, java.lang.Long mediaItemId,
             java.lang.Long renditionId, java.lang.String filename,
-            java.lang.String contentType) throws
-            java.lang.IllegalArgumentException, java.io.IOException;
+            java.lang.String contentType) throws java.io.IOException;
 
     dk.i2m.converge.core.content.catalogue.MediaItemRendition updateMediaItemRendition(
             java.io.File file, String filename, String contentType,
