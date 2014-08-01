@@ -44,89 +44,111 @@ import net.fortuna.ical4j.util.UidGenerator;
 @Stateless
 public class CalendarFacadeBean implements CalendarFacadeLocal {
 
-    @EJB private DaoServiceLocal daoService;
+    @EJB
+    private DaoServiceLocal daoService;
 
-    @EJB private ConfigurationServiceLocal cfgService;
+    @EJB
+    private ConfigurationServiceLocal cfgService;
 
-    private static final Logger LOG = Logger.getLogger(CalendarFacadeBean.class.
-            getName());
+    private static final Logger LOG = Logger.getLogger(CalendarFacadeBean.class.getName());
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Event create(Event event) {
         return daoService.create(event);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Event update(Event event) {
         return daoService.update(event);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void delete(Long id) {
         daoService.delete(Event.class, id);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Event findById(Long id) throws DataNotFoundException {
         return daoService.findById(Event.class, id);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Event> findAll() {
         return daoService.findAll(Event.class);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Event> findByDate(Calendar start, Calendar end) {
-        Map params = QueryBuilder.with("start", start).and("end", end).
-                parameters();
+        Map params = QueryBuilder.with(Event.QUERY_PARAM_START, start).and(Event.QUERY_PARAM_END, end).parameters();
         return daoService.findWithNamedQuery(Event.FIND_BY_DATE, params);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Event> findByStartDate(Calendar start) {
-        Map params = QueryBuilder.with("start", start).parameters();
+        Map params = QueryBuilder.with(Event.QUERY_PARAM_START, start).parameters();
         return daoService.findWithNamedQuery(Event.FIND_BY_START_DATE, params);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Event> findUpcoming() {
         return findByStartDate(Calendar.getInstance());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Event> findTodaysEvents() {
         Calendar now = Calendar.getInstance();
-        Map params = QueryBuilder.with("date", now).parameters();
+        Map params = QueryBuilder.with(Event.QUERY_PARAM_DATE, now).parameters();
         return daoService.findWithNamedQuery(Event.FIND_BY_BETWEEN, params);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Event> findUpcomingEvents(int days) {
         Calendar now = Calendar.getInstance();
         Calendar endDate = Calendar.getInstance();
         endDate.add(Calendar.DAY_OF_MONTH, days);
-        Map params = QueryBuilder.with("start", now).
-                and("end", endDate).parameters();
+        Map params = QueryBuilder.with(Event.QUERY_PARAM_START, now).
+                and(Event.QUERY_PARAM_END, endDate).parameters();
 
         return daoService.findWithNamedQuery(Event.FIND_BY_DATE, params);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String generateVCal() {
-        net.fortuna.ical4j.model.Calendar vcal =
-                new net.fortuna.ical4j.model.Calendar();
+        net.fortuna.ical4j.model.Calendar vcal
+                = new net.fortuna.ical4j.model.Calendar();
 
         String calendarName = "Converge";
         String appId = cfgService.getLongVersion();
@@ -165,32 +187,41 @@ public class CalendarFacadeBean implements CalendarFacadeLocal {
         return vcal.toString();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EventCategory create(EventCategory category) {
         return daoService.create(category);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EventCategory update(EventCategory category) {
         return daoService.update(category);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteEventCategory(Long id) {
         daoService.delete(EventCategory.class, id);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public EventCategory findEventCategoryById(Long id) throws
-            DataNotFoundException {
+    public EventCategory findEventCategoryById(Long id) throws DataNotFoundException {
         return daoService.findById(EventCategory.class, id);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<EventCategory> findAllCategories() {
         return daoService.findAll(EventCategory.class);

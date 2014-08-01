@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2010 Interactive Media Management
+ * Copyright (C) 2014 Allan Lykke Christensen
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,49 +33,74 @@ import javax.persistence.*;
 @Entity
 @Table(name = "event")
 @NamedQueries({
-    @NamedQuery(name = Event.FIND_BY_DATE, query = "SELECT e FROM Event AS e WHERE e.startDate >= :start AND e.startDate <= :end ORDER BY e.startDate ASC"),
-    @NamedQuery(name = Event.FIND_BY_START_DATE, query = "SELECT e FROM Event AS e WHERE e.startDate >= :start OR (e.startDate <= :start AND e.endDate >= :start) ORDER BY e.startDate ASC"),
-    @NamedQuery(name = Event.FIND_BY_BETWEEN, query = "SELECT e FROM Event AS e WHERE :date BETWEEN e.startDate AND e.endDate ORDER BY e.startDate ASC")
+    @NamedQuery(name = Event.FIND_BY_DATE, query = "SELECT e FROM Event AS e WHERE e.startDate >= :" + Event.QUERY_PARAM_START + " AND e.startDate <= :" + Event.QUERY_PARAM_END + " ORDER BY e.startDate ASC"),
+    @NamedQuery(name = Event.FIND_BY_START_DATE, query = "SELECT e FROM Event AS e WHERE e.startDate >= :" + Event.QUERY_PARAM_START + " OR (e.startDate <= :" + Event.QUERY_PARAM_START + " AND e.endDate >= :" + Event.QUERY_PARAM_START + ") ORDER BY e.startDate ASC"),
+    @NamedQuery(name = Event.FIND_BY_BETWEEN, query = "SELECT e FROM Event AS e WHERE :" + Event.QUERY_PARAM_DATE + " BETWEEN e.startDate AND e.endDate ORDER BY e.startDate ASC")
 })
 public class Event implements Serializable {
 
-    /** Query for finding events by a given date. */
+    /**
+     * Query for finding events by a given date.
+     */
     public static final String FIND_BY_DATE = "Event.findByDate";
 
-    /** Query for finding events by a given start date. */
+    /**
+     * Query for finding events by a given start date.
+     */
     public static final String FIND_BY_START_DATE = "Event.findByStartDate";
 
-    /** Query for finding events in a given period. */
+    /**
+     * Query for finding events in a given period.
+     */
     public static final String FIND_BY_BETWEEN = "Event.findByBetween";
 
-    /** Unique ID of the event. */
+    public static final String QUERY_PARAM_START = "start";
+    public static final String QUERY_PARAM_END = "end";
+    public static final String QUERY_PARAM_DATE = "date";
+
+    /**
+     * Unique ID of the event.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    /** Summary of the event. */
+    /**
+     * Summary of the event.
+     */
     @Column(name = "summary")
     private String summary = "";
 
-    /** Location where the event will take place. */
+    /**
+     * Location where the event will take place.
+     */
     @Column(name = "location")
     private String location = "";
 
-    /** Category of the event. */
+    /**
+     * Category of the event.
+     */
     @Column(name = "category")
     private String category = "";
 
-    /** Detailed description of the event. */
-    @Column(name = "description") @Lob
+    /**
+     * Detailed description of the event.
+     */
+    @Column(name = "description")
+    @Lob
     private String description = "";
 
-    /** Start time of the event. */
+    /**
+     * Start time of the event.
+     */
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     @Column(name = "start_date")
     private Calendar startDate;
 
-    /** End time of the event. */
+    /**
+     * End time of the event.
+     */
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     @Column(name = "end_date")
     private Calendar endDate;
@@ -83,11 +109,15 @@ public class Event implements Serializable {
     @JoinColumn(name = "originator_id")
     private UserAccount originator = null;
 
-    /** All day event indicator. */
+    /**
+     * All day event indicator.
+     */
     @Column(name = "all_day_event")
     private boolean allDayEvent;
 
-    /** Assignments created for this event. */
+    /**
+     * Assignments created for this event.
+     */
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<NewsItem> newsItem = new ArrayList<NewsItem>();
 
@@ -181,7 +211,7 @@ public class Event implements Serializable {
      * Determines if the start and end day are the same.
      *
      * @return <code>true</code> if the start and end day are the same,
-     *         otherwise <code>false</code>
+     * otherwise <code>false</code>
      */
     public boolean isStartAndEndSameDay() {
 
@@ -197,18 +227,14 @@ public class Event implements Serializable {
         int endMonth = getEndDate().get(Calendar.MONTH);
         int endDay = getEndDate().get(Calendar.DAY_OF_MONTH);
 
-        if (startYear == endYear && startMonth == endMonth && startDay == endDay) {
-            return true;
-        } else {
-            return false;
-        }
+        return startYear == endYear && startMonth == endMonth && startDay == endDay;
     }
 
     /**
      * Determines if the event is assigned to anyone.
      *
      * @return <code>true</code> if the event is assigned, otherwise
-     *         <code>false</code>
+     * <code>false</code>
      */
     public boolean isAssigned() {
         if (this.newsItem == null) {
@@ -231,11 +257,7 @@ public class Event implements Serializable {
             return false;
         }
         final Event other = (Event) obj;
-        if (this.id != other.id
-                && (this.id == null || !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return this.id == other.id || (this.id != null && this.id.equals(other.id));
     }
 
     @Override
