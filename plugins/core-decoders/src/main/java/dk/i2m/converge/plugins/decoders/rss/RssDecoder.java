@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -118,8 +119,6 @@ public class RssDecoder implements NewswireDecoder {
             throw new NewswireDecoderException(ex);
         } catch (IOException ex) {
             throw new NewswireDecoderException(ex);
-        } catch (Throwable t) {
-            throw new NewswireDecoderException(t);
         }
 
         ctx.log(LogSeverity.INFO,
@@ -186,7 +185,7 @@ public class RssDecoder implements NewswireDecoder {
 
             SimpleDateFormat format = new SimpleDateFormat(FORMAT);
             return format.parse(bundle.getString("PLUGIN_BUILD_TIME"));
-        } catch (Exception ex) {
+        } catch (ParseException ex) {
             return Calendar.getInstance().getTime();
         }
     }
