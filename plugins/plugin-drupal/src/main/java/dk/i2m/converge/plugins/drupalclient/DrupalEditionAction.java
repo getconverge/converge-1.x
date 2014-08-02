@@ -18,7 +18,6 @@ package dk.i2m.converge.plugins.drupalclient;
 
 import dk.i2m.converge.core.annotations.OutletAction;
 import dk.i2m.converge.core.content.NewsItem;
-import dk.i2m.converge.core.content.NewsItemActor;
 import dk.i2m.converge.core.content.NewsItemEditionState;
 import dk.i2m.converge.core.content.NewsItemMediaAttachment;
 import dk.i2m.converge.core.content.NewsItemPlacement;
@@ -32,8 +31,11 @@ import dk.i2m.converge.core.workflow.OutletEditionAction;
 import dk.i2m.converge.core.workflow.OutletEditionActionProperty;
 import dk.i2m.converge.core.workflow.Section;
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -45,7 +47,6 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -95,10 +96,10 @@ public class DrupalEditionAction implements EditionAction {
     private static final String NID_LABEL = "nid";
     private static final String URI_LABEL = "uri";
     private static final String STATUS_LABEL = "status";
-    private ResourceBundle bundle = ResourceBundle.getBundle("dk.i2m.converge.plugins.drupalclient.Messages");
+    private final ResourceBundle bundle = ResourceBundle.getBundle("dk.i2m.converge.plugins.drupalclient.Messages");
     private Map<String, String> availableProperties;
     private Map<Long, Long> sectionMapping;
-    private DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final DateFormat DRUPAL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private String publishDelay;
     private String publishImmediately;
     private String renditionName;
@@ -213,8 +214,8 @@ public class DrupalEditionAction implements EditionAction {
     @Override
     public Date getDate() {
         try {
-            return sdf.parse(bundle.getString("PLUGIN_BUILD_TIME"));
-        } catch (Exception e) {
+            return DRUPAL_DATE_FORMAT.parse(bundle.getString("PLUGIN_BUILD_TIME"));
+        } catch (ParseException e) {
             return new Date();
         }
     }
@@ -238,8 +239,8 @@ public class DrupalEditionAction implements EditionAction {
     private void setSectionMapping(String mapping) {
         String[] values = mapping.split(";");
 
-        for (int i = 0; i < values.length; i++) {
-            String[] value = values[i].split(":");
+        for (String singleMapping : values) {
+            String[] value = singleMapping.split(":");
             Long convergeId = Long.valueOf(value[0].trim());
             Long drupalId = Long.valueOf(value[1].trim());
             sectionMapping.put(convergeId, drupalId);
@@ -262,48 +263,7 @@ public class DrupalEditionAction implements EditionAction {
         Calendar calendar = (Calendar) edition.getPublicationDate().clone();
         calendar.add(Calendar.HOUR_OF_DAY, Integer.valueOf(publishDelay));
 
-        return sdf.format(calendar.getTime());
-    }
-
-    /**
-     * Get Author text field.
-     *
-     * @param newsItem {@link NewsItem}
-     * @return By-line to use for the story when published on Drupal
-     */
-    private String getAuthor(NewsItem newsItem) {
-        if (newsItem.isUndisclosedAuthor()) {
-            return "N/A";
-        } else {
-            if (StringUtils.isBlank(newsItem.getByLine())) {
-                // No by-line specified in the news item. 
-                // Generate by-line from actors on news item
-
-                StringBuilder sb = new StringBuilder();
-
-                // Iterate through actors specified on the news item
-                boolean firstActor = true;
-                for (NewsItemActor actor : newsItem.getActors()) {
-
-                    // If the actor has the role from the initial state of the 
-                    // workflow, he is the author of the story
-                    if (actor.getRole().equals(newsItem.getOutlet().getWorkflow().getStartState().getActorRole())) {
-                        if (!firstActor) {
-                            sb.append(", ");
-                        } else {
-                            firstActor = false;
-                        }
-
-                        sb.append(actor.getUser().getFullName());
-                    }
-                }
-
-                return sb.toString();
-            } else {
-                // Return the "by-line" of the NewsItem
-                return newsItem.getByLine();
-            }
-        }
+        return DRUPAL_DATE_FORMAT.format(calendar.getTime());
     }
 
     /**
@@ -378,8 +338,6 @@ public class DrupalEditionAction implements EditionAction {
     private void init(OutletEditionAction action) {
         Map<String, String> properties = action.getPropertiesAsMap();
 
-        //mappings = properties.get(Property.SECTION_MAPPING.name());
-
         StringBuilder mapBuilder = new StringBuilder();
         for (OutletEditionActionProperty actionProperty : action.getProperties()) {
             if (actionProperty.getKey().equalsIgnoreCase(Property.SECTION_MAPPING.name())) {
@@ -433,13 +391,15 @@ public class DrupalEditionAction implements EditionAction {
         }
 
         if (connectionTimeout == null) {
-            connectionTimeout = "30000"; // 30 seconds
+            // 30 seconds
+            connectionTimeout = "30000";
         } else if (!isInteger(connectionTimeout)) {
             throw new IllegalArgumentException("'connectionTimeout' must be an integer");
         }
 
         if (socketTimeout == null) {
-            socketTimeout = "30000"; // 30 seconds
+            // 30 seconds
+            socketTimeout = "30000";
         } else if (!isInteger(socketTimeout)) {
             throw new IllegalArgumentException("'socketTimeout' must be an integer");
         }
@@ -494,7 +454,15 @@ public class DrupalEditionAction implements EditionAction {
                 LOG.log(Level.INFO, "Updating Node #{0} with NewsItem #{1} & {2} image(s)", new Object[]{nodeId, newsItem.getId(), mediaItems.size()});
                 drupalServiceClient.updateNode(nodeId, entity);
                 drupalServiceClient.attachFile(nodeId, "field_image", mediaItems);
-            } catch (Exception ex) {
+            } catch (DrupalServerConnectionException ex) {
+                this.errors++;
+                LOG.log(Level.SEVERE, ex.getMessage());
+                LOG.log(Level.FINEST, "", ex);
+            } catch (IOException ex) {
+                this.errors++;
+                LOG.log(Level.SEVERE, ex.getMessage());
+                LOG.log(Level.FINEST, "", ex);
+            } catch (URISyntaxException ex) {
                 this.errors++;
                 LOG.log(Level.SEVERE, ex.getMessage());
                 LOG.log(Level.FINEST, "", ex);
@@ -502,7 +470,7 @@ public class DrupalEditionAction implements EditionAction {
         } else {
             LOG.log(Level.INFO, "Creating new Node for NewsItem #{0} & {1} image(s)", new Object[]{newsItem.getId(), mediaItems.size()});
 
-            NewsItemEditionState status = ctx.addNewsItemEditionState(edition.getId(), newsItem.getId(), STATUS_LABEL, UPLOADING.toString());
+            NewsItemEditionState status = ctx.addNewsItemEditionState(edition.getId(), newsItem.getId(), STATUS_LABEL, UPLOADING);
             NewsItemEditionState nid = ctx.addNewsItemEditionState(edition.getId(), newsItem.getId(), NID_LABEL, null);
             NewsItemEditionState uri = ctx.addNewsItemEditionState(edition.getId(), newsItem.getId(), URI_LABEL, null);
             NewsItemEditionState submitted = ctx.addNewsItemEditionState(edition.getId(), newsItem.getId(), DATE, null);
@@ -512,12 +480,12 @@ public class DrupalEditionAction implements EditionAction {
                 drupalServiceClient.attachFile(newNode.getId(), "field_image", mediaItems);
 
                 nid.setValue(newNode.getId().toString());
-                uri.setValue(newNode.getUri().toString());
+                uri.setValue(newNode.getUri());
                 submitted.setValue(new Date().toString());
-                status.setValue(UPLOADED.toString());
+                status.setValue(UPLOADED);
             } catch (DrupalServerConnectionException ex) {
                 this.errors++;
-                status.setValue(FAILED.toString());
+                status.setValue(FAILED);
                 LOG.log(Level.SEVERE, ex.getMessage());
                 LOG.log(Level.FINEST, "", ex);
 
@@ -545,36 +513,15 @@ public class DrupalEditionAction implements EditionAction {
      * {@link NewsItemPlacement}
      */
     private UrlEncodedFormEntity toUrlEncodedFormEntity(NewsItemPlacement nip, String publishOn) {
-        Edition edition = nip.getEdition();
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        NewsItemPlacementToNameValuePairsConverter converter = new NewsItemPlacementToNameValuePairsConverter();
+        List<NameValuePair> params = converter.convert(nip);
         params.add(new BasicNameValuePair("type", this.nodeType));
         params.add(new BasicNameValuePair("publish_on", publishOn));
-        params.add(new BasicNameValuePair("date", sdf.format(edition.getPublicationDate().getTime())));
-        params.add(new BasicNameValuePair("title", StringUtils.left(StringEscapeUtils.escapeHtml(nip.getNewsItem().getTitle()), 255)));
-        params.add(new BasicNameValuePair("language", "und"));
-        params.add(new BasicNameValuePair("body[und][0][value]", nip.getNewsItem().getStory()));
-        params.add(new BasicNameValuePair("body[und][0][format]", "full_html"));
-        // CON-22 must be implemented here
-        params.add(new BasicNameValuePair("field_author[und][0][value]", getAuthor(nip.getNewsItem())));
-        params.add(new BasicNameValuePair("field_newsitem[und][0][value]", "" + nip.getNewsItem().getId()));
-        params.add(new BasicNameValuePair("field_edition[und][0][value]", "" + nip.getEdition().getId()));
+
         try {
             params.add(new BasicNameValuePair("field_section[und][0]", getSection(nip)));
         } catch (UnmappedSectionException ex) {
             // Section not mapped
-        }
-        if (nip.getStart() != null) {
-            LOG.log(Level.FINE, "NewsItemPlacement # {0}. Setting Placement Start (" + nip.getStart() + ")", nip.getId());
-            params.add(new BasicNameValuePair("field_placement_start[und][0]", nip.getStart().toString()));
-        } else {
-            LOG.log(Level.FINE, "NewsItemPlacement # {0}. Skipping Placement Start (null)", nip.getId());
-        }
-
-        if (nip.getPosition() != null) {
-            LOG.log(Level.FINE, "NewsItemPlacement # {0}. Setting Placement Position (" + nip.getPosition() + ")", nip.getId());
-            params.add(new BasicNameValuePair("field_placement_position[und][0]", nip.getPosition().toString()));
-        } else {
-            LOG.log(Level.FINE, "NewsItemPlacement # {0}. Skipping Placement Position (null)", nip.getId());
         }
 
         return new UrlEncodedFormEntity(params, Charset.defaultCharset());

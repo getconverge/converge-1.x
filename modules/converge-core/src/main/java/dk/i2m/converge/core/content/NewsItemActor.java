@@ -60,6 +60,25 @@ public class NewsItemActor implements Serializable {
     @Column(name = "opt_lock")
     private int versionIdentifier;
 
+    /**
+     * Creates a new instance of {@link NewsItemActor}.
+     */
+    public NewsItemActor() {
+    }
+
+    /**
+     * Creates a new instance of {@link NewsItemActor}.
+     * 
+     * @param user {@link UserAccount}
+     * @param role {@link UserRole}
+     * @param newsItem {@link NewsItem}
+     */
+    public NewsItemActor(UserAccount user, UserRole role, NewsItem newsItem) {
+        this.user = user;
+        this.role = role;
+        this.newsItem = newsItem;
+    }
+
     public Long getId() {
         return id;
     }
@@ -80,8 +99,7 @@ public class NewsItemActor implements Serializable {
     /**
      * Sets the {@link UserRole} of the news item actor.
      *
-     * @param role
-     *          {@link UserRole} of the news item actor
+     * @param role {@link UserRole} of the news item actor
      */
     public void setRole(UserRole role) {
         this.role = role;
