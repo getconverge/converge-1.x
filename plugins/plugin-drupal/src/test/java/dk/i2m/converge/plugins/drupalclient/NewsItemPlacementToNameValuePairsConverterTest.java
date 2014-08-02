@@ -23,6 +23,9 @@ import dk.i2m.converge.core.security.UserAccount;
 import dk.i2m.converge.core.security.UserRole;
 import dk.i2m.converge.core.workflow.Edition;
 import dk.i2m.converge.core.workflow.Outlet;
+import dk.i2m.converge.core.workflow.OutletEditionAction;
+import dk.i2m.converge.core.workflow.OutletEditionActionProperty;
+import dk.i2m.converge.core.workflow.Section;
 import dk.i2m.converge.core.workflow.Workflow;
 import dk.i2m.converge.core.workflow.WorkflowState;
 import java.util.Calendar;
@@ -39,13 +42,14 @@ import org.junit.Test;
 public class NewsItemPlacementToNameValuePairsConverterTest {
 
     @Test
-    public void newsItemPlacementToNameValuePairsConverter_newsItemWithoutPlacement_returnNameValuePairsWithoutPlacement() {
+    public void newsItemPlacementToNameValuePairsConverter_newsItemWithoutPlacement_returnNameValuePairsWithoutPlacement() throws Exception {
         // Arrange
         NewsItemPlacement placement = getNewsItemPlacementWithoutPlacement();
+        OutletEditionAction action = getAction();
 
         // Act
         NewsItemPlacementToNameValuePairsConverter converter = new NewsItemPlacementToNameValuePairsConverter();
-        List<NameValuePair> nameValuePairs = converter.convert(placement);
+        List<NameValuePair> nameValuePairs = converter.convert(action, placement);
 
         // Assert
         boolean assertedLanguage = false;
@@ -67,13 +71,14 @@ public class NewsItemPlacementToNameValuePairsConverterTest {
     }
 
     @Test
-    public void newsItemPlacementToNameValuePairsConverter_newsItemPlacement_returnNameValuePairsWithPlacement() {
+    public void newsItemPlacementToNameValuePairsConverter_newsItemPlacement_returnNameValuePairsWithPlacement() throws Exception {
         // Arrange
         NewsItemPlacement placement = getNewsItemPlacementWithPlacement();
+        OutletEditionAction action = getAction();
 
         // Act
         NewsItemPlacementToNameValuePairsConverter converter = new NewsItemPlacementToNameValuePairsConverter();
-        List<NameValuePair> nameValuePairs = converter.convert(placement);
+        List<NameValuePair> nameValuePairs = converter.convert(action, placement);
 
         // Assert
         boolean assertedStart = false;
@@ -96,8 +101,7 @@ public class NewsItemPlacementToNameValuePairsConverterTest {
         Workflow workflow = new Workflow();
         workflow.setName("Test Workflow");
         workflow.setStartState(startState);
-        Outlet outlet = new Outlet();
-        outlet.setTitle("Test Outlet");
+        Outlet outlet = getOutlet();
         outlet.setWorkflow(workflow);
         NewsItem newsItem = new NewsItem();
         newsItem.setOutlet(outlet);
@@ -125,6 +129,7 @@ public class NewsItemPlacementToNameValuePairsConverterTest {
         placement.setEdition(edition);
         placement.setPosition(null);
         placement.setStart(null);
+        placement.setSection(getSection());
         return placement;
     }
 
@@ -138,6 +143,36 @@ public class NewsItemPlacementToNameValuePairsConverterTest {
         placement.setEdition(edition);
         placement.setPosition(32);
         placement.setStart(5);
+        placement.setSection(getSection());
         return placement;
+    }
+
+    private OutletEditionAction getAction() {
+        OutletEditionAction action = new OutletEditionAction();
+        action.setId(1L);
+        action.setActionClass(DrupalEditionAction.class.getName());
+        action.setLabel("Upload to Drupal Site");
+        action.setManualAction(true);
+        action.setOutlet(getOutlet());
+        action.getProperties().add(new OutletEditionActionProperty(action, DrupalEditionAction.Property.PUBLISH_IMMEDIATELY.name(), "false"));
+        action.getProperties().add(new OutletEditionActionProperty(action, DrupalEditionAction.Property.PUBLISH_DELAY.name(), "0"));
+        action.getProperties().add(new OutletEditionActionProperty(action, DrupalEditionAction.Property.SECTION_MAPPING.name(), "10:52"));
+        action.getProperties().add(new OutletEditionActionProperty(action, DrupalEditionAction.Property.SECTION_MAPPING.name(), "1:5"));
+        return action;
+    }
+
+    private Outlet getOutlet() {
+        Outlet outlet = new Outlet();
+        outlet.setId(1L);
+        outlet.setTitle("Test Outlet");
+        return outlet;
+    }
+
+    private Section getSection() {
+        Section section = new Section();
+        section.setId(10L);
+        section.setName("Sports");
+        section.setOutlet(getOutlet());
+        return section;
     }
 }

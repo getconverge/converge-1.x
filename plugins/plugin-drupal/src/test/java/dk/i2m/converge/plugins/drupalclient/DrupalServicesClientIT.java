@@ -197,7 +197,7 @@ public class DrupalServicesClientIT {
         params.add(new BasicNameValuePair("field_author[und][0][value]", "Mr. Integration Tester"));
         params.add(new BasicNameValuePair("field_converge_id[und][0][value]", "123456"));
         params.add(new BasicNameValuePair("field_edition[und][0][value]", "1"));
-        params.add(new BasicNameValuePair("field_section[und][0]", "16"));
+        params.add(new BasicNameValuePair("field_section[und][0]", "2"));
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, Charset.defaultCharset());
 
         // Act
@@ -303,9 +303,9 @@ public class DrupalServicesClientIT {
         params.add(new BasicNameValuePair("field_author[und][0][value]", "Mr. Integration Tester"));
         params.add(new BasicNameValuePair("field_converge_id[und][0][value]", "123457"));
         params.add(new BasicNameValuePair("field_edition[und][0][value]", "1"));
-        params.add(new BasicNameValuePair("field_section[und][0]", "16"));
-        params.add(new BasicNameValuePair("field_placement_start[und][0]", "1"));
-        params.add(new BasicNameValuePair("field_placement_position[und][0]", "2"));
+        params.add(new BasicNameValuePair("field_section[und][0]", "2"));
+        params.add(new BasicNameValuePair("field_placement_start[und][0][value]", "1"));
+        params.add(new BasicNameValuePair("field_placement_position[und][0][value]", "2"));
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, Charset.defaultCharset());
         NodeInfo nodeInfo = client.createNode(entity);
 

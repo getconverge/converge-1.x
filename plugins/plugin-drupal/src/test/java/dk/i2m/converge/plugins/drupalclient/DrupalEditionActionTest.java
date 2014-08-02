@@ -16,6 +16,9 @@
  */
 package dk.i2m.converge.plugins.drupalclient;
 
+import java.util.Date;
+import java.util.Map;
+import java.util.ResourceBundle;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -48,5 +51,52 @@ public class DrupalEditionActionTest {
 
         // Assert
         assertTrue(supportsPlacement);
+    }
+
+    @Test
+    public void drupalEditionAction_instance_metadataAvailable() {
+        // Arrange
+        DrupalEditionAction plugin = new DrupalEditionAction();
+
+        // Act
+        String name = plugin.getName();
+        String about = plugin.getAbout();
+        ResourceBundle bundle = plugin.getBundle();
+        Date date = plugin.getDate();
+        String description = plugin.getDescription();
+        String vendor = plugin.getVendor();
+
+        // Assert
+        assertNotNull(name);
+        assertNotNull(about);
+        assertNotNull(bundle);
+        assertNotNull(date);
+        assertNotNull(description);
+        assertNotNull(vendor);
+    }
+
+    @Test
+    public void drupalEditionAction_instance_propertiesAvailable() {
+        // Arrange
+        DrupalEditionAction plugin = new DrupalEditionAction();
+
+        // Act
+        Map<String, String> availableProperties = plugin.getAvailableProperties();
+
+        // Assert
+        assertEquals(13, availableProperties.size());
+    }
+
+    @Test
+    public void drupalEditionAction_instance_samePropertiesAvailableOnMultipleInvocations() {
+        // Arrange
+        DrupalEditionAction plugin = new DrupalEditionAction();
+
+        // Act
+        Map<String, String> firstInvocation = plugin.getAvailableProperties();
+        Map<String, String> secondInvocation = plugin.getAvailableProperties();
+
+        // Assert
+        assertEquals(firstInvocation, secondInvocation);
     }
 }

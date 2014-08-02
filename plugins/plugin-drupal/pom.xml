@@ -52,6 +52,12 @@
             <artifactId>tika-parsers</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.5</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <finalName>converge-${project.artifactId}-${project.version}</finalName>

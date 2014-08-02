@@ -446,7 +446,7 @@ public class MediaItem implements Serializable {
                 return mir;
             }
         }
-        throw new RenditionNotFoundException();
+        throw new RenditionNotFoundException(rendition + " does not exist for media item");
     }
 
     /**

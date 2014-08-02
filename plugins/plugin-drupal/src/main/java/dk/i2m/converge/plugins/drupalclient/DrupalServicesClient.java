@@ -32,6 +32,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Consts;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
@@ -237,17 +238,17 @@ public class DrupalServicesClient {
     }
 
     public NodeInfo createNode(UrlEncodedFormEntity entity) throws DrupalServerConnectionException {
+        String url = getHostnameWithEndpoint() + "/node";
         try {
-            HttpPost method = createHttpPost(getHostnameWithEndpoint() + "/node");
+            HttpPost method = createHttpPost(url);
             method.setEntity(entity);
-
             ResponseHandler<String> handler = new BasicResponseHandler();
             String response = getHttpClient().execute(method, handler);
             return new Gson().fromJson(response, NodeInfo.class);
         } catch (IOException ex) {
-            throw new DrupalServerConnectionException("Could not create node. " + ex.getMessage(), ex);
+            throw new DrupalServerConnectionException("Could not create node on " + url + ". " + ex.getMessage(), ex);
         } catch (URISyntaxException ex) {
-            throw new DrupalServerConnectionException("Could not create node. Invalid URI. " + ex.getMessage(), ex);
+            throw new DrupalServerConnectionException("Could not create node on " + url + ". Invalid URI. " + ex.getMessage(), ex);
         }
     }
 

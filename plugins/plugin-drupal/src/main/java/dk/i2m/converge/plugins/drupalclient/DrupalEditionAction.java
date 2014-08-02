@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 - 2013 Interactive Media Management
+ * Copyright (C) 2014 Allan Lykke Christensen
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,60 +20,39 @@ package dk.i2m.converge.plugins.drupalclient;
 import dk.i2m.converge.core.annotations.OutletAction;
 import dk.i2m.converge.core.content.NewsItem;
 import dk.i2m.converge.core.content.NewsItemEditionState;
-import dk.i2m.converge.core.content.NewsItemMediaAttachment;
 import dk.i2m.converge.core.content.NewsItemPlacement;
-import dk.i2m.converge.core.content.catalogue.MediaItem;
-import dk.i2m.converge.core.content.catalogue.MediaItemRendition;
-import dk.i2m.converge.core.content.catalogue.RenditionNotFoundException;
 import dk.i2m.converge.core.plugin.EditionAction;
 import dk.i2m.converge.core.plugin.PluginContext;
 import dk.i2m.converge.core.workflow.Edition;
 import dk.i2m.converge.core.workflow.OutletEditionAction;
-import dk.i2m.converge.core.workflow.OutletEditionActionProperty;
-import dk.i2m.converge.core.workflow.Section;
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.message.BasicNameValuePair;
 
 /**
  * {@link EditionAction} for uploading content to Drupal websites using the
  * Services module.
  *
  * @author Raymond Wanyoike
- * @author <a href="mailto:allan@i2m.dk">Allan Lykke Christensen</a>
+ * @author Allan Lykke Christensen
  */
 @OutletAction
 public class DrupalEditionAction implements EditionAction {
 
-    public static final int MEDIA_ITEM_TITLE_LENGTH = 1024;
-    private String hostname;
-    private String endpoint;
-    private String username;
-    private String password;
-    private String connectionTimeout;
-    private String socketTimeout;
-    private DrupalServicesClient drupalServiceClient;
-    private int errors = 0;
-
-    private enum Property {
+    public enum Property {
 
         CONNECTION_TIMEOUT,
         IMAGE_RENDITION,
@@ -88,7 +68,12 @@ public class DrupalEditionAction implements EditionAction {
         URL,
         USERNAME
     }
+
+    private static final int DEFAULT_SOCKET_TIMEOUT = 30000;
+    private static final int DEFAULT_CONNECTION_TIMEOUT = 30000;
     private static final Logger LOG = Logger.getLogger(DrupalEditionAction.class.getName());
+    private static final String LOG_PREFIX = "[#{0}:{1}] ";
+    private final DateFormat DRUPAL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static final String UPLOADING = "UPLOADING";
     private static final String UPLOADED = "UPLOADED";
     private static final String FAILED = "FAILED";
@@ -98,78 +83,79 @@ public class DrupalEditionAction implements EditionAction {
     private static final String STATUS_LABEL = "status";
     private final ResourceBundle bundle = ResourceBundle.getBundle("dk.i2m.converge.plugins.drupalclient.Messages");
     private Map<String, String> availableProperties;
-    private Map<Long, Long> sectionMapping;
-    private final DateFormat DRUPAL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private String publishDelay;
-    private String publishImmediately;
-    private String renditionName;
-    private String nodeLanguage;
-    private String nodeType;
-    private String mappings;
+    private OutletEditionAction action;
+    private PluginContext pluginContext;
+    private DrupalServicesClient drupalServiceClient;
+    private int errors = 0;
 
     @Override
     public void execute(PluginContext ctx, Edition edition, OutletEditionAction action) {
-        LOG.log(Level.INFO, "Executing DrupalEditionAction on Edition #{0}", edition.getId());
-
-        init(action);
+        LOG.log(Level.INFO, LOG_PREFIX + "Executing DrupalEditionAction on Edition #{2}", new Object[]{action.getId(), action.getLabel(), edition.getId()});
         this.errors = 0;
+        this.action = action;
+        this.pluginContext = ctx;
+
+        init();
 
         try {
             if (!this.drupalServiceClient.login()) {
-                LOG.log(Level.SEVERE, "Could not log-in to the configured Drupal Instance");
+                LOG.log(Level.SEVERE, LOG_PREFIX + "Could not log-in to the configured Drupal Instance", new Object[]{action.getId(), action.getLabel()});
                 return;
             }
+            LOG.log(Level.INFO, LOG_PREFIX + "Number of items in Edition #{2}: {3}", new Object[]{action.getId(), action.getLabel(), edition.getId(), edition.getNumberOfPlacements()});
+
+            for (NewsItemPlacement nip : edition.getPlacements()) {
+                processPlacement(nip);
+            }
+
         } catch (DrupalServerConnectionException ex) {
-            LOG.log(Level.SEVERE, "Could not log-in to the configured Drupal Instance. {0}", ex.getMessage());
-            LOG.log(Level.FINEST, "", ex);
+            LOG.log(Level.SEVERE, LOG_PREFIX + "{2}", new Object[]{action.getId(), action.getLabel(), ex.getMessage()});
+            LOG.log(Level.FINEST, null, ex);
             return;
+        } finally {
+            try {
+                drupalServiceClient.logout();
+            } catch (DrupalServerConnectionException ex) {
+                LOG.log(Level.SEVERE, LOG_PREFIX + "{2}", new Object[]{action.getId(), action.getLabel(), ex.getMessage()});
+                LOG.log(Level.FINEST, null, ex);
+            }
         }
 
-        LOG.log(Level.INFO, "Number of items in Edition #{0}: {1}", new Object[]{edition.getId(), edition.getNumberOfPlacements()});
-
-        for (NewsItemPlacement nip : edition.getPlacements()) {
-            processPlacement(ctx, nip);
-        }
-
-        try {
-            drupalServiceClient.logout();
-        } catch (DrupalServerConnectionException ex) {
-            LOG.log(Level.SEVERE, "Could not log-out. {0}", ex.getMessage());
-            LOG.log(Level.FINEST, "", ex);
-        }
-
-        LOG.log(Level.WARNING, "{0} errors encounted", new Object[]{this.errors});
-        LOG.log(Level.INFO, "Finishing action. Edition #{0}", new Object[]{edition.getId()});
+        LOG.log(Level.INFO, LOG_PREFIX + "{2} errors encounted", new Object[]{action.getId(), action.getLabel(), this.errors});
+        LOG.log(Level.INFO, LOG_PREFIX + "Finishing action. Edition #{2}", new Object[]{action.getId(), action.getLabel(), edition.getId()});
     }
 
     @Override
     public void executePlacement(PluginContext ctx, NewsItemPlacement placement, Edition edition, OutletEditionAction action) {
-        LOG.log(Level.INFO, "Executing DrupalEditionAction for NewsItem #{0} in Edition #{1}", new Object[]{placement.getNewsItem().getId(), edition.getId()});
-
-        init(action);
+        LOG.log(Level.INFO, LOG_PREFIX + "Executing DrupalEditionAction for NewsItem #{2} in Edition #{3}", new Object[]{action.getId(), action.getLabel(), placement.getNewsItem().getId(), edition.getId()});
         this.errors = 0;
+        this.action = action;
+        this.pluginContext = ctx;
+
+        init();
 
         try {
-            if (!this.drupalServiceClient.login()) {
-                LOG.log(Level.SEVERE, "Could not log-in to the configured Drupal Instance");
+            if (!drupalServiceClient.login()) {
+                LOG.log(Level.SEVERE, LOG_PREFIX + "Could not log-in to the configured Drupal Instance", new Object[]{action.getId(), action.getLabel()});
                 return;
+            } else {
+                LOG.log(Level.INFO, LOG_PREFIX + "Logged into Drupal successfully", new Object[]{action.getId(), action.getLabel()});
             }
+            processPlacement(placement);
         } catch (DrupalServerConnectionException ex) {
-            LOG.log(Level.SEVERE, "Could not log-in to the configured Drupal Instance. {0}", ex.getMessage());
-            LOG.log(Level.FINEST, "", ex);
+            LOG.log(Level.SEVERE, LOG_PREFIX + "{0}", new Object[]{action.getId(), action.getLabel(), ex.getMessage()});
+            LOG.log(Level.FINEST, null, ex);
             return;
+        } finally {
+            try {
+                drupalServiceClient.logout();
+            } catch (DrupalServerConnectionException ex) {
+                LOG.log(Level.SEVERE, LOG_PREFIX + "{2}", new Object[]{action.getId(), action.getLabel(), ex.getMessage()});
+                LOG.log(Level.FINEST, null, ex);
+            }
         }
 
-        processPlacement(ctx, placement);
-
-        try {
-            drupalServiceClient.logout();
-        } catch (DrupalServerConnectionException ex) {
-            LOG.log(Level.SEVERE, "Could not log-out. {0}", ex.getMessage());
-            LOG.log(Level.FINEST, "", ex);
-        }
-
-        LOG.log(Level.WARNING, "{0} errors encounted", new Object[]{this.errors});
+        LOG.log(Level.INFO, "{0} errors encounted", new Object[]{this.errors});
         LOG.log(Level.INFO, "Finishing action. Edition #{0}", new Object[]{edition.getId()});
     }
 
@@ -231,138 +217,18 @@ public class DrupalEditionAction implements EditionAction {
     }
 
     /**
-     * Decodes the section mappings and adding each mapping to
-     * {@link #sectionMapping}.
-     *
-     * @param mapping mapping to set
-     */
-    private void setSectionMapping(String mapping) {
-        String[] values = mapping.split(";");
-
-        for (String singleMapping : values) {
-            String[] value = singleMapping.split(":");
-            Long convergeId = Long.valueOf(value[0].trim());
-            Long drupalId = Long.valueOf(value[1].trim());
-            sectionMapping.put(convergeId, drupalId);
-            LOG.log(Level.INFO, "Mapping Converge Section #{0} to Drupal Section #{1}", new Object[]{convergeId, drupalId});
-        }
-
-        LOG.log(Level.INFO, "Found {0} Section mapping(s)", sectionMapping.size());
-    }
-
-    /**
-     * Get Publish on text value.
-     *
-     * @return "YYYY-MM-DD HH:MM:SS" or ""
-     */
-    private String getPublishOn(Edition edition) {
-        if (publishImmediately != null) {
-            return null;
-        }
-
-        Calendar calendar = (Calendar) edition.getPublicationDate().clone();
-        calendar.add(Calendar.HOUR_OF_DAY, Integer.valueOf(publishDelay));
-
-        return DRUPAL_DATE_FORMAT.format(calendar.getTime());
-    }
-
-    /**
-     * Gets the ID of the Drupal section where the {@link NewsItemPlacement}
-     * should be placed.
-     *
-     * @param nip {@link NewsItemPlacement} for which to get the Drupal section
-     * @return ID of the Drupal section where the {@link NewsItemPlacement}
-     * should be placed
-     * @throws UnmappedSectionException If the {@link NewsItemPlacement} is not
-     * mapped to a section in Drupal
-     */
-    private String getSection(NewsItemPlacement nip) throws UnmappedSectionException {
-        Section section = nip.getSection();
-
-        if (section != null) {
-            if (sectionMapping.containsKey(section.getId())) {
-                return sectionMapping.get(section.getId()).toString();
-            }
-        }
-
-        throw new UnmappedSectionException(section + " is not mapped");
-    }
-
-    /**
-     * Get {@link ImageField}s for {@link NewsItem}.
-     *
-     * @param newsItem NewsItem
-     * @return
-     */
-    private List<FileInfo> getMediaItems(NewsItem newsItem) {
-        List<FileInfo> mediaItems = new ArrayList<FileInfo>();
-
-        for (NewsItemMediaAttachment nima : newsItem.getMediaAttachments()) {
-            MediaItem mediaItem = nima.getMediaItem();
-
-            // Verify that the item exist and any renditions are attached
-            if (mediaItem == null || !mediaItem.isRenditionsAttached()) {
-                continue;
-            } else {
-                try {
-                    MediaItemRendition rendition = mediaItem.findRendition(this.renditionName);
-                    String abbreviatedCaption = StringUtils.abbreviate(nima.getCaption(), MEDIA_ITEM_TITLE_LENGTH);
-                    mediaItems.add(new FileInfo(new File(rendition.getFileLocation()), abbreviatedCaption));
-                    LOG.log(Level.FINE, "Adding Rendition #{0} Located at: {1} with Caption: {2} Capped to: {3}", new Object[]{rendition.getId(), rendition.getFileLocation(), nima.getCaption(), abbreviatedCaption});
-                } catch (RenditionNotFoundException ex) {
-                    LOG.log(Level.INFO, "Rendition ''{0}'' missing for MediaItem #{1}. MediaItem #{1} will not be uploaded.", new Object[]{renditionName, mediaItem.getId()});
-                    continue;
-                }
-            }
-        }
-
-        return mediaItems;
-    }
-
-    private boolean isInteger(String input) {
-        try {
-            Integer.valueOf(input);
-            return true;
-        } catch (NumberFormatException ex) {
-            return false;
-        }
-    }
-
-    /**
      * Initialises the plug-in. The initialisation includes loading and
      * validating properties and preparing the Drupal services client.
-     *
-     * @param action {@link OutletEditionAction} that should be used for
-     * initialisation
      */
-    private void init(OutletEditionAction action) {
+    private void init() {
         Map<String, String> properties = action.getPropertiesAsMap();
 
-        StringBuilder mapBuilder = new StringBuilder();
-        for (OutletEditionActionProperty actionProperty : action.getProperties()) {
-            if (actionProperty.getKey().equalsIgnoreCase(Property.SECTION_MAPPING.name())) {
-                if (mapBuilder.length() > 0) {
-                    mapBuilder.append(";");
-                }
-                mapBuilder.append(actionProperty.getValue());
-            }
-        }
-        mappings = mapBuilder.toString();
-
-        nodeType = properties.get(Property.NODE_TYPE.name());
-        nodeLanguage = properties.get(Property.NODE_LANGUAGE.name());
-        publishDelay = properties.get(Property.PUBLISH_DELAY.name());
-        publishImmediately = properties.get(Property.PUBLISH_IMMEDIATELY.name());
-        renditionName = properties.get(Property.IMAGE_RENDITION.name());
-
-        sectionMapping = new HashMap<Long, Long>();
-
-        this.hostname = properties.get(Property.URL.name());
-        this.endpoint = properties.get(Property.SERVICE_ENDPOINT.name());
-        this.username = properties.get(Property.USERNAME.name());
-        this.password = properties.get(Property.PASSWORD.name());
-        this.connectionTimeout = properties.get(Property.CONNECTION_TIMEOUT.name());
-        this.socketTimeout = properties.get(Property.SOCKET_TIMEOUT.name());
+        String hostname = properties.get(Property.URL.name());
+        String endpoint = properties.get(Property.SERVICE_ENDPOINT.name());
+        String username = properties.get(Property.USERNAME.name());
+        String password = properties.get(Property.PASSWORD.name());
+        Integer connectionTimeout = NumberUtils.toInt(properties.get(Property.CONNECTION_TIMEOUT.name()), DEFAULT_CONNECTION_TIMEOUT);
+        Integer socketTimeout = NumberUtils.toInt(properties.get(Property.SOCKET_TIMEOUT.name()), DEFAULT_SOCKET_TIMEOUT);
 
         if (hostname == null) {
             throw new IllegalArgumentException("'hostname' cannot be null");
@@ -374,156 +240,113 @@ public class DrupalEditionAction implements EditionAction {
             throw new IllegalArgumentException("'password' cannot be null");
         }
 
-        if (nodeType == null) {
-            throw new IllegalArgumentException("'nodeType' cannot be null");
-        } else if (mappings == null) {
-            throw new IllegalArgumentException("'mappings' cannot be null");
-        }
-
-        if (publishImmediately == null && publishDelay == null) {
-            throw new IllegalArgumentException("'publishImmediately' or 'publishDelay' cannot be null");
-        } else if (publishImmediately == null && publishDelay != null) {
-            if (!isInteger(publishDelay)) {
-                throw new IllegalArgumentException("'publishDelay' must be an integer");
-            } else if (Integer.valueOf(publishDelay) <= 0) {
-                throw new IllegalArgumentException("'publishDelay' cannot be <= 0");
-            }
-        }
-
-        if (connectionTimeout == null) {
-            // 30 seconds
-            connectionTimeout = "30000";
-        } else if (!isInteger(connectionTimeout)) {
-            throw new IllegalArgumentException("'connectionTimeout' must be an integer");
-        }
-
-        if (socketTimeout == null) {
-            // 30 seconds
-            socketTimeout = "30000";
-        } else if (!isInteger(socketTimeout)) {
-            throw new IllegalArgumentException("'socketTimeout' must be an integer");
-        }
-
-        setSectionMapping(mappings);
-
-        this.drupalServiceClient = new DrupalServicesClient(hostname, endpoint, username, password, Integer.valueOf(socketTimeout), Integer.valueOf(connectionTimeout));
+        this.drupalServiceClient = new DrupalServicesClient(hostname, endpoint, username, password, socketTimeout, connectionTimeout);
     }
 
     /**
      * Process a single {@link NewsItemPlacement}. The processing includes
      * creating or updating a corresponding node in Drupal.
      *
-     * @param ctx {@link PluginContext}
      * @param nip {@link NewsItemPlacement} to process
      */
-    private void processPlacement(PluginContext ctx, NewsItemPlacement nip) {
-
-        Edition edition = nip.getEdition();
-
+    private void processPlacement(NewsItemPlacement nip) {
         NewsItem newsItem = nip.getNewsItem();
 
         // Ignore NewsItem if it hasn't reached the end state of the workflow
         if (!newsItem.isEndState()) {
+            LOG.log(Level.INFO, LOG_PREFIX + "Ignoring NewsItemPlacement #{2} / NewsItem #{3}. Not yet complete.", new Object[]{action.getId(), action.getLabel(), nip.getId(), newsItem.getId()});
             return;
         }
 
         // Ignore NewsItem if the section of the NewsItemPlacement is not mapped
+        List<NameValuePair> params;
         try {
-            getSection(nip);
-        } catch (UnmappedSectionException usex) {
+            NewsItemPlacementToNameValuePairsConverter converter = new NewsItemPlacementToNameValuePairsConverter();
+            params = converter.convert(action, nip);
+        } catch (UnmappedSectionException ex) {
+            LOG.log(Level.INFO, LOG_PREFIX + "Ignoring NewsItemPlacement #{2} / NewsItem #{3}. {4}", new Object[]{action.getId(), action.getLabel(), nip.getId(), newsItem.getId(), ex.getMessage()});
             return;
         }
+
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, Charset.defaultCharset());
 
         boolean update;
         try {
             // determine if the news item is already uploaded
             update = this.drupalServiceClient.exists("newsitem", nip.getNewsItem().getId());
         } catch (DrupalServerConnectionException ex) {
-            LOG.log(Level.SEVERE, "Could not determine if NewsItem #{0} is already update. {1}", new Object[]{newsItem.getId(), ex.getMessage()});
+            LOG.log(Level.SEVERE, LOG_PREFIX + "Could not determine if NewsItem #{2} exists. {3}", new Object[]{action.getId(), action.getLabel(), newsItem.getId(), ex.getMessage()});
             LOG.log(Level.FINEST, null, ex);
             errors++;
             return;
         }
 
-        UrlEncodedFormEntity entity = toUrlEncodedFormEntity(nip, getPublishOn(edition));
-        List<FileInfo> mediaItems = getMediaItems(newsItem);
+        NewsItemPlacementToFileInfosConverter fileInfosConverter = new NewsItemPlacementToFileInfosConverter();
+        List<FileInfo> mediaItems = fileInfosConverter.convert(action, nip);
 
         if (update) {
-            try {
-                Long nodeId = drupalServiceClient.retrieveNodeIdFromResource("newsitem", nip.getNewsItem().getId());
-                LOG.log(Level.INFO, "Updating Node #{0} with NewsItem #{1} & {2} image(s)", new Object[]{nodeId, newsItem.getId(), mediaItems.size()});
-                drupalServiceClient.updateNode(nodeId, entity);
-                drupalServiceClient.attachFile(nodeId, "field_image", mediaItems);
-            } catch (DrupalServerConnectionException ex) {
-                this.errors++;
-                LOG.log(Level.SEVERE, ex.getMessage());
-                LOG.log(Level.FINEST, "", ex);
-            } catch (IOException ex) {
-                this.errors++;
-                LOG.log(Level.SEVERE, ex.getMessage());
-                LOG.log(Level.FINEST, "", ex);
-            } catch (URISyntaxException ex) {
-                this.errors++;
-                LOG.log(Level.SEVERE, ex.getMessage());
-                LOG.log(Level.FINEST, "", ex);
-            }
+            updateNode(nip, mediaItems, entity);
         } else {
-            LOG.log(Level.INFO, "Creating new Node for NewsItem #{0} & {1} image(s)", new Object[]{newsItem.getId(), mediaItems.size()});
-
-            NewsItemEditionState status = ctx.addNewsItemEditionState(edition.getId(), newsItem.getId(), STATUS_LABEL, UPLOADING);
-            NewsItemEditionState nid = ctx.addNewsItemEditionState(edition.getId(), newsItem.getId(), NID_LABEL, null);
-            NewsItemEditionState uri = ctx.addNewsItemEditionState(edition.getId(), newsItem.getId(), URI_LABEL, null);
-            NewsItemEditionState submitted = ctx.addNewsItemEditionState(edition.getId(), newsItem.getId(), DATE, null);
-
-            try {
-                NodeInfo newNode = drupalServiceClient.createNode(entity);
-                drupalServiceClient.attachFile(newNode.getId(), "field_image", mediaItems);
-
-                nid.setValue(newNode.getId().toString());
-                uri.setValue(newNode.getUri());
-                submitted.setValue(new Date().toString());
-                status.setValue(UPLOADED);
-            } catch (DrupalServerConnectionException ex) {
-                this.errors++;
-                status.setValue(FAILED);
-                LOG.log(Level.SEVERE, ex.getMessage());
-                LOG.log(Level.FINEST, "", ex);
-
-                ctx.updateNewsItemEditionState(status);
-                ctx.updateNewsItemEditionState(nid);
-                ctx.updateNewsItemEditionState(uri);
-                ctx.updateNewsItemEditionState(submitted);
-            }
-
-            ctx.updateNewsItemEditionState(status);
-            ctx.updateNewsItemEditionState(nid);
-            ctx.updateNewsItemEditionState(uri);
-            ctx.updateNewsItemEditionState(submitted);
+            createNode(nip, mediaItems, entity);
         }
     }
 
-    /**
-     * Turns a {@link NewsItemPlacement} into a {@link UrlEncodedFormEntity}
-     * that can be sent to the Drupal Services API.
-     *
-     * @param nip {@link NewsItemPlacement} to turn into a
-     * {@link UrlEncodedFormEntity}
-     * @param publishOn Date when the {@link NewsItem} should be published
-     * @return {@link UrlEncodedFormEntity} based on the
-     * {@link NewsItemPlacement}
-     */
-    private UrlEncodedFormEntity toUrlEncodedFormEntity(NewsItemPlacement nip, String publishOn) {
-        NewsItemPlacementToNameValuePairsConverter converter = new NewsItemPlacementToNameValuePairsConverter();
-        List<NameValuePair> params = converter.convert(nip);
-        params.add(new BasicNameValuePair("type", this.nodeType));
-        params.add(new BasicNameValuePair("publish_on", publishOn));
+    private void createNode(NewsItemPlacement newsItemPlacement, List<FileInfo> mediaItems, UrlEncodedFormEntity entity) {
+        NewsItem newsItem = newsItemPlacement.getNewsItem();
+        Edition edition = newsItemPlacement.getEdition();
+
+        LOG.log(Level.INFO, "Creating new Node for NewsItem #{0} & {1} image(s)", new Object[]{newsItem.getId(), mediaItems.size()});
+
+        NewsItemEditionState status = pluginContext.addNewsItemEditionState(edition.getId(), newsItem.getId(), STATUS_LABEL, UPLOADING);
+        NewsItemEditionState nid = pluginContext.addNewsItemEditionState(edition.getId(), newsItem.getId(), NID_LABEL, null);
+        NewsItemEditionState uri = pluginContext.addNewsItemEditionState(edition.getId(), newsItem.getId(), URI_LABEL, null);
+        NewsItemEditionState submitted = pluginContext.addNewsItemEditionState(edition.getId(), newsItem.getId(), DATE, null);
 
         try {
-            params.add(new BasicNameValuePair("field_section[und][0]", getSection(nip)));
-        } catch (UnmappedSectionException ex) {
-            // Section not mapped
+            NodeInfo newNode = drupalServiceClient.createNode(entity);
+            drupalServiceClient.attachFile(newNode.getId(), "field_image", mediaItems);
+
+            nid.setValue(newNode.getId().toString());
+            uri.setValue(newNode.getUri());
+            submitted.setValue(new Date().toString());
+            status.setValue(UPLOADED);
+        } catch (DrupalServerConnectionException ex) {
+            this.errors++;
+            status.setValue(FAILED);
+            LOG.log(Level.SEVERE, ex.getMessage());
+            LOG.log(Level.FINEST, "", ex);
+
+            pluginContext.updateNewsItemEditionState(status);
+            pluginContext.updateNewsItemEditionState(nid);
+            pluginContext.updateNewsItemEditionState(uri);
+            pluginContext.updateNewsItemEditionState(submitted);
         }
 
-        return new UrlEncodedFormEntity(params, Charset.defaultCharset());
+        pluginContext.updateNewsItemEditionState(status);
+        pluginContext.updateNewsItemEditionState(nid);
+        pluginContext.updateNewsItemEditionState(uri);
+        pluginContext.updateNewsItemEditionState(submitted);
     }
+
+    private void updateNode(NewsItemPlacement nip, List<FileInfo> mediaItems, UrlEncodedFormEntity entity) {
+        try {
+            Long nodeId = drupalServiceClient.retrieveNodeIdFromResource("newsitem", nip.getNewsItem().getId());
+            LOG.log(Level.INFO, "Updating Node #{0} with NewsItem #{1} & {2} image(s)", new Object[]{nodeId, nip.getNewsItem().getId(), mediaItems.size()});
+            drupalServiceClient.updateNode(nodeId, entity);
+            drupalServiceClient.attachFile(nodeId, "field_image", mediaItems);
+        } catch (DrupalServerConnectionException ex) {
+            this.errors++;
+            LOG.log(Level.SEVERE, ex.getMessage());
+            LOG.log(Level.FINEST, "", ex);
+        } catch (IOException ex) {
+            this.errors++;
+            LOG.log(Level.SEVERE, ex.getMessage());
+            LOG.log(Level.FINEST, "", ex);
+        } catch (URISyntaxException ex) {
+            this.errors++;
+            LOG.log(Level.SEVERE, ex.getMessage());
+            LOG.log(Level.FINEST, "", ex);
+        }
+    }
+
 }
