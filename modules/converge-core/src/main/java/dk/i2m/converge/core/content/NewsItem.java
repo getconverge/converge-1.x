@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2010 - 2011 Interactive Media Management
+ * Copyright (C) 2014 Allan Lykke Christensen
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -360,6 +361,45 @@ public class NewsItem implements Serializable {
      */
     public void setByLine(String byLine) {
         this.byLine = byLine;
+    }
+    
+    /**
+     * Get the author of the {@link NewsItem}. If {@link #getByLine()} is empty,
+     * it will generate an author string based on the {@link NewsItemActor}s of the start state.
+     *
+     * @return Author of the NewsItem
+     */
+    public String getAuthors() {
+        if (org.apache.commons.lang.StringUtils.isBlank(getByLine())) {
+            // No by-line specified in the news item. 
+            // Generate by-line from actors on news item
+
+            StringBuilder sb = new StringBuilder();
+
+            Workflow workflow = getOutlet().getWorkflow();
+            UserRole authorRole = workflow.getStartState().getActorRole();
+
+            // Iterate through actors specified on the news item
+            boolean firstActor = true;
+            for (NewsItemActor actor : getActors()) {
+
+                // If the actor has the role from the initial state of the 
+                // workflow, he is the author of the story
+                if (actor.getRole().equals(authorRole)) {
+                    if (!firstActor) {
+                        sb.append(", ");
+                    } else {
+                        firstActor = false;
+                    }
+
+                    sb.append(actor.getUser().getFullName());
+                }
+            }
+
+            return sb.toString();
+        } else {
+            return getByLine();
+        }
     }
 
     /**

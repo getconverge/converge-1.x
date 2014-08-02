@@ -39,34 +39,6 @@ import org.junit.Test;
 public class NewsItemPlacementToNameValuePairsConverterTest {
 
     @Test
-    public void newsItemPlacementToNameValuePairsConverter_newsItemWithoutByLine_returnAuthorsFromInitialActors() {
-        // Arrange
-        NewsItem newsItem = getNewsItemWithoutByline();
-        String expectedAuthors = "Allan Lykke Christensen, Nikholai Mukalazi";
-
-        // Act
-        NewsItemPlacementToNameValuePairsConverter converter = new NewsItemPlacementToNameValuePairsConverter();
-        String actualAuthors = converter.getAuthor(newsItem);
-
-        // Assert
-        assertEquals(expectedAuthors, actualAuthors);
-    }
-
-    @Test
-    public void newsItemPlacementToNameValuePairsConverter_newsItemWithByLine_returnAuthorsFromInitialActors() {
-        // Arrange
-        NewsItem newsItem = getNewsItemWithByline();
-        String expectedAuthors = "By Reporters";
-
-        // Act
-        NewsItemPlacementToNameValuePairsConverter converter = new NewsItemPlacementToNameValuePairsConverter();
-        String actualAuthors = converter.getAuthor(newsItem);
-
-        // Assert
-        assertEquals(expectedAuthors, actualAuthors);
-    }
-
-    @Test
     public void newsItemPlacementToNameValuePairsConverter_newsItemWithoutPlacement_returnNameValuePairsWithoutPlacement() {
         // Arrange
         NewsItemPlacement placement = getNewsItemPlacementWithoutPlacement();
@@ -116,29 +88,6 @@ public class NewsItemPlacementToNameValuePairsConverterTest {
             }
         }
         assertTrue(assertedStart && assertedPosition);
-    }
-
-    private NewsItem getNewsItemWithoutByline() {
-        WorkflowState startState = new WorkflowState();
-        startState.setActorRole(new UserRole(1L, "Author"));
-        Workflow workflow = new Workflow();
-        workflow.setName("Test Workflow");
-        workflow.setStartState(startState);
-        Outlet outlet = new Outlet();
-        outlet.setTitle("Test Outlet");
-        outlet.setWorkflow(workflow);
-        NewsItem newsItem = new NewsItem();
-        newsItem.setOutlet(outlet);
-        UserAccount actor1 = new UserAccount();
-        actor1.setFullName("Allan Lykke Christensen");
-        UserAccount actor2 = new UserAccount();
-        actor2.setFullName("Nikholai Mukalazi");
-        UserAccount actor3 = new UserAccount();
-        actor3.setFullName("Mackenzie Ndiga");
-        newsItem.getActors().add(new NewsItemActor(actor1, startState.getActorRole(), newsItem));
-        newsItem.getActors().add(new NewsItemActor(actor2, startState.getActorRole(), newsItem));
-        newsItem.getActors().add(new NewsItemActor(actor3, new UserRole(2L, "Editor"), newsItem));
-        return newsItem;
     }
 
     private NewsItem getNewsItemWithByline() {

@@ -17,11 +17,8 @@
 package dk.i2m.converge.plugins.drupalclient;
 
 import dk.i2m.converge.core.content.NewsItem;
-import dk.i2m.converge.core.content.NewsItemActor;
 import dk.i2m.converge.core.content.NewsItemPlacement;
-import dk.i2m.converge.core.security.UserRole;
 import dk.i2m.converge.core.workflow.Edition;
-import dk.i2m.converge.core.workflow.Workflow;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -52,7 +49,7 @@ public class NewsItemPlacementToNameValuePairsConverter {
         params.add(new BasicNameValuePair("language", "und"));
         params.add(new BasicNameValuePair("body[und][0][value]", newsItem.getStory()));
         params.add(new BasicNameValuePair("body[und][0][format]", "full_html"));
-        params.add(new BasicNameValuePair("field_author[und][0][value]", getAuthor(newsItem)));
+        params.add(new BasicNameValuePair("field_author[und][0][value]", newsItem.getAuthors()));
         params.add(new BasicNameValuePair("field_newsitem[und][0][value]", "" + newsItem.getId()));
         params.add(new BasicNameValuePair("field_edition[und][0][value]", "" + edition.getId()));
 
@@ -65,46 +62,5 @@ public class NewsItemPlacementToNameValuePairsConverter {
         }
 
         return params;
-    }
-
-    /**
-     * Get Author text field. If the by-line of the {@link NewsItem} is empty,
-     * it will generate an author string based on the initial actors.
-     *
-     * @param newsItem {@link NewsItem}
-     * @return By-line to use for the story when published on Drupal
-     */
-    public String getAuthor(NewsItem newsItem) {
-        if (StringUtils.isBlank(newsItem.getByLine())) {
-            // No by-line specified in the news item. 
-            // Generate by-line from actors on news item
-
-            StringBuilder sb = new StringBuilder();
-
-            Workflow workflow = newsItem.getOutlet().getWorkflow();
-            UserRole authorRole = workflow.getStartState().getActorRole();
-
-            // Iterate through actors specified on the news item
-            boolean firstActor = true;
-            for (NewsItemActor actor : newsItem.getActors()) {
-
-                // If the actor has the role from the initial state of the 
-                // workflow, he is the author of the story
-                if (actor.getRole().equals(authorRole)) {
-                    if (!firstActor) {
-                        sb.append(", ");
-                    } else {
-                        firstActor = false;
-                    }
-
-                    sb.append(actor.getUser().getFullName());
-                }
-            }
-
-            return sb.toString();
-        } else {
-            // Return the "by-line" of the NewsItem
-            return newsItem.getByLine();
-        }
     }
 }
