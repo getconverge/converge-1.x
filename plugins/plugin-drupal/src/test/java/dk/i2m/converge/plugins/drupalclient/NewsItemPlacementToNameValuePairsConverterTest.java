@@ -42,7 +42,7 @@ public class NewsItemPlacementToNameValuePairsConverterTest {
     public void newsItemPlacementToNameValuePairsConverter_newsItemWithoutByLine_returnAuthorsFromInitialActors() {
         // Arrange
         NewsItem newsItem = getNewsItemWithoutByline();
-        String expectedAuthors = "Allan Lykke Christensen, Nikholai Mukalazi, Mackenzie Ndiga";
+        String expectedAuthors = "Allan Lykke Christensen, Nikholai Mukalazi";
 
         // Act
         NewsItemPlacementToNameValuePairsConverter converter = new NewsItemPlacementToNameValuePairsConverter();
@@ -120,7 +120,7 @@ public class NewsItemPlacementToNameValuePairsConverterTest {
 
     private NewsItem getNewsItemWithoutByline() {
         WorkflowState startState = new WorkflowState();
-        startState.setActorRole(new UserRole("Author"));
+        startState.setActorRole(new UserRole(1L, "Author"));
         Workflow workflow = new Workflow();
         workflow.setName("Test Workflow");
         workflow.setStartState(startState);
@@ -137,7 +137,7 @@ public class NewsItemPlacementToNameValuePairsConverterTest {
         actor3.setFullName("Mackenzie Ndiga");
         newsItem.getActors().add(new NewsItemActor(actor1, startState.getActorRole(), newsItem));
         newsItem.getActors().add(new NewsItemActor(actor2, startState.getActorRole(), newsItem));
-        newsItem.getActors().add(new NewsItemActor(actor3, startState.getActorRole(), newsItem));
+        newsItem.getActors().add(new NewsItemActor(actor3, new UserRole(2L, "Editor"), newsItem));
         return newsItem;
     }
 

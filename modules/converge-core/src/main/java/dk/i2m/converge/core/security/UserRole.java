@@ -80,10 +80,20 @@ public class UserRole implements Serializable {
     /**
      * Creates a new instance of {@link UserRole}.
      *
-     * @param name
-     *          Unique name of the role
+     * @param name Unique name of the role
      */
     public UserRole(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Creates a new instance of {@link UserRole}.
+     *
+     * @param id Unique identifier of the role
+     * @param name Unique name of the role
+     */
+    public UserRole(Long id, String name) {
+        this.id = id;
         this.name = name;
     }
 
