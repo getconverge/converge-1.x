@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2010 - 2012 Interactive Media Management
+ * Copyright (C) 2014 Allan Lykke Christensen
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +18,6 @@
 package dk.i2m.converge.ejb.services;
 
 import dk.i2m.converge.domain.SystemTimer;
-import dk.i2m.converge.ejb.facades.CatalogueFacadeLocal;
 import dk.i2m.converge.ejb.facades.OutletFacadeLocal;
 import dk.i2m.converge.ejb.facades.SearchEngineLocal;
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ import javax.annotation.Resource;
 import javax.ejb.*;
 
 /**
- * Stateless session bean implementing the timer service of the system
+ * Stateless session bean implementing the timer service of the system.
  *
  * @author Allan Lykke Christensen
  */
@@ -39,19 +39,24 @@ public class TimerServiceBean implements TimerServiceLocal {
 
     private static final Logger LOG = Logger.getLogger(TimerServiceBean.class.getName());
 
-    @Resource private TimerService timerService;
+    @Resource
+    private TimerService timerService;
 
-    @EJB private ConfigurationServiceLocal cfgService;
+    @EJB
+    private ConfigurationServiceLocal cfgService;
 
-    @EJB private NewswireServiceLocal newswireService;
+    @EJB
+    private NewswireServiceLocal newswireService;
 
-    @EJB private OutletFacadeLocal outletFacade;
+    @EJB
+    private OutletFacadeLocal outletFacade;
 
-    @EJB private CatalogueFacadeLocal catalogueFacade;
+    @EJB
+    private SearchEngineLocal searchEngineService;
 
-    @EJB private SearchEngineLocal searchEngineService;
-
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void startTimer(PeriodicTimer timer) {
         Calendar now = Calendar.getInstance();
@@ -76,7 +81,9 @@ public class TimerServiceBean implements TimerServiceLocal {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void stopTimer(PeriodicTimer timer) {
         for (Timer t : (Collection<Timer>) timerService.getTimers()) {
@@ -87,7 +94,9 @@ public class TimerServiceBean implements TimerServiceLocal {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void startTimers() {
         LOG.log(Level.INFO, "Starting timers");
@@ -96,7 +105,9 @@ public class TimerServiceBean implements TimerServiceLocal {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void stopTimers() {
         LOG.log(Level.INFO, "Stopping timers");
@@ -105,7 +116,9 @@ public class TimerServiceBean implements TimerServiceLocal {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<dk.i2m.converge.domain.SystemTimer> getAllTimers() {
         List<dk.i2m.converge.domain.SystemTimer> timers = new ArrayList<dk.i2m.converge.domain.SystemTimer>();
@@ -134,7 +147,9 @@ public class TimerServiceBean implements TimerServiceLocal {
         return timers;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<dk.i2m.converge.domain.SystemTimer> getActiveTimers() {
         List<dk.i2m.converge.domain.SystemTimer> timers = new ArrayList<dk.i2m.converge.domain.SystemTimer>();
@@ -151,17 +166,16 @@ public class TimerServiceBean implements TimerServiceLocal {
     /**
      * Executes a {@link Timer}
      *
-     * @param timer
-     *          Timer that initiated the timeout
+     * @param timer Timer that initiated the timeout
      */
     @Timeout
     public void executeTimer(Timer timer) {
-        LOG.log(Level.FINE, "Executing timer [{0}]", new Object[]{timer.getInfo()});
+        LOG.log(Level.INFO, "Executing timer [{0}]", new Object[]{timer.getInfo()});
 
         try {
             if (timer.getInfo().equals(PeriodicTimer.NEWSWIRE.name())) {
                 newswireService.downloadNewswireServices();
-            }else if (timer.getInfo().equals(PeriodicTimer.NEWSWIRE_PURGE.name())) {
+            } else if (timer.getInfo().equals(PeriodicTimer.NEWSWIRE_PURGE.name())) {
                 newswireService.purgeNewswires();
             } else if (timer.getInfo().equals(PeriodicTimer.EDITION.name())) {
                 outletFacade.closeOverdueEditions();
@@ -172,8 +186,12 @@ public class TimerServiceBean implements TimerServiceLocal {
             } else {
                 LOG.log(Level.WARNING, "Ignoring unknown timer [{0}]", new Object[]{timer.getInfo()});
             }
-        } catch (Throwable t) {
-            LOG.log(Level.SEVERE, t.getMessage(), t);
+        } catch (IllegalStateException ex) {
+            LOG.log(Level.SEVERE, ex.getMessage());
+            LOG.log(Level.FINEST, null, ex);
+        } catch (EJBException ex) {
+            LOG.log(Level.SEVERE, ex.getMessage());
+            LOG.log(Level.FINEST, null, ex);
         }
     }
 

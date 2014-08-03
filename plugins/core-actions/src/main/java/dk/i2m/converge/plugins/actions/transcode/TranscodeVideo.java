@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 Interactive Media Management
+ * Copyright (C) 2014 Allan Lykke Christensen
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,8 +24,6 @@ import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.mediatool.event.*;
 import com.xuggle.xuggler.*;
 import java.awt.image.BufferedImage;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Transcodes a video from one format to another.
@@ -38,7 +37,6 @@ public class TranscodeVideo {
     private int width;
     private int height;
     private IMediaWriter writer;
-    private static final Logger LOG = Logger.getLogger(TranscodeVideo.class.getName());
 
     public TranscodeVideo(String input, String output) {
         this.input = input;
@@ -65,36 +63,19 @@ public class TranscodeVideo {
         IMediaReader mediaReader = ToolFactory.makeReader(input);
         mediaReader.setBufferedImageTypeToGenerate(BufferedImage.TYPE_3BYTE_BGR);
         mediaReader.addListener(new Transcoder());
-        
+
         writer = ToolFactory.makeWriter(output, mediaReader);
         mediaReader.addListener(writer);
 
-        try {
-            while (mediaReader.readPacket() == null) ;
-        } catch (Throwable t) {
-            LOG.log(Level.WARNING, "Could NOT read Media Content");
-            LOG.log(Level.FINEST, "",t);
+        while (mediaReader.readPacket() == null) {
+            // read through input and process using the MediaWriter listener
         }
     }
-    
+
     class Transcoder extends MediaToolAdapter {
 
         private IVideoResampler videoResampler = null;
         private IAudioResampler audioResampler = null;
-
-//        @Override
-//        public void onAddStream(IAddStreamEvent event) {
-//            int streamIndex = event.getStreamIndex();
-//            IStreamCoder streamCoder = event.getSource().getContainer().getStream(streamIndex).getStreamCoder();
-//            if (streamCoder.getCodecType() == ICodec.Type.CODEC_TYPE_AUDIO) {
-//                writer.addAudioStream(streamIndex, streamIndex, 2, 44100);
-//            } else if (streamCoder.getCodecType() == ICodec.Type.CODEC_TYPE_VIDEO) {
-//                streamCoder.setWidth(getWidth());
-//                streamCoder.setHeight(getHeight());
-//                writer.addVideoStream(streamIndex, streamIndex, getWidth(), getHeight());
-//            }
-//            super.onAddStream(event);
-//        }
 
         @Override
         public void onVideoPicture(IVideoPictureEvent event) {
