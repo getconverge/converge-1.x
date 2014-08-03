@@ -338,14 +338,6 @@ public class DrupalEditionAction implements EditionAction {
             this.errors++;
             LOG.log(Level.SEVERE, ex.getMessage());
             LOG.log(Level.FINEST, "", ex);
-        } catch (IOException ex) {
-            this.errors++;
-            LOG.log(Level.SEVERE, ex.getMessage());
-            LOG.log(Level.FINEST, "", ex);
-        } catch (URISyntaxException ex) {
-            this.errors++;
-            LOG.log(Level.SEVERE, ex.getMessage());
-            LOG.log(Level.FINEST, "", ex);
         }
     }
 

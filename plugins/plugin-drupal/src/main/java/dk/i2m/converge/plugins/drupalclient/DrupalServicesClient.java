@@ -32,7 +32,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Consts;
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
@@ -177,6 +176,12 @@ public class DrupalServicesClient {
         }
     }
 
+    /**
+     * Logout from the current session.
+     *
+     * @throws DrupalServerConnectionException If the user could not be logged
+     * out, e.g. already logged out
+     */
     public void logout() throws DrupalServerConnectionException {
         try {
             HttpPost method = createHttpPost(getHostnameWithEndpoint() + "/user/logout");
@@ -201,20 +206,22 @@ public class DrupalServicesClient {
      * could not be established
      */
     public boolean exists(String resource, Long id) throws DrupalServerConnectionException {
+        String url = getHostnameWithEndpoint() + "/" + resource + "/" + id;
+
         try {
-            HttpGet method = createHttpGet(getHostnameWithEndpoint() + "/" + resource + "/" + id);
+            HttpGet method = createHttpGet(url);
 
             HttpResponse response = getHttpClient().execute(method);
-            int status = response.getStatusLine().getStatusCode();
+            StatusLine statusLine = response.getStatusLine();
 
             EntityUtils.consume(response.getEntity());
 
-            if (status == 404) {
+            if (statusLine.getStatusCode() == 404) {
                 return false;
-            } else if (status == 200) {
+            } else if (statusLine.getStatusCode() == 200) {
                 return true;
             } else {
-                throw new DrupalServerConnectionException("Unexpected response from Drupal server: " + status);
+                throw new DrupalServerConnectionException("Unexpected response from Drupal server (" + url + "). " + statusLine.getStatusCode() + " " + statusLine.getReasonPhrase());
             }
         } catch (IOException ex) {
             throw new DrupalServerConnectionException("Could not determine if resource exists", ex);
@@ -223,20 +230,39 @@ public class DrupalServicesClient {
         }
     }
 
-    public Long retrieveNodeIdFromResource(String resource, Long id) throws DrupalServerConnectionException, IOException {
+    /**
+     * Retrieve a Drupal node of a specific resource type.
+     *
+     * @param resource Type of resource
+     * @param id Unique identifier of the resource
+     * @return Drupal node matching the {@code resource} and {@code id}
+     * @throws DrupalServerConnectionException If the resource type is incorrect
+     * or unexpected response from server
+     */
+    public Long retrieveNodeIdFromResource(String resource, Long id) throws DrupalServerConnectionException {
+        String url = getHostnameWithEndpoint() + "/" + resource + "/" + id;
         try {
-            URIBuilder builder = new URIBuilder(getHostnameWithEndpoint() + "/" + resource + "/" + id);
+            URIBuilder builder = new URIBuilder(url);
             HttpGet method = new HttpGet(builder.build());
 
             ResponseHandler<String> handler = new BasicResponseHandler();
             String output = getHttpClient().execute(method, handler);
             NodeInfo ni = new Gson().fromJson(output, NodeInfo.class);
             return ni.getId();
+        } catch (IOException ex) {
+            throw new DrupalServerConnectionException("Could not retrieve node from Drupal server (" + url + "). " + ex.getMessage(), ex);
         } catch (URISyntaxException ex) {
             throw new DrupalServerConnectionException("Could not determine if resource exists. Server URI incorrect. ", ex);
         }
     }
 
+    /**
+     * Creates a new node.
+     *
+     * @param entity Entity containing the fields of the node
+     * @return Response from server
+     * @throws DrupalServerConnectionException If the node could not be created
+     */
     public NodeInfo createNode(UrlEncodedFormEntity entity) throws DrupalServerConnectionException {
         String url = getHostnameWithEndpoint() + "/node";
         try {
@@ -252,23 +278,54 @@ public class DrupalServicesClient {
         }
     }
 
-    public String retrieveNode(Long id) throws URISyntaxException, IOException {
-        URIBuilder builder = new URIBuilder(getHostnameWithEndpoint() + "/node/" + id);
-        HttpGet method = new HttpGet(builder.build());
+    /**
+     * Retrieves a node with a given unique identifier.
+     *
+     * @param id Unique identifier of the node
+     * @return Node matching the unique identifier
+     * @throws DrupalServerConnectionException If a node could not be matched or
+     * if an unexpected response was received from the server
+     */
+    public String retrieveNode(Long id) throws DrupalServerConnectionException {
+        String url = getHostnameWithEndpoint() + "/node/" + id;
+        try {
+            URIBuilder builder = new URIBuilder(url);
+            HttpGet method = new HttpGet(builder.build());
 
-        ResponseHandler<String> handler = new BasicResponseHandler();
+            ResponseHandler<String> handler = new BasicResponseHandler();
 
-        String output = getHttpClient().execute(method, handler);
-        return output;
+            String output = getHttpClient().execute(method, handler);
+            return output;
+        } catch (IOException ex) {
+            throw new DrupalServerConnectionException("Could not retrieve node on " + url + ". " + ex.getMessage(), ex);
+        } catch (URISyntaxException ex) {
+            throw new DrupalServerConnectionException("Could not retrieve node on " + url + ". Invalid URI. " + ex.getMessage(), ex);
+        }
     }
 
-    public String updateNode(Long id, UrlEncodedFormEntity entity) throws URISyntaxException, IOException {
-        HttpPut method = createHttpPut(getHostnameWithEndpoint() + "/node/" + id);
-        method.setEntity(entity);
+    /**
+     * Updates an existing node.
+     *
+     * @param id Unique identifier of the node
+     * @param entity Entity containing fields to update
+     * @return Response from the server
+     * @throws DrupalServerConnectionException If the entity could not be
+     * updated or an unexpected response from the server
+     */
+    public String updateNode(Long id, UrlEncodedFormEntity entity) throws DrupalServerConnectionException {
+        String url = getHostnameWithEndpoint() + "/node/" + id;
+        try {
+            HttpPut method = createHttpPut(url);
+            method.setEntity(entity);
 
-        ResponseHandler<String> handler = new BasicResponseHandler();
-        String response = getHttpClient().execute(method, handler);
-        return response;
+            ResponseHandler<String> handler = new BasicResponseHandler();
+            String response = getHttpClient().execute(method, handler);
+            return response;
+        } catch (IOException ex) {
+            throw new DrupalServerConnectionException("Could not update node on " + url + ". " + ex.getMessage(), ex);
+        } catch (URISyntaxException ex) {
+            throw new DrupalServerConnectionException("Could not update node on " + url + ". Invalid URI. " + ex.getMessage(), ex);
+        }
     }
 
     /**
@@ -278,22 +335,29 @@ public class DrupalServicesClient {
      * {@code newsitem}
      * @param id Unique identifier of the resource to delete
      * @return {@code true} if the node was deleted otherwise {@code false}
-     * @throws URISyntaxException If the constructed delete URI was incorrect
-     * @throws IOException If an unexpected response was received from Drupal
+     * @throws DrupalServerConnectionException If the delete URI was incorrect
+     * or if an unexpected response was received from Drupal
      */
-    public boolean delete(String resource, Long id) throws URISyntaxException, IOException {
-        HttpDelete method = createHttpDelete(getHostnameWithEndpoint() + "/" + resource + "/" + id);
-        HttpResponse response = getHttpClient().execute(method);
-        StatusLine statusLine = response.getStatusLine();
-        StringWriter writer = new StringWriter();
-        IOUtils.copy(response.getEntity().getContent(), writer);
-        EntityUtils.consume(response.getEntity());
+    public boolean delete(String resource, Long id) throws DrupalServerConnectionException {
+        String url = getHostnameWithEndpoint() + "/" + resource + "/" + id;
+        try {
+            HttpDelete method = createHttpDelete(url);
+            HttpResponse response = getHttpClient().execute(method);
+            StatusLine statusLine = response.getStatusLine();
+            StringWriter writer = new StringWriter();
+            IOUtils.copy(response.getEntity().getContent(), writer);
+            EntityUtils.consume(response.getEntity());
 
-        if (200 == statusLine.getStatusCode()) {
-            return true;
-        } else {
-            LOG.log(Level.WARNING, "{0} with id #{1} was not deleted. {2} {3}", new Object[]{resource, id, statusLine.getStatusCode(), statusLine.getReasonPhrase()});
-            return false;
+            if (200 == statusLine.getStatusCode()) {
+                return true;
+            } else {
+                LOG.log(Level.WARNING, "{0} with id #{1} was not deleted. {2} {3}", new Object[]{resource, id, statusLine.getStatusCode(), statusLine.getReasonPhrase()});
+                return false;
+            }
+        } catch (IOException ex) {
+            throw new DrupalServerConnectionException("Could not delete node on " + url + ". " + ex.getMessage(), ex);
+        } catch (URISyntaxException ex) {
+            throw new DrupalServerConnectionException("Could not delete node on " + url + ". Invalid URI. " + ex.getMessage(), ex);
         }
     }
 
@@ -356,19 +420,25 @@ public class DrupalServicesClient {
      *
      * @param id Unique identifier of the node
      * @return {@link List} of files attached to the given node
-     * @throws IOException
-     * @throws URISyntaxException
+     * @throws DrupalServerConnectionException If the server return an
+     * unexpected response
      */
-    public List<DrupalFile> getNodeFiles(Long id) throws IOException, URISyntaxException {
-        String returnFileContents = "0";
-        URIBuilder builder = new URIBuilder(getHostnameWithEndpoint() + "/node/" + id + "/files/" + returnFileContents);
-        HttpGet method = new HttpGet(builder.build());
+    public List<DrupalFile> getNodeFiles(Long id) throws DrupalServerConnectionException {
+        String url = getHostnameWithEndpoint() + "/node/" + id + "/files/0";
+        try {
+            URIBuilder builder = new URIBuilder(url);
+            HttpGet method = new HttpGet(builder.build());
 
-        ResponseHandler<String> handler = new BasicResponseHandler();
-        String response = getHttpClient().execute(method, handler);
+            ResponseHandler<String> handler = new BasicResponseHandler();
+            String response = getHttpClient().execute(method, handler);
 
-        return new Gson().fromJson(response, new TypeToken<List<DrupalFile>>() {
-        }.getType());
+            return new Gson().fromJson(response, new TypeToken<List<DrupalFile>>() {
+            }.getType());
+        } catch (IOException ex) {
+            throw new DrupalServerConnectionException("Could not get node files. " + ex.getMessage(), ex);
+        } catch (URISyntaxException ex) {
+            throw new DrupalServerConnectionException("Could not get node files. Invalud URI. " + ex.getMessage(), ex);
+        }
     }
 
     /**

@@ -16,6 +16,8 @@
  */
 package dk.i2m.converge.plugins.drupalclient;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import dk.i2m.converge.core.content.NewsItem;
 import dk.i2m.converge.core.content.NewsItemEditionState;
 import dk.i2m.converge.core.content.NewsItemPlacement;
@@ -27,6 +29,7 @@ import dk.i2m.converge.core.workflow.OutletEditionActionProperty;
 import dk.i2m.converge.core.workflow.Section;
 import java.util.Calendar;
 import org.junit.Test;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -37,8 +40,16 @@ import static org.mockito.Mockito.*;
  */
 public class DrupalEditionActionIT {
 
+    private static final String DRUPAL_NODE_TYPE = "newsitem";
+    private static final String DRUPAL_PWD = "c0nv3rg3";
+    private static final String DRUPAL_UID = "converge";
+    private static final String DRUPAL_SERVICE_ENDPOINT = "converge";
+    private static final String DRUPAL_URL = "http://int.drupal.getconverge.com";
+    private static final Integer DRUPAL_SECTION_SPORT = 1;
+    private static final Integer CONVERGE_SECTION_SPORT = 1004;
+
     @Test
-    public void drupalEditionAction_unspecified() throws Exception {
+    public void drupalEditionAction_createNode_nodeExistsWithCorrectFields() throws Exception {
         // Arrange
         DrupalEditionAction plugin = new DrupalEditionAction();
 
@@ -48,6 +59,38 @@ public class DrupalEditionActionIT {
         plugin.executePlacement(getPluginContext(), newsItemPlacement, newsItemPlacement.getEdition(), getAction());
 
         // Assert
+        DrupalServicesClient client = new DrupalServicesClient(DRUPAL_URL, DRUPAL_SERVICE_ENDPOINT, DRUPAL_UID, DRUPAL_PWD);
+        client.login();
+        boolean nodeExists = client.exists(DRUPAL_NODE_TYPE, newsItemPlacement.getNewsItem().getId());
+        Long drupalNodeId = client.retrieveNodeIdFromResource(DRUPAL_NODE_TYPE, newsItemPlacement.getNewsItem().getId());
+        String node = client.retrieveNode(drupalNodeId);
+        JsonParser parser = new JsonParser();
+        JsonObject jsonResponse = (JsonObject) parser.parse(node);
+        String titleActual = jsonResponse.get("title").getAsString();
+        String storyActual = jsonResponse.get("body").getAsJsonObject()
+                .get("und").getAsJsonArray()
+                .get(0).getAsJsonObject()
+                .get("value").getAsString();
+        Integer startActual = jsonResponse.get("field_placement_start").getAsJsonObject()
+                .get("und").getAsJsonArray()
+                .get(0).getAsJsonObject()
+                .get("value").getAsInt();
+        Integer positionActual = jsonResponse.get("field_placement_position").getAsJsonObject()
+                .get("und").getAsJsonArray()
+                .get(0).getAsJsonObject()
+                .get("value").getAsInt();
+        Integer sectionActual = jsonResponse.get("field_section").getAsJsonObject()
+                .get("und").getAsJsonArray()
+                .get(0).getAsJsonObject()
+                .get("tid").getAsInt();
+        client.logout();
+        
+        assertTrue(nodeExists);
+        assertEquals(newsItemPlacement.getNewsItem().getTitle(), titleActual);
+        assertEquals(newsItemPlacement.getNewsItem().getStory(), storyActual);
+        assertEquals(newsItemPlacement.getStart(), startActual);
+        assertEquals(newsItemPlacement.getPosition(), positionActual);
+        assertEquals(DRUPAL_SECTION_SPORT, sectionActual);
     }
 
     public PluginContext getPluginContext() {
@@ -88,12 +131,12 @@ public class DrupalEditionActionIT {
         action.setLabel("Upload to Drupal Site");
         action.setActionClass(DrupalEditionAction.class.getName());
         action.setManualAction(true);
-        action.getProperties().add(new OutletEditionActionProperty(action, DrupalEditionAction.Property.URL.name(), "http://int.drupal.getconverge.com"));
-        action.getProperties().add(new OutletEditionActionProperty(action, DrupalEditionAction.Property.SERVICE_ENDPOINT.name(), "converge"));
-        action.getProperties().add(new OutletEditionActionProperty(action, DrupalEditionAction.Property.USERNAME.name(), "converge"));
-        action.getProperties().add(new OutletEditionActionProperty(action, DrupalEditionAction.Property.PASSWORD.name(), "c0nv3rg3"));
-        action.getProperties().add(new OutletEditionActionProperty(action, DrupalEditionAction.Property.SECTION_MAPPING.name(), "1004:1"));
-        action.getProperties().add(new OutletEditionActionProperty(action, DrupalEditionAction.Property.NODE_TYPE.name(), "newsitem"));
+        action.getProperties().add(new OutletEditionActionProperty(action, DrupalEditionAction.Property.URL.name(), DRUPAL_URL));
+        action.getProperties().add(new OutletEditionActionProperty(action, DrupalEditionAction.Property.SERVICE_ENDPOINT.name(), DRUPAL_SERVICE_ENDPOINT));
+        action.getProperties().add(new OutletEditionActionProperty(action, DrupalEditionAction.Property.USERNAME.name(), DRUPAL_UID));
+        action.getProperties().add(new OutletEditionActionProperty(action, DrupalEditionAction.Property.PASSWORD.name(), DRUPAL_PWD));
+        action.getProperties().add(new OutletEditionActionProperty(action, DrupalEditionAction.Property.SECTION_MAPPING.name(), String.valueOf(CONVERGE_SECTION_SPORT) + ":" + String.valueOf(DRUPAL_SECTION_SPORT)));
+        action.getProperties().add(new OutletEditionActionProperty(action, DrupalEditionAction.Property.NODE_TYPE.name(), DRUPAL_NODE_TYPE));
         return action;
     }
 

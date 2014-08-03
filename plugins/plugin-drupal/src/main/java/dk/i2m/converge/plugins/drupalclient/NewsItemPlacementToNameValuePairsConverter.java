@@ -131,11 +131,11 @@ public class NewsItemPlacementToNameValuePairsConverter {
         params.add(new BasicNameValuePair("field_section[" + this.nodeLanguage + "][0]", this.drupalSectionId));
 
         if (placement.getStart() != null) {
-            params.add(new BasicNameValuePair("field_placement_start[" + this.nodeLanguage + "][0]", String.valueOf(placement.getStart())));
+            params.add(new BasicNameValuePair("field_placement_start[" + this.nodeLanguage + "][0][value]", String.valueOf(placement.getStart())));
         }
 
         if (placement.getPosition() != null) {
-            params.add(new BasicNameValuePair("field_placement_position[" + this.nodeLanguage + "][0]", String.valueOf(placement.getPosition())));
+            params.add(new BasicNameValuePair("field_placement_position[" + this.nodeLanguage + "][0][value]", String.valueOf(placement.getPosition())));
         }
 
         return params;

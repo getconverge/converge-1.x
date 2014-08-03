@@ -78,6 +78,7 @@ public class NewsItemPlacementToFileInfosConverter {
                     files.add(new FileInfo(new File(rendition.getFileLocation()), abbreviatedCaption));
                 } catch (RenditionNotFoundException ex) {
                     LOG.log(Level.INFO, "Rendition ''{0}'' missing for MediaItem #{1}. Ignoring MediaItem #{1}.", new Object[]{renditionName, mediaItem.getId()});
+                    LOG.log(Level.FINEST, null, ex);
                 }
             }
         }

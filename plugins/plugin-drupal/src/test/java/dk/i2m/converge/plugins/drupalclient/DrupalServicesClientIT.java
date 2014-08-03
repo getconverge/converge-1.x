@@ -174,7 +174,8 @@ public class DrupalServicesClientIT {
         try {
             client.retrieveNodeIdFromResource("newsitem", NON_EXISTING_NEWS_ITEM_ID);
             fail("Exception was not thrown upon retrieving non-existing none");
-        } catch (IOException ex) {
+        } catch (DrupalServerConnectionException ex) {
+            // Expected
         }
     }
 
@@ -195,7 +196,7 @@ public class DrupalServicesClientIT {
         params.add(new BasicNameValuePair("body[und][0][format]", "full_html"));
         params.add(new BasicNameValuePair("publish_on", DRUPAL_DATE_FORMAT.format(publishOn.getTime())));
         params.add(new BasicNameValuePair("field_author[und][0][value]", "Mr. Integration Tester"));
-        params.add(new BasicNameValuePair("field_converge_id[und][0][value]", "123456"));
+        params.add(new BasicNameValuePair("field_newsitem[und][0][value]", "123456"));
         params.add(new BasicNameValuePair("field_edition[und][0][value]", "1"));
         params.add(new BasicNameValuePair("field_section[und][0]", "2"));
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, Charset.defaultCharset());
@@ -205,7 +206,7 @@ public class DrupalServicesClientIT {
         try {
             client.retrieveNode(nodeInfo.getId());
             // Assert
-        } catch (IOException ex) {
+        } catch (DrupalServerConnectionException ex) {
             fail(ex.getMessage());
         }
 
@@ -235,7 +236,7 @@ public class DrupalServicesClientIT {
         params.add(new BasicNameValuePair("body[und][0][format]", "full_html"));
         params.add(new BasicNameValuePair("publish_on", DRUPAL_DATE_FORMAT.format(publishOn.getTime())));
         params.add(new BasicNameValuePair("field_author[und][0][value]", "Mr. Integration Tester"));
-        params.add(new BasicNameValuePair("field_converge_id[und][0][value]", "123456"));
+        params.add(new BasicNameValuePair("field_newsitem[und][0][value]", "123456"));
         params.add(new BasicNameValuePair("field_placement_start[und][0][value]", expectedStart));
         params.add(new BasicNameValuePair("field_placement_position[und][0][value]", expectedPosition));
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, Charset.defaultCharset());
@@ -301,7 +302,7 @@ public class DrupalServicesClientIT {
         params.add(new BasicNameValuePair("body[und][0][format]", "full_html"));
         params.add(new BasicNameValuePair("publish_on", DRUPAL_DATE_FORMAT.format(publishOn.getTime())));
         params.add(new BasicNameValuePair("field_author[und][0][value]", "Mr. Integration Tester"));
-        params.add(new BasicNameValuePair("field_converge_id[und][0][value]", "123457"));
+        params.add(new BasicNameValuePair("field_newsitem[und][0][value]", "123457"));
         params.add(new BasicNameValuePair("field_edition[und][0][value]", "1"));
         params.add(new BasicNameValuePair("field_section[und][0]", "2"));
         params.add(new BasicNameValuePair("field_placement_start[und][0][value]", "1"));

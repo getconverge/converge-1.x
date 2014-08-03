@@ -84,10 +84,10 @@ public class NewsItemPlacementToNameValuePairsConverterTest {
         boolean assertedStart = false;
         boolean assertedPosition = false;
         for (NameValuePair nameValue : nameValuePairs) {
-            if (nameValue.getName().equals("field_placement_start[und][0]")) {
+            if (nameValue.getName().equals("field_placement_start[und][0][value]")) {
                 assertEquals("5", nameValue.getValue());
                 assertedStart = true;
-            } else if (nameValue.getName().equals("field_placement_position[und][0]")) {
+            } else if (nameValue.getName().equals("field_placement_position[und][0][value]")) {
                 assertEquals("32", nameValue.getValue());
                 assertedPosition = true;
             }
