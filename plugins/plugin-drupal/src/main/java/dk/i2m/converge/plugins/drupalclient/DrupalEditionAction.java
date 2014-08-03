@@ -25,8 +25,6 @@ import dk.i2m.converge.core.plugin.EditionAction;
 import dk.i2m.converge.core.plugin.PluginContext;
 import dk.i2m.converge.core.workflow.Edition;
 import dk.i2m.converge.core.workflow.OutletEditionAction;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -71,9 +69,10 @@ public class DrupalEditionAction implements EditionAction {
 
     private static final int DEFAULT_SOCKET_TIMEOUT = 30000;
     private static final int DEFAULT_CONNECTION_TIMEOUT = 30000;
+    private static final String DEFAULT_NODE_TYPE = "article";
     private static final Logger LOG = Logger.getLogger(DrupalEditionAction.class.getName());
     private static final String LOG_PREFIX = "[#{0}:{1}] ";
-    private final DateFormat DRUPAL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final DateFormat DRUPAL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static final String UPLOADING = "UPLOADING";
     private static final String UPLOADED = "UPLOADED";
     private static final String FAILED = "FAILED";
@@ -86,6 +85,7 @@ public class DrupalEditionAction implements EditionAction {
     private OutletEditionAction action;
     private PluginContext pluginContext;
     private DrupalServicesClient drupalServiceClient;
+    private String nodeType;
     private int errors = 0;
 
     @Override
@@ -230,6 +230,12 @@ public class DrupalEditionAction implements EditionAction {
         Integer connectionTimeout = NumberUtils.toInt(properties.get(Property.CONNECTION_TIMEOUT.name()), DEFAULT_CONNECTION_TIMEOUT);
         Integer socketTimeout = NumberUtils.toInt(properties.get(Property.SOCKET_TIMEOUT.name()), DEFAULT_SOCKET_TIMEOUT);
 
+        if (properties.containsKey(Property.NODE_TYPE.name())) {
+            nodeType = properties.get(Property.NODE_TYPE.name());
+        } else {
+            nodeType = DEFAULT_NODE_TYPE;
+        }
+
         if (hostname == null) {
             throw new IllegalArgumentException("'hostname' cannot be null");
         } else if (endpoint == null) {
@@ -265,6 +271,7 @@ public class DrupalEditionAction implements EditionAction {
             params = converter.convert(action, nip);
         } catch (UnmappedSectionException ex) {
             LOG.log(Level.INFO, LOG_PREFIX + "Ignoring NewsItemPlacement #{2} / NewsItem #{3}. {4}", new Object[]{action.getId(), action.getLabel(), nip.getId(), newsItem.getId(), ex.getMessage()});
+            LOG.log(Level.FINEST, null, ex);
             return;
         }
 
@@ -273,7 +280,7 @@ public class DrupalEditionAction implements EditionAction {
         boolean update;
         try {
             // determine if the news item is already uploaded
-            update = this.drupalServiceClient.exists("newsitem", nip.getNewsItem().getId());
+            update = this.drupalServiceClient.exists(this.nodeType, nip.getNewsItem().getId());
         } catch (DrupalServerConnectionException ex) {
             LOG.log(Level.SEVERE, LOG_PREFIX + "Could not determine if NewsItem #{2} exists. {3}", new Object[]{action.getId(), action.getLabel(), newsItem.getId(), ex.getMessage()});
             LOG.log(Level.FINEST, null, ex);
@@ -330,8 +337,8 @@ public class DrupalEditionAction implements EditionAction {
 
     private void updateNode(NewsItemPlacement nip, List<FileInfo> mediaItems, UrlEncodedFormEntity entity) {
         try {
-            Long nodeId = drupalServiceClient.retrieveNodeIdFromResource("newsitem", nip.getNewsItem().getId());
-            LOG.log(Level.INFO, "Updating Node #{0} with NewsItem #{1} & {2} image(s)", new Object[]{nodeId, nip.getNewsItem().getId(), mediaItems.size()});
+            Long nodeId = drupalServiceClient.retrieveNodeIdFromResource(this.nodeType, nip.getNewsItem().getId());
+            LOG.log(Level.INFO, "Updating node #{0} of type {1} with NewsItem #{2} & {3} image(s)", new Object[]{nodeId, this.nodeType, nip.getNewsItem().getId(), mediaItems.size()});
             drupalServiceClient.updateNode(nodeId, entity);
             drupalServiceClient.attachFile(nodeId, "field_image", mediaItems);
         } catch (DrupalServerConnectionException ex) {

@@ -66,7 +66,7 @@ import org.apache.tika.Tika;
  *    }
  * </code>
  *
- * @author <a href="mailto:allan@i2m.dk">Allan Lykke Christensen</a>
+ * @author Allan Lykke Christensen
  */
 public class DrupalServicesClient {
 
@@ -77,6 +77,10 @@ public class DrupalServicesClient {
      */
     private static final String HEADER_X_CSRF_TOKEN = "X-CSRF-Token";
     private static final Logger LOG = Logger.getLogger(DrupalServicesClient.class.getName());
+    private static final String FORWARD_SLASH = "/";
+    private static final String NODE_URL_PART = "/node";
+    private static final String USER_LOGIN_URL_PART = "/user/login";
+    private static final String USER_LOGOUT_URL_PART = "/user/logout";
     private String hostname;
     private String endpoint;
     private Integer connectionTimeout = 30000;
@@ -140,7 +144,7 @@ public class DrupalServicesClient {
      */
     public boolean login() throws DrupalServerConnectionException {
         try {
-            URIBuilder builder = new URIBuilder(getHostnameWithEndpoint() + "/user/login");
+            URIBuilder builder = new URIBuilder(getHostnameWithEndpoint() + USER_LOGIN_URL_PART);
 
             List<NameValuePair> values = new ArrayList<NameValuePair>();
             values.add(new BasicNameValuePair("username", this.username));
@@ -184,7 +188,7 @@ public class DrupalServicesClient {
      */
     public void logout() throws DrupalServerConnectionException {
         try {
-            HttpPost method = createHttpPost(getHostnameWithEndpoint() + "/user/logout");
+            HttpPost method = createHttpPost(getHostnameWithEndpoint() + USER_LOGOUT_URL_PART);
             ResponseHandler<String> handler = new BasicResponseHandler();
             getHttpClient().execute(method, handler);
         } catch (IOException ex) {
@@ -206,7 +210,7 @@ public class DrupalServicesClient {
      * could not be established
      */
     public boolean exists(String resource, Long id) throws DrupalServerConnectionException {
-        String url = getHostnameWithEndpoint() + "/" + resource + "/" + id;
+        String url = getHostnameWithEndpoint() + FORWARD_SLASH + resource + FORWARD_SLASH + id;
 
         try {
             HttpGet method = createHttpGet(url);
@@ -240,7 +244,7 @@ public class DrupalServicesClient {
      * or unexpected response from server
      */
     public Long retrieveNodeIdFromResource(String resource, Long id) throws DrupalServerConnectionException {
-        String url = getHostnameWithEndpoint() + "/" + resource + "/" + id;
+        String url = getHostnameWithEndpoint() + FORWARD_SLASH + resource + FORWARD_SLASH + id;
         try {
             URIBuilder builder = new URIBuilder(url);
             HttpGet method = new HttpGet(builder.build());
@@ -264,7 +268,7 @@ public class DrupalServicesClient {
      * @throws DrupalServerConnectionException If the node could not be created
      */
     public NodeInfo createNode(UrlEncodedFormEntity entity) throws DrupalServerConnectionException {
-        String url = getHostnameWithEndpoint() + "/node";
+        String url = getHostnameWithEndpoint() + NODE_URL_PART;
         try {
             HttpPost method = createHttpPost(url);
             method.setEntity(entity);
@@ -287,7 +291,7 @@ public class DrupalServicesClient {
      * if an unexpected response was received from the server
      */
     public String retrieveNode(Long id) throws DrupalServerConnectionException {
-        String url = getHostnameWithEndpoint() + "/node/" + id;
+        String url = getHostnameWithEndpoint() + NODE_URL_PART + FORWARD_SLASH + id;
         try {
             URIBuilder builder = new URIBuilder(url);
             HttpGet method = new HttpGet(builder.build());
@@ -313,7 +317,7 @@ public class DrupalServicesClient {
      * updated or an unexpected response from the server
      */
     public String updateNode(Long id, UrlEncodedFormEntity entity) throws DrupalServerConnectionException {
-        String url = getHostnameWithEndpoint() + "/node/" + id;
+        String url = getHostnameWithEndpoint() + NODE_URL_PART + FORWARD_SLASH + id;
         try {
             HttpPut method = createHttpPut(url);
             method.setEntity(entity);
@@ -339,7 +343,7 @@ public class DrupalServicesClient {
      * or if an unexpected response was received from Drupal
      */
     public boolean delete(String resource, Long id) throws DrupalServerConnectionException {
-        String url = getHostnameWithEndpoint() + "/" + resource + "/" + id;
+        String url = getHostnameWithEndpoint() + FORWARD_SLASH + resource + FORWARD_SLASH + id;
         try {
             HttpDelete method = createHttpDelete(url);
             HttpResponse response = getHttpClient().execute(method);
@@ -388,7 +392,7 @@ public class DrupalServicesClient {
             entity.addPart("field_name", new StringBody(fieldName));
             entity.addPart("attach", new StringBody("0"));
 
-            HttpPost method = createHttpPost(getHostnameWithEndpoint() + "/node/" + id + "/attach_file");
+            HttpPost method = createHttpPost(getHostnameWithEndpoint() + NODE_URL_PART + FORWARD_SLASH + id + "/attach_file");
             method.setEntity(entity);
 
             ResponseHandler<String> handler = new BasicResponseHandler();
@@ -424,7 +428,7 @@ public class DrupalServicesClient {
      * unexpected response
      */
     public List<DrupalFile> getNodeFiles(Long id) throws DrupalServerConnectionException {
-        String url = getHostnameWithEndpoint() + "/node/" + id + "/files/0";
+        String url = getHostnameWithEndpoint() + NODE_URL_PART + FORWARD_SLASH + id + "/files/0";
         try {
             URIBuilder builder = new URIBuilder(url);
             HttpGet method = new HttpGet(builder.build());
@@ -565,7 +569,7 @@ public class DrupalServicesClient {
     }
 
     private String getHostnameWithEndpoint() {
-        return this.hostname + "/" + this.endpoint;
+        return this.hostname + FORWARD_SLASH + this.endpoint;
     }
 
     @Override
