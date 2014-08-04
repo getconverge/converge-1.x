@@ -40,15 +40,14 @@ import javax.faces.model.ListDataModel;
  */
 public class Outlets extends BaseBean {
 
-    @EJB private OutletFacadeLocal outletFacade;
+    @EJB
+    private OutletFacadeLocal outletFacade;
 
     private DataModel outlets = null;
 
     private String selectedOutletTab = "tabOutlet";
 
     private Outlet selectedOutlet = null;
-
-    private DataModel selectedOutletSubscribers = new ListDataModel();
 
     private Department selectedDepartment = null;
 
@@ -59,6 +58,12 @@ public class Outlets extends BaseBean {
     private EditionPattern selectedEditionPattern;
 
     private DataModel outletEditionActionProperties = null;
+
+    private OutletEditionAction selectedOutletEditionAction;
+
+    private OutletEditionActionProperty selectedOutletEditionActionProperty = new OutletEditionActionProperty();
+
+    private String selectedOutletEditionDetailsTab = "";
 
     /**
      * Creates a new instance of {@link Outlets}.
@@ -124,7 +129,8 @@ public class Outlets extends BaseBean {
      * Determines if the {@link Outlet} is in <em>edit</em> or <em>add</em>
      * mode.
      *
-     * @return {@code true} if the {@link Outlet} is in <em>edit</em> mode and {@code false} if in <em>add</em> mode
+     * @return {@code true} if the {@link Outlet} is in <em>edit</em> mode and
+     * {@code false} if in <em>add</em> mode
      */
     public boolean isOutletEditMode() {
         if (selectedOutlet == null || selectedOutlet.getId() == null) {
@@ -137,7 +143,8 @@ public class Outlets extends BaseBean {
     /**
      * Determines if the {@link Outlet} is in <em>add</em> mode.
      *
-     * @return {@code true} if the {@link Outlet} is in <em>add</em> mode and {@code false} if in <em>edit</em> mode
+     * @return {@code true} if the {@link Outlet} is in <em>add</em> mode and
+     * {@code false} if in <em>edit</em> mode
      */
     public boolean isOutletAddMode() {
         return !isOutletEditMode();
@@ -175,7 +182,7 @@ public class Outlets extends BaseBean {
         if (selectedOutlet.getId() != null) {
             outletFacade.scheduleActionsOnOutlet(selectedOutlet.getId());
         }
-        JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO, 
+        JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO,
                 Bundle.i18n.name(), "administrator_Outlets_EDITIONS_RECLOSED");
     }
 
@@ -189,7 +196,7 @@ public class Outlets extends BaseBean {
         if (selectedOutlet != null && action != null) {
             outletFacade.scheduleActionOnOutlet(selectedOutlet.getId(), action.
                     getId());
-            JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO, 
+            JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO,
                     Bundle.i18n.name(),
                     "administrator_Outlets_EXECUTE_ACTION_ON_EDITIONS");
         }
@@ -203,12 +210,12 @@ public class Outlets extends BaseBean {
     public void onSaveOutlet(ActionEvent event) {
         if (isOutletAddMode()) {
             selectedOutlet = outletFacade.createOutlet(selectedOutlet);
-            JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO, 
+            JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO,
                     Bundle.i18n.name(),
                     "administrator_Outlets_OUTLET_CREATED");
         } else {
             selectedOutlet = outletFacade.updateOutlet(selectedOutlet);
-            JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO, 
+            JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO,
                     Bundle.i18n.name(),
                     "administrator_Outlets_OUTLET_UPDATED");
         }
@@ -229,7 +236,7 @@ public class Outlets extends BaseBean {
     public void onDeleteOutlet(ActionEvent event) {
         outletFacade.deleteOutletById(selectedOutlet.getId());
         this.outlets = null;
-        JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO, 
+        JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO,
                 Bundle.i18n.name(), "administrator_Outlets_OUTLET_DELETED");
     }
 
@@ -246,7 +253,7 @@ public class Outlets extends BaseBean {
     public void onSaveSection(ActionEvent event) {
         if (isSectionAddMode()) {
             selectedSection = outletFacade.createSection(selectedSection);
-            JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO, 
+            JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO,
                     Bundle.i18n.name(), "administrator_Outlets_SECTION_CREATED");
         } else {
             selectedSection = outletFacade.updateSection(selectedSection);
@@ -279,8 +286,8 @@ public class Outlets extends BaseBean {
     }
 
     public Map<String, Section> getActiveSections() {
-        Map<String, Section> activeSections =
-                new LinkedHashMap<String, Section>();
+        Map<String, Section> activeSections
+                = new LinkedHashMap<String, Section>();
 
         if (selectedOutlet != null) {
             Collections.sort(selectedOutlet.getSections(), new BeanComparator(
@@ -296,20 +303,12 @@ public class Outlets extends BaseBean {
         return activeSections;
     }
 
-    private OutletEditionAction selectedOutletEditionAction;
-
-    private OutletEditionActionProperty selectedOutletEditionActionProperty =
-            new OutletEditionActionProperty();
-
-    private String selectedOutletEditionDetailsTab = "";
-
     public void onNewOutletAction(ActionEvent event) {
         selectedOutletEditionAction = new OutletEditionAction();
         selectedOutletEditionAction.setOutlet(selectedOutlet);
         selectedOutletEditionAction.setExecuteOrder(1);
         // A default action class is required to avoid NullPointerException from JSF
-        selectedOutletEditionAction.setActionClass(dk.i2m.converge.plugins.indexedition.IndexEditionAction.class.
-                getName());
+        selectedOutletEditionAction.setActionClass(dk.i2m.converge.plugins.indexedition.IndexEditionAction.class.getName());
     }
 
     public void onAddActionProperty(ActionEvent event) {
@@ -334,12 +333,12 @@ public class Outlets extends BaseBean {
     public DataModel getOutletEditionActionProperties() {
         if (outletEditionActionProperties == null) {
             if (this.selectedOutletEditionAction != null) {
-                this.outletEditionActionProperties =
-                        new ListDataModel(this.selectedOutletEditionAction.
-                        getProperties());
+                this.outletEditionActionProperties
+                        = new ListDataModel(this.selectedOutletEditionAction.
+                                getProperties());
             } else {
-                this.outletEditionActionProperties =
-                        new ListDataModel(new ArrayList());
+                this.outletEditionActionProperties
+                        = new ListDataModel(new ArrayList());
             }
         }
         return outletEditionActionProperties;
@@ -360,8 +359,8 @@ public class Outlets extends BaseBean {
 
     public void setSelectedOutletEditionActionProperty(
             OutletEditionActionProperty selectedOutletEditionActionProperty) {
-        this.selectedOutletEditionActionProperty =
-                selectedOutletEditionActionProperty;
+        this.selectedOutletEditionActionProperty
+                = selectedOutletEditionActionProperty;
     }
 
     public OutletEditionActionProperty getDeleteProperty() {
@@ -375,13 +374,7 @@ public class Outlets extends BaseBean {
     }
 
     public boolean isActionEditMode() {
-        if (selectedOutletEditionAction == null || selectedOutletEditionAction.
-                getId() == null) {
-            return false;
-        } else {
-            return true;
-        }
-
+        return selectedOutletEditionAction != null && selectedOutletEditionAction.getId() != null;
     }
 
     public boolean isActionAddMode() {
@@ -395,7 +388,7 @@ public class Outlets extends BaseBean {
      */
     public void onDeleteOutletAction(ActionEvent event) {
         selectedOutlet.getEditionActions().remove(selectedOutletEditionAction);
-        JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO, 
+        JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO,
                 Bundle.i18n.name(),
                 "administrator_Outlets_OUTLET_ACTION_REMOVE");
 
@@ -411,13 +404,13 @@ public class Outlets extends BaseBean {
             selectedOutletEditionAction.setOutlet(selectedOutlet);
             selectedOutletEditionAction = outletFacade.createOutletAction(
                     selectedOutletEditionAction);
-            JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO, 
+            JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO,
                     Bundle.i18n.name(),
                     "administrator_Outlets_OUTLET_ACTION_CREATED");
         } else {
             selectedOutletEditionAction = outletFacade.updateOutletAction(
                     selectedOutletEditionAction);
-            JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO, 
+            JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO,
                     Bundle.i18n.name(),
                     "administrator_Outlets_OUTLET_ACTION_UPDATED");
         }
@@ -439,12 +432,7 @@ public class Outlets extends BaseBean {
     }
 
     public boolean isEditionPatternEditMode() {
-        if (selectedEditionPattern == null || selectedEditionPattern.getId()
-                == null) {
-            return false;
-        } else {
-            return true;
-        }
+        return selectedEditionPattern != null && selectedEditionPattern.getId() != null;
     }
 
     public void onNewEditionPattern(ActionEvent event) {
@@ -472,7 +460,7 @@ public class Outlets extends BaseBean {
             selectedEditionPattern.setOutlet(selectedOutlet);
             selectedEditionPattern = outletFacade.createEditionPattern(
                     selectedEditionPattern);
-            JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO, 
+            JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO,
                     Bundle.i18n.name(),
                     "administrator_Outlets_EDITION_PATTERN_CREATED");
         }
