@@ -19,7 +19,6 @@
 
         <ui:define name="rightColumn">
             <converge:userProfileModule id="modUserProfile" user="#{userSession.user}" />
-            <converge:userActivityModule id="modUserActivity" showMoreStatistics="true" />
             <converge:announcements />
         </ui:define>
     </ui:composition>

@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2011 - 2014 Converge Consulting
+ * Copyright (C) 2011 - 2012 Interactive Media Management
+ * Copyright (C) 2014 Allan Lykke Christensen
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -22,11 +23,13 @@ import dk.i2m.converge.core.reporting.activity.UserActivity;
 import dk.i2m.converge.core.reporting.activity.UserActivitySummary;
 import dk.i2m.converge.core.security.UserAccount;
 import dk.i2m.converge.core.security.UserRole;
+import dk.i2m.converge.core.utils.CalendarUtils;
 import dk.i2m.converge.ejb.services.DaoServiceLocal;
 import dk.i2m.converge.ejb.services.QueryBuilder;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -48,11 +51,47 @@ import org.apache.poi.ss.util.WorkbookUtil;
 @Stateless
 public class ReportingFacadeBean implements ReportingFacadeLocal {
 
-    @EJB private DaoServiceLocal daoService;
+    @EJB
+    private DaoServiceLocal daoService;
 
-    @EJB private SystemFacadeLocal systemFacade;
+    @EJB
+    private SystemFacadeLocal systemFacade;
 
     private static final Logger LOG = Logger.getLogger(ReportingFacadeBean.class.getName());
+
+    /**
+     * Generates a {@link UserActivitySummary} for a given user for the current
+     * month.
+     *
+     * @param user {@link User} for which to generate the report
+     * @return {@link UserActivitySummary} containing the activities of the
+     * {@code user} for the current month
+     */
+    @Override
+    public UserActivitySummary generateActivityReportForThisMonth(UserAccount user) {
+        return generateActivityReportForMonthRelative(0, user);
+    }
+
+    /**
+     * Generates a {@link UserActivitySummary} for a given user for the previous
+     * month.
+     *
+     * @param user {@link User} for which to generate the report
+     * @return {@link UserActivitySummary} containing the activities of the
+     * {@code user} for the previous month
+     */
+    @Override
+    public UserActivitySummary generateActivityReportForPreviousMonth(UserAccount user) {
+        return generateActivityReportForMonthRelative(-1, user);
+    }
+
+    private UserActivitySummary generateActivityReportForMonthRelative(int monthsRelativeToNow, UserAccount user) {
+        Calendar now = java.util.Calendar.getInstance();
+        now.add(java.util.Calendar.MONTH, monthsRelativeToNow);
+        Calendar firstDay = CalendarUtils.getFirstDayOfMonth(now);
+        Calendar lastDay = CalendarUtils.getLastDayOfMonth(now);
+        return generateUserActivitySummary(firstDay.getTime(), lastDay.getTime(), user);
+    }
 
     @Override
     public ActivityReport generateActivityReport(Date start, Date end, UserRole userRole, boolean submitter) {
@@ -82,13 +121,10 @@ public class ReportingFacadeBean implements ReportingFacadeLocal {
 
     /**
      * Generates the activity report for a single user.
-     * 
-     * @param start
-     *          Start of activities
-     * @param end
-     *          End of activities
-     * @param user
-     *          {@link UserAccount} for which to retrieve the report
+     *
+     * @param start Start of activities
+     * @param end End of activities
+     * @param user {@link UserAccount} for which to retrieve the report
      * @return {@link UserActivity} for the given period and user
      */
     @Override

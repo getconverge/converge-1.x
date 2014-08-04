@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2010 - 2012 Interactive Media Management
+ * Copyright (C) 2014 Allan Lykke Christensen
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +24,6 @@ import dk.i2m.converge.core.DataNotFoundException;
 import dk.i2m.converge.core.Notification;
 import dk.i2m.converge.core.content.catalogue.Catalogue;
 import dk.i2m.converge.core.newswire.NewswireService;
-import dk.i2m.converge.core.reporting.activity.UserActivitySummary;
 import dk.i2m.converge.core.security.SystemPrivilege;
 import dk.i2m.converge.core.security.UserAccount;
 import dk.i2m.converge.core.security.UserRole;
@@ -35,7 +35,6 @@ import dk.i2m.converge.jsf.beans.administrator.Catalogues;
 import dk.i2m.converge.jsf.model.MenuHelper;
 import dk.i2m.converge.jsf.model.MenuItem;
 import dk.i2m.converge.jsf.model.MenuItems;
-import dk.i2m.converge.core.utils.CalendarUtils;
 import dk.i2m.jsf.JsfUtils;
 import java.io.IOException;
 import java.util.*;
@@ -71,9 +70,6 @@ public class UserSession {
     private SystemFacadeLocal systemFacade;
 
     @EJB
-    private ReportingFacadeLocal reportingFacade;
-
-    @EJB
     private WikiFacadeBeanLocal wikiFacade;
 
     private UserAccount user;
@@ -106,10 +102,6 @@ public class UserSession {
     private Notification selectedNotification;
 
     private NewswireService selectedNewswireService;
-
-    private UserActivitySummary lastMonthActivity;
-
-    private UserActivitySummary thisMonthActivity;
 
     private Page displayWikiPage = null;
 
@@ -196,14 +188,6 @@ public class UserSession {
      */
     public Map<Long, Boolean> getCatalogueEditorRole() {
         return catalogueEditor;
-    }
-
-    public UserActivitySummary getLastMonthActivity() {
-        return lastMonthActivity;
-    }
-
-    public UserActivitySummary getThisMonthActivity() {
-        return thisMonthActivity;
     }
 
     /**
@@ -303,13 +287,6 @@ public class UserSession {
                 if (user.getPreferredLocale() != null) {
                     setLocale(user.getPreferredLocale());
                 }
-
-                // Only show user activity if you have the Reporting privilege.
-                // Needed until the CON-2 issue has been resolved
-                if (privileges.containsKey(SystemPrivilege.REPORTING.name())) {
-                    onRefreshUserActivity();
-                }
-
             } catch (DataNotFoundException ex) {
                 throw new UserSessionException(ex);
             }
@@ -452,35 +429,6 @@ public class UserSession {
             mine.put(c.getName(), c);
         }
         return mine;
-    }
-
-    /**
-     * Refreshes the {@link UserActivitySummary} for the past two months. After
-     * executing this method, the activity summary is available in
-     * {@link UserSession#getLastMonthActivity()} and
-     * {@link UserSession#getThisMonthActivity()}.
-     */
-    public void onRefreshUserActivity() {
-        java.util.Calendar lastMonth = java.util.Calendar.getInstance();
-        lastMonth.add(java.util.Calendar.MONTH, -1);
-        java.util.Calendar thisMonth = java.util.Calendar.getInstance();
-
-        java.util.Calendar lastMonthFirstDay = CalendarUtils.getFirstDayOfMonth(
-                lastMonth);
-        java.util.Calendar lastMonthLastDay = CalendarUtils.getLastDayOfMonth(
-                lastMonth);
-
-        java.util.Calendar thisMonthFirstDay = CalendarUtils.getFirstDayOfMonth(
-                thisMonth);
-        java.util.Calendar thisMonthLastDay = CalendarUtils.getLastDayOfMonth(
-                thisMonth);
-
-        this.lastMonthActivity
-                = reportingFacade.generateUserActivitySummary(lastMonthFirstDay.
-                        getTime(), lastMonthLastDay.getTime(), getUser());
-        this.thisMonthActivity
-                = reportingFacade.generateUserActivitySummary(thisMonthFirstDay.
-                        getTime(), thisMonthLastDay.getTime(), getUser());
     }
 
     /**
