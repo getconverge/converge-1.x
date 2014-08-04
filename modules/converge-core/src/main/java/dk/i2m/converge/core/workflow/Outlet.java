@@ -18,7 +18,6 @@ package dk.i2m.converge.core.workflow;
 
 import dk.i2m.converge.core.content.Language;
 import dk.i2m.converge.core.security.UserRole;
-import dk.i2m.converge.core.subscriber.OutletSubscriber;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,10 +69,7 @@ public class Outlet implements Serializable {
     @ManyToOne
     @JoinColumn(name = "language_id")
     private Language language;
-    @OneToMany(mappedBy = "outlet")
-    private List<OutletSubscriber> subscribers = new ArrayList<OutletSubscriber>();
-    @Transient
-    private int numberOfSubscribers = 0;
+
 
     /**
      * Creates a new instance of {@link Outlet}.
@@ -259,37 +255,6 @@ public class Outlet implements Serializable {
         }
 
         return true;
-    }
-
-    /**
-     * Contains a list of subscribers of the {@link Outlet}.
-     * <p/>
-     * @return {@link List} of subscribers of the {@link Outlet}
-     */
-    public List<OutletSubscriber> getSubscribers() {
-        return subscribers;
-    }
-
-    public void setSubscribers(List<OutletSubscriber> subscribers) {
-        this.subscribers = subscribers;
-    }
-
-    /**
-     * Gets the number of subscribers of the {@link Outlet}.
-     *
-     * @return Number of subscribers
-     */
-    public int getNumberOfSubscribers() {
-        return numberOfSubscribers;
-    }
-
-    /**
-     * Sets the number of subscribers of the {@link Outlet}.
-     *
-     * @param numberOfSubscribers Number of Subscribers
-     */
-    public void setNumberOfSubscribers(int numberOfSubscribers) {
-        this.numberOfSubscribers = numberOfSubscribers;
     }
 
     @Override

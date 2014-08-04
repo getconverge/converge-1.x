@@ -273,59 +273,6 @@
 
                             </rich:tab>
 
-
-                            <rich:tab id="tabSubscribers" label="#{i18n.administrator_Outlets_SUBSCRIBERS}" disabled="#{administrator_Outlets.outletAddMode}">
-
-                                <h:panelGrid columnClasses="tabSheet" styleClass="tabSheetGrid">
-
-                                    <rich:dataTable id="dtSubscribers" value="#{administrator_Outlets.selectedOutletSubscribers}" var="subscriber" styleClass="table subscribers" headerClass="tableHeader" rowClasses="odd, even">
-
-                                        <rich:column styleClass="columnIcon center">
-                                            <f:facet name="header">&#160;</f:facet>
-                                            <a4j:commandLink ajaxSingle="true">
-                                                <h:graphicImage value="#{i18n.resource_ICON_OUTLET_SUBSCRIBER}" />
-                                            </a4j:commandLink>
-                                        </rich:column>
-
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{i18n.administrator_Outlets_OUTLET_SUBSCRIBER_NAME}" />
-                                            </f:facet>
-                                            <h:outputText value="#{subscriber.name}" />
-                                        </rich:column>
-
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{i18n.administrator_Outlets_OUTLET_SUBSCRIBER_STATUS}" />
-                                            </f:facet>
-                                            <h:outputText value="#{i18n.administrator_Outlets_OUTLET_SUBSCRIBER_STATUS_SUBSCRIBED}" rendered="#{subscriber.subscribed}" />
-                                            <h:outputText value="#{i18n.administrator_Outlets_OUTLET_SUBSCRIBER_STATUS_UNSUBSCRIBED}" rendered="#{!subscriber.subscribed}" />
-                                        </rich:column>
-
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{i18n.administrator_Outlets_OUTLET_SUBSCRIBER_SUBSCRIBED}" title="#{i18n.administrator_Outlets_OUTLET_SUBSCRIBER_SUBSCRIBED_TOOLTIP}" />
-                                            </f:facet>
-                                            <h:outputText value="#{subscriber.subscriptionDate}" rendered="#{subscriber.subscribed}">
-                                                <f:convertDateTime pattern="#{i18n.Generic_FORMAT_SHORT_DATE_AND_TIME}" />
-                                            </h:outputText>
-                                            <h:outputText value="#{subscriber.unsubscriptionDate}" styleClass="unsubscribed" rendered="#{!subscriber.subscribed}">
-                                                <f:convertDateTime pattern="#{i18n.Generic_FORMAT_SHORT_DATE_AND_TIME}" />
-                                            </h:outputText>
-                                        </rich:column>
-
-
-                                        <rich:column styleClass="columnIcon center">
-                                            <f:facet name="header"><a4j:commandButton styleClass="button smallButton" value="#{i18n.Generic_NEW}" ajaxSingle="true" reRender="frmOutletSubscriber" actionListener="#{administrator_Outlets.onNewOutletSubscriber}" oncomplete="#{rich:component('mpOutletSubscriber')}.show();" /></f:facet>
-                                            <a4j:commandButton styleClass="button smallButton" value="#{i18n.Generic_MODIFY}" ajaxSingle="true" reRender="frmOutletSubscriber" oncomplete="#{rich:component('mpOutletSubscriber')}.show();">
-                                                <f:setPropertyActionListener target="#{administrator_Outlets.selectedOutletSubscriber}" value="#{subscriber}" />
-                                            </a4j:commandButton>
-                                        </rich:column>
-                                    </rich:dataTable>
-                                    <rich:spacer width="450" height="1" />
-                                </h:panelGrid>
-                            </rich:tab>
-
                             <rich:tab id="tabEvents" label="#{i18n.Outlets_ACTIONS}" disabled="#{administrator_Outlets.outletAddMode}">
 
                                 <h:panelGrid columnClasses="tabSheet" styleClass="tabSheetGrid">
@@ -738,61 +685,6 @@
 
                 </rich:modalPanel>
             </h:form>
-
-
-            <h:form id="frmOutletSubscriber">
-                <rich:modalPanel id="mpOutletSubscriber" autosized="true" domElementAttachment="parent" rendered="#{administrator_Outlets.selectedOutletSubscriber != null}">
-                    <f:facet name="header">
-                        <h:panelGroup>
-                            <h:outputText value="#{i18n.administrator_Outlets_OUTLET_SUBSCRIBER_DETAILS}" />
-                        </h:panelGroup>
-                    </f:facet>
-                    <f:facet name="controls">
-                        <h:panelGroup>
-                            <h:graphicImage value="#{i18n.resource_ICON_DIALOGUE_CLOSE}" style="link">
-                                <rich:componentControl for="mpOutletSubscriber" operation="hide" event="onclick"/>
-                            </h:graphicImage>
-                        </h:panelGroup>
-                    </f:facet>
-                    <h:panelGrid id="pgOutletSubscriberDetails" style="width: 480px;">
-
-                        <rich:tabPanel id="tpOutletSubscriber" switchType="client" activeTabClass="tabActive" inactiveTabClass="tabInactive">
-                            <rich:tab label="#{i18n.administrator_Outlets_OUTLET_SUBSCRIBER_PROFILE}">
-                                <h:panelGrid columnClasses="tabSheet" styleClass="tabSheetGrid">
-                                    <h:outputText value="#{i18n.administrator_Outlets_OUTLET_SUBSCRIBER_NAME}:" />
-                                    <h:inputText id="txtName" styleClass="text mediumInput" value="#{administrator_Outlets.selectedOutletSubscriber.name}" />
-                                    <h:outputText value="#{i18n.administrator_Outlets_OUTLET_SUBSCRIBER_EMAIL}:" />
-                                    <h:inputText id="txtEmail" styleClass="text mediumInput" value="#{administrator_Outlets.selectedOutletSubscriber.email}" />
-                                    <h:outputText value="#{i18n.administrator_Outlets_OUTLET_SUBSCRIBER_PHONE}:" />
-                                    <h:inputText id="txtPhone" styleClass="text mediumInput" value="#{administrator_Outlets.selectedOutletSubscriber.phone}" />
-                                    <h:outputText value="#{i18n.administrator_Outlets_OUTLET_SUBSCRIBER_LOCATION}:" />
-                                    <h:inputText id="txtLocation" styleClass="text mediumInput" value="#{administrator_Outlets.selectedOutletSubscriber.location}" />
-                                    <h:outputText value="#{i18n.administrator_Outlets_OUTLET_SUBSCRIBER_SOURCE}:" />
-                                    <h:inputText id="txtSource" styleClass="text mediumInput" value="#{administrator_Outlets.selectedOutletSubscriber.source}" />
-                                    <h:outputText value="#{i18n.administrator_Outlets_OUTLET_SUBSCRIBER_STATUS}:" />
-                                    <h:selectOneRadio value="#{administrator_Outlets.selectedOutletSubscriber.subscribed}">
-                                        <f:selectItem itemLabel="#{i18n.administrator_Outlets_OUTLET_SUBSCRIBER_STATUS_SUBSCRIBED}" itemValue="#{true}" />
-                                        <f:selectItem itemLabel="#{i18n.administrator_Outlets_OUTLET_SUBSCRIBER_STATUS_UNSUBSCRIBED}" itemValue="#{false}" />
-                                    </h:selectOneRadio>
-                                </h:panelGrid>
-                            </rich:tab>
-                        </rich:tabPanel>
-                    </h:panelGrid>
-
-                    <h:panelGroup styleClass="dialogueButtons">
-                        <a4j:commandLink id="lnkSaveOutletSubscriber" styleClass="dialogButton" value="#{i18n.Generic_SAVE}" actionListener="#{administrator_Outlets.onSaveOutletSubscriber}" reRender="dtSubscribers">
-                            <rich:componentControl for="mpOutletSubscriber" operation="hide" event="oncomplete" />
-                        </a4j:commandLink>
-                        <a4j:commandLink id="lnkApplyOutletSubscriber" styleClass="dialogButton" value="#{i18n.Generic_APPLY}" actionListener="#{administrator_Outlets.onSaveOutletSubscriber}" reRender="dtSubscribers" />
-                        <a4j:commandLink id="lnkDeleteOutletSubscriber" rendered="#{!administrator_Outlets.outletSubscriberAddMode}" onclick="if (confirm('#{i18n.administrator_Outlets_OUTLET_SUBSCRIBER_PROMPT_DELETE}') != true){ return false; };" actionListener="#{administrator_Outlets.onDeleteOutletSubscriber}" styleClass="dialogButton" value="#{i18n.Generic_DELETE}" reRender="dtSubscribers">
-                            <rich:componentControl for="mpOutletSubscriber" operation="hide" event="oncomplete" />
-                        </a4j:commandLink>
-                        <h:commandLink id="lnkCloseOutletSubscriber" styleClass="dialogButton" value="#{i18n.Generic_CLOSE}" onclick="#{rich:component('mpOutletSubscriber')}.hide(); return false;" />
-                    </h:panelGroup>
-
-                </rich:modalPanel>
-            </h:form>
-
 
         </ui:define>
     </ui:composition>

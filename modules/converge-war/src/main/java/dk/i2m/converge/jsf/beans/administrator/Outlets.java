@@ -18,7 +18,6 @@ package dk.i2m.converge.jsf.beans.administrator;
 
 import dk.i2m.commons.BeanComparator;
 import dk.i2m.converge.core.DataNotFoundException;
-import dk.i2m.converge.core.subscriber.OutletSubscriber;
 import dk.i2m.converge.core.workflow.*;
 import dk.i2m.converge.ejb.facades.EntityReferenceException;
 import dk.i2m.converge.ejb.facades.OutletFacadeLocal;
@@ -50,8 +49,6 @@ public class Outlets extends BaseBean {
     private Outlet selectedOutlet = null;
 
     private DataModel selectedOutletSubscribers = new ListDataModel();
-
-    private OutletSubscriber selectedOutletSubscriber = null;
 
     private Department selectedDepartment = null;
 
@@ -85,22 +82,6 @@ public class Outlets extends BaseBean {
      */
     public void setSelectedOutlet(Outlet selectedOutlet) {
         this.selectedOutlet = selectedOutlet;
-        onLoadSelectedOutletSubscribers(null);
-    }
-
-    /**
-     * Event handler for loading the subscribers of the selected outlet.
-     * <p/>
-     * @param event Event that invoked the handler
-     */
-    public void onLoadSelectedOutletSubscribers(ActionEvent event) {
-        if (getSelectedOutlet() != null && getSelectedOutlet().getId() != null) {
-            List<OutletSubscriber> subscribers = outletFacade.
-                    findOutletSubscribers(getSelectedOutlet().getId(), 0, 100);
-            this.selectedOutletSubscribers = new ListDataModel(subscribers);
-        } else {
-            this.selectedOutletSubscribers = new ListDataModel();
-        }
     }
 
     /**
@@ -113,34 +94,6 @@ public class Outlets extends BaseBean {
             outlets = new ListDataModel(outletFacade.findAllOutlets());
         }
         return outlets;
-    }
-
-    /**
-     * Gets a {@link DataModel} containing the subscribers of the {@link Outlet}.
-     * <p/>
-     * @return {@link Datamodel} containing the subscribers of the selected {@link Outlet}
-     */
-    public DataModel getSelectedOutletSubscribers() {
-        return selectedOutletSubscribers;
-    }
-
-    /**
-     * Gets the selected {@link OutletSubscriber}.
-     * <p/>
-     * @return Selected {@link OutletSubscriber} or {@code null} if no subscriber is selected
-     */
-    public OutletSubscriber getSelectedOutletSubscriber() {
-        return selectedOutletSubscriber;
-    }
-
-    /**
-     * Sets the selected {@link OutletSubscriber}.
-     * <p/>
-     * @param selectedOutletSubscriber Selected {@link OutletSubscriber}
-     */
-    public void setSelectedOutletSubscriber(
-            OutletSubscriber selectedOutletSubscriber) {
-        this.selectedOutletSubscriber = selectedOutletSubscriber;
     }
 
     public String getSelectedOutletTab() {
@@ -315,57 +268,6 @@ public class Outlets extends BaseBean {
         }
 
         reloadSelectedOutlet();
-    }
-
-    /**
-     * Event handler for preparing the creation of a new outlet subscriber.
-     * <p/>
-     * @param event Event that invoked the handler
-     */
-    public void onNewOutletSubscriber(ActionEvent event) {
-        this.selectedOutletSubscriber = new OutletSubscriber();
-        this.selectedOutletSubscriber.setOutlet(selectedOutlet);
-    }
-
-    public void onSaveOutletSubscriber(ActionEvent event) {
-        Date now = Calendar.getInstance().getTime();
-        if (isOutletAddMode()) {
-            if (!selectedOutletSubscriber.isSubscribed()) {
-                selectedOutletSubscriber.setUnsubscriptionDate(now);
-            } else {
-                selectedOutletSubscriber.setSubscriptionDate(now);
-            }
-            
-            selectedOutletSubscriber = outletFacade.createSubscriber(
-                    selectedOutletSubscriber);
-            JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO, 
-                    Bundle.i18n.name(),
-                    "administrator_Outlets_OUTLET_SUBSCRIBER_CREATED");
-        } else {
-            selectedOutletSubscriber = outletFacade.updateSubscriber(
-                    selectedOutletSubscriber);
-            JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO, 
-                    Bundle.i18n.name(),
-                    "administrator_Outlets_OUTLET_SUBSCRIBER_UPDATED");
-        }
-        onLoadSelectedOutletSubscribers(event);
-    }
-
-    public void onDeleteOutletSubscriber(ActionEvent event) {
-        outletFacade.deleteSubscriberById(selectedOutletSubscriber.getId());
-        JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO, 
-                Bundle.i18n.name(),
-                "administrator_Outlets_OUTLET_SUBSCRIBER_DELETED");
-        onLoadSelectedOutletSubscribers(event);
-    }
-
-    public boolean isOutletSubscriberAddMode() {
-        if (selectedOutletSubscriber == null || selectedOutletSubscriber.getId()
-                == null) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     private void reloadSelectedOutlet() {

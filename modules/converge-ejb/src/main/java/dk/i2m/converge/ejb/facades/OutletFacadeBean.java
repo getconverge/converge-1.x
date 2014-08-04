@@ -22,7 +22,6 @@ import dk.i2m.converge.core.dto.EditionAssignmentView;
 import dk.i2m.converge.core.dto.EditionView;
 import dk.i2m.converge.core.dto.OutletActionView;
 import dk.i2m.converge.core.security.UserRole;
-import dk.i2m.converge.core.subscriber.OutletSubscriber;
 import dk.i2m.converge.core.utils.BeanComparator;
 import dk.i2m.converge.core.workflow.*;
 import dk.i2m.converge.ejb.messaging.EditionServiceMessageBean;
@@ -162,85 +161,6 @@ public class OutletFacadeBean implements OutletFacadeLocal {
     public void deleteDepartment(Long id) {
         //TODO: Determine what to do about news item current in this department
         daoService.delete(Department.class, id);
-    }
-
-    /**
-     * Create a new subscriber of an {@link Outlet}.
-     * <p/>
-     * @param subscriber New subscriber
-     * @return Created subscriber
-     */
-    @Override
-    public OutletSubscriber createSubscriber(OutletSubscriber subscriber) {
-        return daoService.create(subscriber);
-    }
-
-    /**
-     * Update an existing subscriber.
-     * <p/>
-     * @param subscriber Subscriber to update
-     * @return Updated subscriber
-     */
-    @Override
-    public OutletSubscriber updateSubscriber(OutletSubscriber subscriber) {
-        // Check if there was a subscription change
-        try {
-            Date now = Calendar.getInstance().getTime();
-            OutletSubscriber original = findSubscriberById(subscriber.getId());
-            if (original.isSubscribed() && !subscriber.isSubscribed()) {
-                subscriber.setUnsubscriptionDate(now);
-            } else if (!original.isSubscribed() && subscriber.isSubscribed()) {
-                subscriber.setSubscriptionDate(now);
-            }
-        } catch (DataNotFoundException ex) {
-            LOG.log(Level.SEVERE, "Original subscriber does not exist");
-        }
-
-        return daoService.update(subscriber);
-    }
-
-    /**
-     * Finds an existing subscriber by id.
-     * <p/>
-     * @param id Unique identifier of the subscriber
-     * @return Subscriber matching the {@code id}
-     * @throws DataNotFoundException If a subscriber with the given {@code id} could not be found
-     */
-    @Override
-    public OutletSubscriber findSubscriberById(Long id) throws
-            DataNotFoundException {
-        return daoService.findById(OutletSubscriber.class, id);
-    }
-
-    /**
-     * Deletes a subscriber from the database.
-     * <p/>
-     * @param id Unique identifier of the subscriber
-     */
-    @Override
-    public void deleteSubscriberById(Long id) {
-        daoService.delete(OutletSubscriber.class, id);
-    }
-
-    @Override
-    public List<OutletSubscriber> findOutletSubscribers(int start, int results) {
-        return daoService.findAll(OutletSubscriber.class, start, results);
-    }
-
-    @Override
-    public List<OutletSubscriber> findOutletSubscribers(Long outletId, int start,
-            int results) {
-        try {
-            Outlet outlet = findOutletById(outletId);
-            Map<String, Object> params = QueryBuilder.with(
-                    OutletSubscriber.OUTLET_PARAMETER, outlet).parameters();
-
-            return daoService.
-                    findWithNamedQuery(OutletSubscriber.FIND_BY_OUTLET,
-                    params, start, results);
-        } catch (DataNotFoundException ex) {
-            return Collections.EMPTY_LIST;
-        }
     }
 
     /**

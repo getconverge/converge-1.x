@@ -341,23 +341,4 @@ public interface OutletFacadeLocal {
     List<Section> findSectionByName(Long outletId, String sectionName) throws
             DataNotFoundException;
 
-    dk.i2m.converge.core.subscriber.OutletSubscriber createSubscriber(
-            dk.i2m.converge.core.subscriber.OutletSubscriber subscriber);
-
-    dk.i2m.converge.core.subscriber.OutletSubscriber updateSubscriber(
-            dk.i2m.converge.core.subscriber.OutletSubscriber subscriber);
-
-    dk.i2m.converge.core.subscriber.OutletSubscriber findSubscriberById(
-            java.lang.Long id)
-            throws dk.i2m.converge.core.DataNotFoundException;
-
-    void deleteSubscriberById(java.lang.Long id);
-
-    java.util.List<dk.i2m.converge.core.subscriber.OutletSubscriber> findOutletSubscribers(
-            int start,
-            int results);
-
-    java.util.List<dk.i2m.converge.core.subscriber.OutletSubscriber> findOutletSubscribers(
-            java.lang.Long outletId,
-            int start, int results);
 }
