@@ -1,4 +1,45 @@
 
+        Release Notes - Converge - Version 1.1.13
+    
+<h2>        Sub-task
+</h2>
+<ul>
+<li>[<a href='https://getconverge.atlassian.net/browse/CON-16'>CON-16</a>] -         Split unit and integration tests
+</li>
+<li>[<a href='https://getconverge.atlassian.net/browse/CON-20'>CON-20</a>] -         Move code from Core Actions to separate Maven project
+</li>
+<li>[<a href='https://getconverge.atlassian.net/browse/CON-21'>CON-21</a>] -         Document how to use the plugin on docs.getconverge.com
+</li>
+</ul>
+        
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://getconverge.atlassian.net/browse/CON-4'>CON-4</a>] -          The story placements in Drupal don&#39;t match the placement in Converge
+</li>
+<li>[<a href='https://getconverge.atlassian.net/browse/CON-6'>CON-6</a>] -         HTML entities displayed in Drupal node title
+</li>
+<li>[<a href='https://getconverge.atlassian.net/browse/CON-23'>CON-23</a>] -         Reporting yields an error /ReportActivity.jspx: The class &#39;dk.i2m.converge.jsf.beans.ReportActivity&#39; does not have the property &#39;timeTakenToGenerateReport&#39;
+</li>
+</ul>
+                
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://getconverge.atlassian.net/browse/CON-18'>CON-18</a>] -         Bring down SonarQube technical debt by 10 days
+</li>
+</ul>
+    
+<h2>        Task
+</h2>
+<ul>
+<li>[<a href='https://getconverge.atlassian.net/browse/CON-19'>CON-19</a>] -         Move Drupal Plugin to separate Maven project
+</li>
+</ul>
+
+
+
+
         Release Notes - Converge - Version 1.1.12
     
 <h2>        Sub-task
