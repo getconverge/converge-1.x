@@ -39,7 +39,7 @@ import javax.jws.WebService;
  *
  * @author Allan Lykke Christensen
  */
-@WebService(serviceName = "OutletService")
+//@WebService(serviceName = "OutletService")
 public class OutletService {
 
     private static final Logger LOG = Logger.getLogger(OutletService.class.

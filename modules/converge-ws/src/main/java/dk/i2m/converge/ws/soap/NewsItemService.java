@@ -42,7 +42,7 @@ import javax.xml.ws.WebServiceContext;
  *
  * @author Allan Lykke Christensen
  */
-@WebService(serviceName = "NewsItemService")
+//@WebService(serviceName = "NewsItemService")
 public class NewsItemService {
 
     private static final Logger LOG = Logger.getLogger(NewsItemService.class.

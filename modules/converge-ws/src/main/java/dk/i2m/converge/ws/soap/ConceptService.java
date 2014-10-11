@@ -24,7 +24,7 @@ import javax.xml.ws.WebServiceContext;
  *
  * @author alc
  */
-@WebService(serviceName = "ConceptService")
+//@WebService(serviceName = "ConceptService")
 public class ConceptService {
 
     private static final Logger LOG = Logger.getLogger(ConceptService.class.getName());

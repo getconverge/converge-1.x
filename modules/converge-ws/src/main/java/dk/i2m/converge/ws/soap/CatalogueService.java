@@ -44,7 +44,7 @@ import org.apache.commons.io.FileUtils;
  *
  * @author Allan Lykke Christensen
  */
-@WebService(serviceName = "DigitalAssetService")
+//@WebService(serviceName = "DigitalAssetService")
 public class CatalogueService {
 
     @EJB private CatalogueFacadeLocal catalogueFacade;
