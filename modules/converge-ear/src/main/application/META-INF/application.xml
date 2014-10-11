@@ -8,12 +8,12 @@
             <context-root>/converge</context-root>
         </web>
     </module>
-    <!--module>
+    <module>
         <web>
             <web-uri>converge-ws.war</web-uri>
             <context-root>/converge-ws</context-root>
         </web>
-    </module-->
+    </module>
     <module>
         <ejb>converge-ejb.jar</ejb>
     </module>
