@@ -2,12 +2,35 @@
 <web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
     <description>Web services for Converge for remote application integration</description>
     <display-name>Converge Web Services</display-name>
+    <servlet>
+        <servlet-name>ServletAdaptor</servlet-name>
+        <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <description>Multiple packages, separated by semicolon(;), can be specified in param-value</description>
+            <param-name>com.sun.jersey.config.property.packages</param-name>
+            <param-value>com.getconverge.ws.rest</param-value>
+        </init-param>
+        <init-param>
+            <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ServletAdaptor</servlet-name>
+        <url-pattern>/service/*</url-pattern>
+    </servlet-mapping>
     <security-constraint>
         <display-name>Resources restricted to CONVERGE users</display-name>
         <web-resource-collection>
             <web-resource-name>News Item Services</web-resource-name>
             <description/>
             <url-pattern>/NewsItemService*</url-pattern>
+        </web-resource-collection>
+        <web-resource-collection>
+            <web-resource-name>News Item Services</web-resource-name>
+            <description/>
+            <url-pattern>/service/*</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <role-name>CONVERGE</role-name>
@@ -60,4 +83,10 @@
     <security-role>
         <role-name>CONVERGE</role-name>
     </security-role>
+    <ejb-local-ref>
+        <ejb-ref-name>ActivityStreamFacade</ejb-ref-name>
+        <ejb-ref-type>Session</ejb-ref-type>
+        <local>dk.i2m.converge.ejb.facades.ActivityStreamFacadeLocal</local>
+        <ejb-link>ActivityStreamFacade</ejb-link>
+    </ejb-local-ref>
 </web-app>
