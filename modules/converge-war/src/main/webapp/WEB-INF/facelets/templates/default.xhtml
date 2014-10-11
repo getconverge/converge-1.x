@@ -7,7 +7,10 @@
             <title><ui:insert name="title" />&#160;-&#160;#{i18n.Generic_APPLICATION_TITLE}</title>
             <link rel="shortcut icon" href="#{facesContext.externalContext.request.contextPath}/favicon.ico" />
             <link rel="stylesheet" href="#{facesContext.externalContext.request.contextPath}/css/template.css?version=#{common.buildNumber}" type="text/css" />
+            <link rel="stylesheet" href="#{facesContext.externalContext.request.contextPath}/css/converge-activitystream.css?version=#{common.buildNumber}" type="text/css" />
             <a4j:loadScript src="resource://jquery.js"/>
+            <script type="text/javascript" src="#{facesContext.externalContext.request.contextPath}/scripts/humane.js"></script>
+            <script type="text/javascript" src="#{facesContext.externalContext.request.contextPath}/scripts/jquery.converge-activitystream.js"></script>
             <script type="text/javascript" src="#{facesContext.externalContext.request.contextPath}/scripts/windowutils.js"></script>
             <script type="text/javascript" src="#{facesContext.externalContext.request.contextPath}/scripts/domutils.js"></script>
             <script type="text/javascript" src="#{facesContext.externalContext.request.contextPath}/scripts/jquery.gritter.js"></script>
@@ -110,13 +113,13 @@
             <ui:insert name="pageBody" />
 
             <script type="text/javascript">
-                A4J.AJAX.onError = function(req, status, message) {
+                A4J.AJAX.onError = function (req, status, message) {
                     window.status = "#{i18n.Generic_CONNECTION_ERROR_ERROR}: " + message;
                     openNotice(message);
                     return false;
                 }
 
-                A4J.AJAX.onExpired = function(loc, expiredMsg) {
+                A4J.AJAX.onExpired = function (loc, expiredMsg) {
                     window.status = "#{i18n.Generic_CONNECTION_ERROR_SESSION_EXPIRED}: " + expiredMsg;
                     openNotice(message);
                     return false;

@@ -21,7 +21,6 @@ import dk.i2m.commons.FileUtils;
 import dk.i2m.commons.ImageUtils;
 import dk.i2m.converge.core.ConfigurationKey;
 import dk.i2m.converge.core.DataNotFoundException;
-import dk.i2m.converge.core.Notification;
 import dk.i2m.converge.core.content.catalogue.Catalogue;
 import dk.i2m.converge.core.newswire.NewswireService;
 import dk.i2m.converge.core.security.SystemPrivilege;
@@ -98,8 +97,6 @@ public class UserSession {
     private Map<Long, Boolean> catalogueEditor = new HashMap<Long, Boolean>();
 
     private List<Catalogue> catalogues = new ArrayList<Catalogue>();
-
-    private Notification selectedNotification;
 
     private NewswireService selectedNewswireService;
 
@@ -443,14 +440,6 @@ public class UserSession {
         return privileges;
     }
 
-    public Notification getSelectedNotification() {
-        return selectedNotification;
-    }
-
-    public void setSelectedNotification(Notification selectedNotification) {
-        this.selectedNotification = selectedNotification;
-    }
-
     public NewswireService getSelectedNewswireService() {
         return selectedNewswireService;
     }
@@ -515,26 +504,6 @@ public class UserSession {
         } else {
             LOG.log(Level.SEVERE, "RichFaces is not set-up to use tempFiles for storing file uploads");
         }
-    }
-
-    /**
-     * Event handler for dismissing the selected {@link Notification}.
-     *
-     * @param event Event that invoked the handler
-     */
-    public void onDismissNotification(ActionEvent event) {
-        if (selectedNotification != null) {
-            userFacade.dismiss(selectedNotification);
-        }
-    }
-
-    /**
-     * Event handler for dismissing all {@link Notification}s.
-     *
-     * @param event Event that invoked the handler
-     */
-    public void onDismissAllNotifications(ActionEvent event) {
-        userFacade.dismiss(getUser());
     }
 
     /**

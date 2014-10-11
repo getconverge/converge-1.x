@@ -20,6 +20,8 @@ import dk.i2m.converge.core.Notification;
 import dk.i2m.converge.core.security.UserAccount;
 import dk.i2m.converge.ejb.facades.UserFacadeLocal;
 import dk.i2m.jsf.JsfUtils;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.DataModel;
@@ -31,56 +33,46 @@ import javax.faces.model.ListDataModel;
  */
 public class ActivityStream {
 
-    @EJB private UserFacadeLocal userFacade;
+    private static final int BATCH_SIZE = 25;
+
+    @EJB
+    private UserFacadeLocal userFacade;
 
     private int show = BATCH_SIZE;
-
-    private static final int BATCH_SIZE = 25;
 
     private DataModel notifications = null;
 
     private Long total = 0L;
 
-    public DataModel getNotifications() {
-        if (notifications == null) {
-            notifications = new ListDataModel(userFacade.getNotifications(getUser().getUsername(), 0, show));
-            total = userFacade.getNotificationCount(getUser().getUsername());
-        }
-        return notifications;
-    }
     
-    public void onDismissAll(ActionEvent event) {
-        userFacade.dismiss(getUser());
-        this.notifications = null;
-    }
-    
-    public void onCheckForUpdates(ActionEvent event) {
-        Long count = userFacade.getNotificationCount(getUser().getUsername());
-        if (count != total) {
-            this.notifications = null;
-        }
-    }
-
-    public void onShowMore(ActionEvent event) {
-        show += BATCH_SIZE;
-        this.notifications = null;
-    }
-
-    public void setDeleteNotification(Notification notification) {
-        userFacade.dismiss(notification);
-        this.notifications = null;
-    }
-    
-    public boolean isShowMore() {
-        if (total > show) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private UserAccount getUser() {
-        final String valueExpression = "#{userSession.user}";
-        return (UserAccount) JsfUtils.getValueOfValueExpression(valueExpression);
-    }
+//    public void onDismissAll(ActionEvent event) {
+//        userFacade.dismiss(getUser());
+//        this.notifications = null;
+//    }
+//
+//    public void onCheckForUpdates(ActionEvent event) {
+//        Long count = userFacade.getNotificationCount(getUser().getUsername());
+//        if (count != total) {
+//            this.notifications = null;
+//        }
+//    }
+//
+//    public void onShowMore(ActionEvent event) {
+//        show += BATCH_SIZE;
+//        this.notifications = null;
+//    }
+//
+//    public void setDeleteNotification(Notification notification) {
+//        userFacade.dismiss(notification);
+//        this.notifications = null;
+//    }
+//
+//    public boolean isShowMore() {
+//        return total > show;
+//    }
+//
+//    private UserAccount getUser() {
+//        final String valueExpression = "#{userSession.user}";
+//        return (UserAccount) JsfUtils.getValueOfValueExpression(valueExpression);
+//    }
 }
