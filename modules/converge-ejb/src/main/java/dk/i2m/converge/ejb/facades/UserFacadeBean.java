@@ -17,7 +17,6 @@
  */
 package dk.i2m.converge.ejb.facades;
 
-import dk.i2m.converge.core.Notification;
 import dk.i2m.converge.core.content.catalogue.Catalogue;
 import dk.i2m.converge.core.DataNotFoundException;
 import dk.i2m.converge.core.security.Privilege;
@@ -32,7 +31,6 @@ import dk.i2m.converge.ejb.services.UserNotFoundException;
 import dk.i2m.converge.ejb.services.UserServiceLocal;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -200,69 +198,7 @@ public class UserFacadeBean implements UserFacadeLocal {
         Collections.sort(members, new BeanComparator(SORT_BY_FULL_NAME));
         return members;
     }
-
-    /**
-     * Gets all the {@Link Notification}S awaiting a given user.
-     *
-     * @param username Username of the {@link UserAccount}
-     * @return {@link List} of awaiting {@link Notification}s
-     */
-    @Override
-    public List<Notification> getNotifications(String username) {
-        Map<String, Object> params = QueryBuilder.with(Notification.QUERY_PARAM_USERNAME, username).parameters();
-        return daoService.findWithNamedQuery(Notification.FIND_BY_USERNAME, params);
-    }
-
-    /**
-     * Gets user {@Link Notification}s in the given interval
-     *
-     * @param username Username of the {@link UserAccount}
-     * @param start First record to fetch
-     * @param count Number of records to fetch
-     * @return {@link List} of awaiting {@link Notification}s
-     */
-    @Override
-    public List<Notification> getNotifications(String username, int start, int count) {
-        Map<String, Object> params = QueryBuilder.with(Notification.QUERY_PARAM_USERNAME, username).parameters();
-        return daoService.findWithNamedQuery(Notification.FIND_BY_USERNAME, params, start, count);
-    }
-
-    /**
-     * Gets the count of notifications awaiting a given user.
-     *
-     * @param username Username of the user
-     * @return Count of notifications
-     */
-    @Override
-    public Long getNotificationCount(String username) {
-        Map<String, Object> params = QueryBuilder.with(Notification.QUERY_PARAM_USERNAME, username).parameters();
-        try {
-            return daoService.findObjectWithNamedQuery(Long.class, Notification.COUNT_BY_USERNAME, params);
-        } catch (DataNotFoundException ex) {
-            LOG.log(Level.SEVERE, ex.getMessage());
-            LOG.log(Level.FINEST, null, ex);
-            return 0L;
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void dismiss(Notification notification) {
-        daoService.delete(Notification.class, notification.getId());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void dismiss(UserAccount user) {
-        for (Notification notification : getNotifications(user.getUsername())) {
-            daoService.delete(Notification.class, notification.getId());
-        }
-    }
-
+    
     @Override
     public UserAccount update(UserAccount userAccount) {
         return userService.update(userAccount);
