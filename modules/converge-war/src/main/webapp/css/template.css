@@ -1384,7 +1384,7 @@ form {
 
 .tabInactive { background: none; background-color: #dedede; }
 .tabInactive:hover { background-color: #aaaaaa; color: #ffffff; }
-.tabActive { font-weight: bold; background: #F3F2F2;; line-height: 20px; height: 20px; border-bottom: 1px solid #f3f2f2; }
+.tabActive { font-weight: bold; background: #F3F2F2; line-height: 20px; height: 20px; border-bottom: 1px solid #f3f2f2; }
 .tabDisabled { background: none; background-color: #dedede; font-style: italic; color: #666666; }
 
 /******************************************************************************/
