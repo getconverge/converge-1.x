@@ -6,18 +6,38 @@
  * @author Allan Lykke Christensen
  */
 (function ($) {
+
+    var stream = $('<ul class="activity-stream"></ul>');
+    var loading = $('<div class="image"><img class="activity-stream-spinner" src="/converge/images/loading.gif" /></div>');
+    var moreLink = $('<a id="activity-stream-more">More</a>');
+
     $.fn.convergeActivityStream = function () {
         var parent = this;
 
-        var image = $('<div class="image">' +
-                '<img class="activity-stream-spinner" src="/converge/images/loading.gif" />' +
-                '</div>');
-        parent.append(image);
+        parent.append(stream);
+        parent.append(moreLink);
+        parent.append(loading);
 
-        var ul = $('<ul class="activity-stream"></ul>');
-        parent.append(ul);
+        var page = $.fn.convergeActivityStream.defaults.page;
+        var size = $.fn.convergeActivityStream.defaults.size;
 
-        $.getJSON("/converge-ws/service/activitystream", function (data) {
+        // Bind the "click" event of the moreLink to loading the next page of the activity stream
+        moreLink.bind("click", function (event) {
+            page++;
+            $.fn.convergeActivityStream.load(stream, page, size);
+        });
+
+        moreLink.click();
+
+        return this;
+    };
+
+    $.fn.convergeActivityStream.load = function (ul, page, size) {
+        moreLink.hide();
+        loading.show();
+
+        var service_request = $.fn.convergeActivityStream.defaults.service_url + "?page=" + page + "&size=" + size;
+        $.getJSON(service_request, function (data) {
             $.each(data.items, function (key, activity) {
                 var li = $('<li class="activity"></li>');
                 li.attr('data-activity-id', activity.id);
@@ -56,8 +76,16 @@
                 li.appendTo(ul);
             });
 
-            $('.activity\\-stream\\-spinner').hide();
             $('.pretty\\-date').humane_dates();
+            loading.hide();
+            moreLink.show();
         });
     };
+
+    $.fn.convergeActivityStream.defaults = {
+        service_url: "/converge-ws/service/activitystream",
+        size: 10,
+        page: 0
+    };
+
 }(jQuery));

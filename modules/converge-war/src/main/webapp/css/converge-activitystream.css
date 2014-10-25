@@ -3,8 +3,6 @@ ul.activity-stream {
 }
 
 ul.activity-stream {
-    height: 400px;
-    overflow: auto;
 }
 
 ul.activity-stream li {

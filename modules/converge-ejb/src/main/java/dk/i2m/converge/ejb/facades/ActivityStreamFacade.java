@@ -129,7 +129,7 @@ public class ActivityStreamFacade implements ActivityStreamFacadeLocal {
         stream.setTotalItems(getNotificationCount(username));
         stream.setBaseUrl(baseUrl);
 
-        List<Notification> notifications = getNotifications(username, 0, 25);
+        List<Notification> notifications = getNotifications(username, start, count);
 
         for (Notification notification : notifications) {
             stream.addItem(ActivityStreamMapper.from(notification));

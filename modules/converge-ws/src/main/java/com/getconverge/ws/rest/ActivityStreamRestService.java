@@ -25,6 +25,7 @@ import javax.naming.NamingException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
@@ -40,17 +41,40 @@ import javax.ws.rs.core.UriInfo;
 public class ActivityStreamRestService extends AbstractRestService {
 
     private static final Logger LOG = Logger.getLogger(ActivityStreamRestService.class.getName());
+    private static final Integer DEFAULT_START = 0;
+    private static final Integer DEFAULT_SIZE = 25;
     private final ActivityStreamFacadeLocal activityStreamFacade = lookupActivityStreamFacadeLocal();
 
     @Context
     private UriInfo context;
 
+    /**
+     * Get the {@link ActivityStream} for the currently authorized user
+     * formatted as a JSON document.
+     *
+     * @param security Security context of the request
+     * @param page Page of the {@link ActivityStream} to fetch
+     * @param size Number of activities to include in the {@Link ActivityStream}
+     * @return {@link ActivityStream} of the logged in user
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public ActivityStream getJson(@Context SecurityContext security) {
+    public ActivityStream getJson(@Context SecurityContext security,
+            @QueryParam("page") Integer page,
+            @QueryParam("size") Integer size) {
         authCheck(security);
         String username = security.getUserPrincipal().getName();
-        return activityStreamFacade.getActivityStream(username, 0, 25);
+        int start = DEFAULT_START;
+
+        if (size == null) {
+            size = DEFAULT_SIZE;
+        }
+        
+        if (page != null) {
+            start = page * size;
+        }
+
+        return activityStreamFacade.getActivityStream(username, start, size);
     }
 
     private ActivityStreamFacadeLocal lookupActivityStreamFacadeLocal() {
