@@ -131,8 +131,7 @@ public class SystemFacadeBean implements SystemFacadeLocal {
         List<Property> properties = new ArrayList<Property>();
         for (ConfigurationKey cfgKey : ConfigurationKey.values()) {
             if (!(cfgKey.equals(ConfigurationKey.VERSION) || cfgKey.equals(
-                    ConfigurationKey.BUILD_TIME) || cfgKey.equals(
-                    ConfigurationKey.APPLICATION_NEWSFEED))) {
+                    ConfigurationKey.BUILD_TIME))) {
                 String key = cfgKey.name();
                 String value = this.cfgService.getString(cfgKey);
                 properties.add(new Property(key, value));

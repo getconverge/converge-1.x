@@ -82,5 +82,7 @@ public enum ConfigurationKey implements Serializable {
     CONVERGE_HOME_URL,
     SEARCH_ENGINE_ALLOW_COMPRESSION,
     OPEN_CALAIS_API_KEY,
-    AUTO_SAVE_INTERVAL
+    AUTO_SAVE_INTERVAL,
+    /** E-mail address of the system administrator. */
+    SYSTEM_ADMINITRATOR_EMAIL
 }
