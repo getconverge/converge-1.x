@@ -28,7 +28,6 @@ public enum ConfigurationKey implements Serializable {
     INVALID,
     VERSION,
     BUILD_TIME,
-    APPLICATION_NEWSFEED,
     WORKING_DIRECTORY,
     MESSAGE_BUNDLE,
     XML_MESSAGE_PACKAGE,
