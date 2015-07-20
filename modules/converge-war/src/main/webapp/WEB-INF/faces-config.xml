@@ -272,13 +272,6 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>activityStream</managed-bean-name>
-        <managed-bean-class>dk.i2m.converge.jsf.beans.ActivityStream</managed-bean-class>
-        <managed-bean-scope>request</managed-bean-scope>
-    </managed-bean>
-
-    
-    <managed-bean>
         <managed-bean-name>myActivity</managed-bean-name>
         <managed-bean-class>dk.i2m.converge.jsf.beans.MyActivity</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>

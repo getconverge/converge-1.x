@@ -9,7 +9,6 @@
 
         <ui:define name="leftColumn">
             <a4j:keepAlive beanName="dashboard" />
-            <a4j:keepAlive beanName="activityStream" />
             <converge:upcomingEvents />
         </ui:define>
 
