@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2012 - 2013 Interactive Media Management
- * Copyright (C) 2014 Allan Lykke Christensen
+ * Copyright (C) 2014 - 2015 Allan Lykke Christensen
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ import java.util.logging.Logger;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import static dk.i2m.converge.plugins.drupalclient.DrupalEditionActionHelper.*;
 
 /**
  * {@link EditionAction} for uploading content to Drupal websites using the
@@ -69,23 +70,28 @@ public class DrupalEditionAction implements EditionAction {
 
     private static final int DEFAULT_SOCKET_TIMEOUT = 30000;
     private static final int DEFAULT_CONNECTION_TIMEOUT = 30000;
-    private static final String DEFAULT_NODE_TYPE = "article";
+
+    /**
+     * This is the resource type created for the Converge service in Drupal.
+     */
+    private static final String CONVERGE_DRUPAL_RESOURCE_TYPE = "newsitem";
     private static final Logger LOG = Logger.getLogger(DrupalEditionAction.class.getName());
     private static final String LOG_PREFIX = "[#{0}:{1}] ";
     private static final DateFormat DRUPAL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static final String UPLOADING = "UPLOADING";
     private static final String UPLOADED = "UPLOADED";
     private static final String FAILED = "FAILED";
-    private static final String DATE = "date";
-    private static final String NID_LABEL = "nid";
-    private static final String URI_LABEL = "uri";
-    private static final String STATUS_LABEL = "status";
+    public static final String STATE_DATE = "date";
+    public static final String STATE_NID = "nid";
+    public static final String STATE_URI = "uri";
+    public static final String STATE_PATH = "path";
+    public static final String STATE_STATUS = "status";
+    public static final String STATE_LAST_UPDATED = "version";
     private final ResourceBundle bundle = ResourceBundle.getBundle("dk.i2m.converge.plugins.drupalclient.Messages");
     private Map<String, String> availableProperties;
     private OutletEditionAction action;
     private PluginContext pluginContext;
     private DrupalServicesClient drupalServiceClient;
-    private String nodeType;
     private int errors = 0;
 
     @Override
@@ -120,7 +126,7 @@ public class DrupalEditionAction implements EditionAction {
                 LOG.log(Level.FINEST, null, ex);
             }
         }
-
+        
         LOG.log(Level.INFO, LOG_PREFIX + "{2} errors encounted", new Object[]{action.getId(), action.getLabel(), this.errors});
         LOG.log(Level.INFO, LOG_PREFIX + "Finishing action. Edition #{2}", new Object[]{action.getId(), action.getLabel(), edition.getId()});
     }
@@ -230,12 +236,6 @@ public class DrupalEditionAction implements EditionAction {
         Integer connectionTimeout = NumberUtils.toInt(properties.get(Property.CONNECTION_TIMEOUT.name()), DEFAULT_CONNECTION_TIMEOUT);
         Integer socketTimeout = NumberUtils.toInt(properties.get(Property.SOCKET_TIMEOUT.name()), DEFAULT_SOCKET_TIMEOUT);
 
-        if (properties.containsKey(Property.NODE_TYPE.name())) {
-            nodeType = properties.get(Property.NODE_TYPE.name());
-        } else {
-            nodeType = DEFAULT_NODE_TYPE;
-        }
-
         if (hostname == null) {
             throw new IllegalArgumentException("'hostname' cannot be null");
         } else if (endpoint == null) {
@@ -280,7 +280,7 @@ public class DrupalEditionAction implements EditionAction {
         boolean update;
         try {
             // determine if the news item is already uploaded
-            update = this.drupalServiceClient.exists(this.nodeType, nip.getNewsItem().getId());
+            update = this.drupalServiceClient.exists(CONVERGE_DRUPAL_RESOURCE_TYPE, nip.getNewsItem().getId());
         } catch (DrupalServerConnectionException ex) {
             LOG.log(Level.SEVERE, LOG_PREFIX + "Could not determine if NewsItem #{2} exists. {3}", new Object[]{action.getId(), action.getLabel(), newsItem.getId(), ex.getMessage()});
             LOG.log(Level.FINEST, null, ex);
@@ -302,50 +302,87 @@ public class DrupalEditionAction implements EditionAction {
         NewsItem newsItem = newsItemPlacement.getNewsItem();
         Edition edition = newsItemPlacement.getEdition();
 
-        LOG.log(Level.INFO, "Creating new Node for NewsItem #{0} & {1} image(s)", new Object[]{newsItem.getId(), mediaItems.size()});
+        LOG.log(Level.INFO, "Creating NewsItem Edition States in Converge");
+        NewsItemEditionState status = pluginContext.addNewsItemEditionState(edition.getId(), newsItem.getId(), STATE_STATUS, UPLOADING);
+        NewsItemEditionState nid = pluginContext.addNewsItemEditionState(edition.getId(), newsItem.getId(), STATE_NID, null);
+        NewsItemEditionState uri = pluginContext.addNewsItemEditionState(edition.getId(), newsItem.getId(), STATE_URI, null);
+        NewsItemEditionState path = pluginContext.addNewsItemEditionState(edition.getId(), newsItem.getId(), STATE_PATH, null);
+        NewsItemEditionState version = pluginContext.addNewsItemEditionState(edition.getId(), newsItem.getId(), STATE_LAST_UPDATED, "0");
+        pluginContext.addNewsItemEditionState(edition.getId(), newsItem.getId(), STATE_DATE, new Date().toString());
 
-        NewsItemEditionState status = pluginContext.addNewsItemEditionState(edition.getId(), newsItem.getId(), STATUS_LABEL, UPLOADING);
-        NewsItemEditionState nid = pluginContext.addNewsItemEditionState(edition.getId(), newsItem.getId(), NID_LABEL, null);
-        NewsItemEditionState uri = pluginContext.addNewsItemEditionState(edition.getId(), newsItem.getId(), URI_LABEL, null);
-        NewsItemEditionState submitted = pluginContext.addNewsItemEditionState(edition.getId(), newsItem.getId(), DATE, null);
-
+        LOG.log(Level.INFO, "Creating new Node for NewsItem #{0} & {1} image(s) on Drupal", new Object[]{newsItem.getId(), mediaItems.size()});
         try {
             NodeInfo newNode = drupalServiceClient.createNode(entity);
             drupalServiceClient.attachFile(newNode.getId(), "field_image", mediaItems);
+            String nodePath = drupalServiceClient.retrieveNodePath(newNode.getId());
 
+            // Updating NewsItem Edition States
             nid.setValue(newNode.getId().toString());
             uri.setValue(newNode.getUri());
-            submitted.setValue(new Date().toString());
+            path.setValue(nodePath);
+            version.setValue(String.valueOf(newsItem.getUpdated().getTimeInMillis()));
             status.setValue(UPLOADED);
         } catch (DrupalServerConnectionException ex) {
             this.errors++;
             status.setValue(FAILED);
             LOG.log(Level.SEVERE, ex.getMessage());
             LOG.log(Level.FINEST, "", ex);
-
-            pluginContext.updateNewsItemEditionState(status);
-            pluginContext.updateNewsItemEditionState(nid);
-            pluginContext.updateNewsItemEditionState(uri);
-            pluginContext.updateNewsItemEditionState(submitted);
         }
 
+        LOG.log(Level.INFO, "Updating NewsItem Edition States in Converge");
         pluginContext.updateNewsItemEditionState(status);
         pluginContext.updateNewsItemEditionState(nid);
         pluginContext.updateNewsItemEditionState(uri);
-        pluginContext.updateNewsItemEditionState(submitted);
+        pluginContext.updateNewsItemEditionState(path);
+        pluginContext.updateNewsItemEditionState(version);
     }
 
     private void updateNode(NewsItemPlacement nip, List<FileInfo> mediaItems, UrlEncodedFormEntity entity) {
+        NewsItem ni = nip.getNewsItem();
+        Long newsItemId = ni.getId();
+        Edition edition = nip.getEdition();
+
+        NewsItemEditionState version = pluginContext.findNewsItemEditionStateOrCreate(edition.getId(), newsItemId, STATE_LAST_UPDATED, "0");
+        NewsItemEditionState status = pluginContext.findNewsItemEditionStateOrCreate(edition.getId(), newsItemId, STATE_STATUS, UPLOADING);
+        NewsItemEditionState nid = pluginContext.findNewsItemEditionStateOrCreate(edition.getId(), newsItemId, STATE_NID, null);
+        NewsItemEditionState uri = pluginContext.findNewsItemEditionStateOrCreate(edition.getId(), newsItemId, STATE_URI, null);
+        NewsItemEditionState path = pluginContext.findNewsItemEditionStateOrCreate(edition.getId(), newsItemId, STATE_PATH, null);
+        NewsItemEditionState submitted = pluginContext.findNewsItemEditionStateOrCreate(edition.getId(), newsItemId, STATE_DATE, null);
+
         try {
-            Long nodeId = drupalServiceClient.retrieveNodeIdFromResource(this.nodeType, nip.getNewsItem().getId());
-            LOG.log(Level.INFO, "Updating node #{0} of type {1} with NewsItem #{2} & {3} image(s)", new Object[]{nodeId, this.nodeType, nip.getNewsItem().getId(), mediaItems.size()});
-            drupalServiceClient.updateNode(nodeId, entity);
-            drupalServiceClient.attachFile(nodeId, "field_image", mediaItems);
+            if (isDrupalNodeOutdated(ni, version)) {
+                LOG.log(Level.INFO, "NewsItem must be updated on Drupal");
+                submitted.setValue(new Date().toString());
+                pluginContext.updateNewsItemEditionState(submitted);
+
+                Long nodeId = drupalServiceClient.retrieveNodeIdFromResource(CONVERGE_DRUPAL_RESOURCE_TYPE, newsItemId);
+
+                LOG.log(Level.INFO, "Updating node #{0} with NewsItem #{1} & {2} image(s)", new Object[]{nodeId, newsItemId, mediaItems.size()});
+                NodeInfo updatedNode = drupalServiceClient.updateNode(nodeId, entity);
+                drupalServiceClient.attachFile(nodeId, "field_image", mediaItems);
+                String nodePath = drupalServiceClient.retrieveNodePath(updatedNode.getId());
+
+                // Updating NewsItem Edition States
+                nid.setValue(String.valueOf(updatedNode.getId()));
+                uri.setValue(updatedNode.getUri());
+                path.setValue(nodePath);
+                version.setValue(String.valueOf(ni.getUpdated().getTimeInMillis()));
+                status.setValue(UPLOADED);
+            } else {
+                LOG.log(Level.INFO, "NewsItem is already available in the latest version on Drupal. Skipping upload to Drupal");
+            }
         } catch (DrupalServerConnectionException ex) {
             this.errors++;
+            status.setValue(FAILED);
             LOG.log(Level.SEVERE, ex.getMessage());
             LOG.log(Level.FINEST, "", ex);
         }
-    }
 
+        LOG.log(Level.INFO, "Updating NewsItem Edition States in Converge");
+        pluginContext.updateNewsItemEditionState(status);
+        pluginContext.updateNewsItemEditionState(nid);
+        pluginContext.updateNewsItemEditionState(uri);
+        pluginContext.updateNewsItemEditionState(path);
+        pluginContext.updateNewsItemEditionState(version);
+    }
 }

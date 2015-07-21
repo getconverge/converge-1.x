@@ -319,10 +319,11 @@ public interface PluginContext {
     /**
      * Create a new {@link NewsItemEditionState} for a {@link NewsItem}.
      *
-     * @param edition {@link Edition} id the {@link NewsItem} belongs to
-     * @param newsItem {@link NewsItem} id that will have a new state created
+     * @param editionId {@link Edition} id the {@link NewsItem} belongs to
+     * @param newsItemId {@link NewsItem} id that will have a new state created
      * @param property State property
      * @param value Property value
+     * @return Created {@link NewsItemEditionState}
      */
     NewsItemEditionState addNewsItemEditionState(Long editionId, Long newsItemId, String property, String value);
 
@@ -333,4 +334,34 @@ public interface PluginContext {
      * @return Updated {@link NewsItemEditionState}
      */
     NewsItemEditionState updateNewsItemEditionState(NewsItemEditionState newsItemEditionState);
+
+    /**
+     * Find an existing {@link NewsItemEditionState} based on the edition and
+     * news item identifier and the name of the property to locate.
+     *
+     * @param editionId {@link Edition} id the {@link NewsItem} belongs to
+     * @param newsItemId {@link NewsItem} id that will have a new state created
+     * @param property State property
+     * @return {@link NewsItemEditionState} matching the given identifies and
+     * property name
+     * @throws DataNotFoundException If the news item edition state could not be
+     * found
+     */
+    NewsItemEditionState findNewsItemEditionState(Long editionId, Long newsItemId, String property) throws DataNotFoundException;
+
+    /**
+     * Find an existing {@Link NewsItemEditionState} based on the edition and
+     * news item identifier and name of property, if a
+     * {@link NewsItemEditionState} could not be found it is created in the
+     * database.
+     *
+     * @param editionId {@link Edition} id the {@link NewsItem} belongs to
+     * @param newsItemId {@link NewsItem} id that will have a new state created
+     * @param property State property
+     * @param value Value to put in the state if the
+     * {@link NewsItemEditionState} could not be found
+     * @return {@link NewsItemEditionState} matching the given identifies and
+     * property name
+     */
+    NewsItemEditionState findNewsItemEditionStateOrCreate(Long editionId, Long newsItemId, String property, String value);
 }

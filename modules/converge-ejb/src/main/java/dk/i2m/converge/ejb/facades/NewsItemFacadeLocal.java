@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2010 Interactive Media Management
+ * Copyright (C) 2015 Allan Lykke Christensen
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +23,7 @@ import dk.i2m.converge.core.DataNotFoundException;
 import dk.i2m.converge.core.workflow.Outlet;
 import dk.i2m.converge.core.content.ContentItemPermission;
 import dk.i2m.converge.core.content.NewsItem;
+import dk.i2m.converge.core.content.NewsItemEditionState;
 import dk.i2m.converge.core.content.NewsItemMediaAttachment;
 import dk.i2m.converge.core.content.NewsItemPlacement;
 import dk.i2m.converge.core.workflow.WorkflowState;
@@ -48,40 +50,33 @@ public interface NewsItemFacadeLocal {
      * Promotes the {@link NewsItem} in the workflow. This step is done
      * regardless of any options.
      *
-     * @param newsItem
-     *          {@link NewsItem} to promote
-     * @param state
-     *          New state
-     * @param comment
-     *          Comment from the sender
+     * @param newsItem {@link NewsItem} to promote
+     * @param state New state
+     * @param comment Comment from the sender
      * @return Promoted {@link NewsItem}
-     * @throws WorkflowStateTransitionException
-     *          If the transition could not be completed
+     * @throws WorkflowStateTransitionException If the transition could not be
+     * completed
      */
     NewsItem step(NewsItem newsItem, WorkflowState state, String comment) throws WorkflowStateTransitionException;
 
-    
     NewsItemHolder checkout(java.lang.Long id) throws dk.i2m.converge.core.DataNotFoundException;
 
     /**
      * Determines if a given {@link NewsItem} has been checked out.
      *
-     * @param id
-     *          Unique identifier of the {@link NewsItem}
+     * @param id Unique identifier of the {@link NewsItem}
      * @return {@code true} if the {@link NewsItem} has been checked out,
-     *         otherwise {@code false}
+     * otherwise {@code false}
      */
     boolean isCheckedOut(java.lang.Long id);
 
     /**
      * Saves a {@link NewsItem} in the database without checking it in.
      *
-     * @param newsItem
-     *          {@link NewsItem} to save
+     * @param newsItem {@link NewsItem} to save
      * @return Saved {@link NewsItem}
-     * @throws dk.i2m.converge.ejb.facades.LockingException
-     *          If the {@link NewsItem} is not checked-out or checked-out by a
-     *          different user
+     * @throws dk.i2m.converge.ejb.facades.LockingException If the
+     * {@link NewsItem} is not checked-out or checked-out by a different user
      */
     dk.i2m.converge.core.content.NewsItem save(dk.i2m.converge.core.content.NewsItem newsItem) throws dk.i2m.converge.ejb.facades.LockingException;
 
@@ -91,12 +86,10 @@ public interface NewsItemFacadeLocal {
      * Finds all {@link NewsItem}s with a given {@link WorkflowState} for an
      * {@link Outlet}.
      *
-     * @param state
-     *          {@link WorkflowState}
-     * @param outlet
-     *          {@link Outlet}
+     * @param state {@link WorkflowState}
+     * @param outlet {@link Outlet}
      * @return {@link List} of {@link NewsItem}s for a given {@link Outlet} with
-     *         a given {@link WorkflowState}
+     * a given {@link WorkflowState}
      */
     List<NewsItem> findByStateAndOutlet(WorkflowState state, Outlet outlet);
 
@@ -104,12 +97,10 @@ public interface NewsItemFacadeLocal {
      * Finds all {@link NewsItem}s with a given {@link WorkflowState} for an
      * {@link Outlet}.
      *
-     * @param stateName
-     *          Name of the {@link WorkflowState}
-     * @param outlet
-     *          {@link Outlet}
+     * @param stateName Name of the {@link WorkflowState}
+     * @param outlet {@link Outlet}
      * @return {@link List} of {@link NewsItem}s for a given {@link Outlet} with
-     *         a given {@link WorkflowState}
+     * a given {@link WorkflowState}
      */
     List<NewsItem> findByStateAndOutlet(String stateName, Outlet outlet);
 
@@ -118,26 +109,23 @@ public interface NewsItemFacadeLocal {
     /**
      * Finds an {@link NewsItem} by its unique identifier.
      *
-     * @param id
-     *          Unique identifier of the {@link NewsItem}
+     * @param id Unique identifier of the {@link NewsItem}
      * @return {@link NewsItem} matching the <code>id</code>.
-     * @throws DataNotFoundException
-     *          If a {@link NewsItem} with the given {@code id} does not exist
+     * @throws DataNotFoundException If a {@link NewsItem} with the given
+     * {@code id} does not exist
      */
     NewsItem findNewsItemById(Long id) throws DataNotFoundException;
 
     /**
      * Determines if a given {@link NewsItem} it published. If the
      * {@link NewsItem} is published, <code>true</code> is returned, otherwise
-     * <code>false</code> is returned. If the {@link NewsItem} does not exist
-     * a {@link DataNotFoundException} will be thrown.
+     * <code>false</code> is returned. If the {@link NewsItem} does not exist a
+     * {@link DataNotFoundException} will be thrown.
      *
-     * @param newsItemId
-     *          Unique identifier of the {@link NewsItem}
+     * @param newsItemId Unique identifier of the {@link NewsItem}
      * @return <code>true</code> if the {@link NewsItem} exist, otherwise
-     *         <code>false</code>
-     * @throws DataNotFoundException
-     *          If the {@link NewsItem} does not exist
+     * <code>false</code>
+     * @throws DataNotFoundException If the {@link NewsItem} does not exist
      */
     boolean isNewsItemPublished(final Long newsItemId) throws DataNotFoundException;
 
@@ -145,29 +133,26 @@ public interface NewsItemFacadeLocal {
      * Check-in a {@link NewsItem} in the database without making a state
      * transition.
      *
-     * @param newsItem
-     *          {@link NewsItem} to check-in.
+     * @param newsItem {@link NewsItem} to check-in.
      * @return Checked-in {@link NewsItem}
-     * @throws LockingException
-     *          If the {@link NewsItem} was checked-out by someone else
+     * @throws LockingException If the {@link NewsItem} was checked-out by
+     * someone else
      */
     NewsItem checkin(NewsItem newsItem) throws LockingException;
 
     /**
      * Gets all the {@link NewsItem}s where the given user is the active part.
      *
-     * @param username
-     *          Unique username of the {@link UserAccount}
+     * @param username Unique username of the {@link UserAccount}
      * @return {@link List} of {@link NewsItem}s where the given user is the
-     *         active part
+     * active part
      */
     List<NewsItem> findByActiveUser(String username);
 
     /**
      * Finds assignments (open news items) by {@link Outlet}.
-     * 
-     * @param selectedOutlet
-     *          {@link Outlet} for which to find assignments
+     *
+     * @param selectedOutlet {@link Outlet} for which to find assignments
      * @return {@link List} of assignments
      */
     List<NewsItem> findAssignmentsByOutlet(Outlet selectedOutlet);
@@ -177,29 +162,27 @@ public interface NewsItemFacadeLocal {
      * deletion will transition the news item to the trash state of the
      * workflow.
      *
-     * @param id
-     *          Unique identifier of the {@link NewsItem}
-     * @return <code>true</code> if the item was deleted, otherwise <code>false</code>
+     * @param id Unique identifier of the {@link NewsItem}
+     * @return <code>true</code> if the item was deleted, otherwise
+     * <code>false</code>
      */
     boolean deleteNewsItem(Long id);
 
     /**
      * Deletes an existing {@link NewsItem} from the database.
      *
-     * @param id
-     *          Unique identifier of the {@link NewsItem}
-     * @param safe
-     *          Enable safe mode
-     * @return <code>true</code> if the item was deleted, otherwise <code>false</code>
-     * @see NewsItemFacadeLocal#deleteNewsItem(java.lang.Long, boolean) 
+     * @param id Unique identifier of the {@link NewsItem}
+     * @param safe Enable safe mode
+     * @return <code>true</code> if the item was deleted, otherwise
+     * <code>false</code>
+     * @see NewsItemFacadeLocal#deleteNewsItem(java.lang.Long, boolean)
      */
     boolean deleteNewsItem(Long id, boolean safe);
 
     /**
      * Removes an actor from a {@link NewsItem}.
      *
-     * @param actor
-     *          Actor to remove from the {@link NewsItem}
+     * @param actor Actor to remove from the {@link NewsItem}
      * @return Updated {@link NewsItem}
      */
     NewsItem removeActorFromNewsItem(dk.i2m.converge.core.content.NewsItemActor actor);
@@ -207,8 +190,7 @@ public interface NewsItemFacadeLocal {
     /**
      * Add an actor to a {@link NewsItem}.
      *
-     * @param actor
-     *          Actor to add to the {@link NewsItem}
+     * @param actor Actor to add to the {@link NewsItem}
      * @return Actor added to the {@link NewsItem}
      */
     dk.i2m.converge.core.content.NewsItemActor addActorToNewsItem(dk.i2m.converge.core.content.NewsItemActor actor);
@@ -216,10 +198,8 @@ public interface NewsItemFacadeLocal {
     /**
      * Determines if the given user is the current actor of the given news item.
      *
-     * @param newsItemId
-     *          Unique identifier of the NewsItem
-     * @param username
-     *          Username of the UserAccount
+     * @param newsItemId Unique identifier of the NewsItem
+     * @param username Username of the UserAccount
      * @return Level of permission for the given user
      */
     ContentItemPermission getPermission(Long newsItemId, String username);
@@ -227,27 +207,26 @@ public interface NewsItemFacadeLocal {
     /**
      * Finds all the versions of a given {@link NewsItem}.
      *
-     * @param newsItemId
-     *          Unique identifier of the {@link NewsItem} for which to find the version
-     * @return {@link List} of {@link NewsItem}s that are a version of the given {@link NewsItem}.
+     * @param newsItemId Unique identifier of the {@link NewsItem} for which to
+     * find the version
+     * @return {@link List} of {@link NewsItem}s that are a version of the given
+     * {@link NewsItem}.
      */
     java.util.List<dk.i2m.converge.core.content.NewsItem> findVersions(java.lang.Long newsItemId);
 
     /**
      * Revokes a lock on a {@link NewsItem}.
      *
-     * @param id
-     *          Unique identifier of the {@link NewsItem}
+     * @param id Unique identifier of the {@link NewsItem}
      * @return {@code true} of the lock was revoked or {@code false} if the news
-     *         item was not locked
+     * item was not locked
      */
     boolean revokeLock(Long id);
 
     /**
      * Revokes all the locks of a particular {@link UserAccount}.
      *
-     * @param username
-     *          Username of the user
+     * @param username Username of the user
      * @return Number of locks revoked
      */
     int revokeLocks(final String username);
@@ -261,30 +240,27 @@ public interface NewsItemFacadeLocal {
 
     /**
      * Finds the current assignments of a given user.
-     * 
-     * @param username
-     *          Username of the user
+     *
+     * @param username Username of the user
      * @return {@link List} of current assignments
      */
     List<CurrentAssignment> findCurrentAssignments(String username);
 
     /**
      * Pulls back an assignment from a given state to its previous state.
-     * 
-     * @param id
-     *          Unique identifier of the assignment
-     * @throws LockingException
-     *          If the assignment was already locked by the recipient
-     * @throws WorkflowStateTransitionException
-     *          If the state does not support workflow pullback
+     *
+     * @param id Unique identifier of the assignment
+     * @throws LockingException If the assignment was already locked by the
+     * recipient
+     * @throws WorkflowStateTransitionException If the state does not support
+     * workflow pullback
      */
     void pullback(Long id) throws LockingException, WorkflowStateTransitionException;
 
     /**
      * Creates a new {@link MediaItem} in the database.
      *
-     * @param mediaItem
-     *          {@link MediaItem} to create
+     * @param mediaItem {@link MediaItem} to create
      * @return Create {@link MediaItem}
      */
     MediaItem create(MediaItem mediaItem);
@@ -292,8 +268,7 @@ public interface NewsItemFacadeLocal {
     /**
      * Creates a new {@link NewsItemMediaAttachment} in the database.
      *
-     * @param attachment
-     *          {@link NewsItemMediaAttachment} to create
+     * @param attachment {@link NewsItemMediaAttachment} to create
      * @return {@link NewsItemMediaAttachment} created
      */
     NewsItemMediaAttachment create(NewsItemMediaAttachment attachment);
@@ -306,14 +281,11 @@ public interface NewsItemFacadeLocal {
 
     /**
      * Adds a {@link NewsItem} to the next open edition.
-     * 
-     * @param newsItem
-     *          {@link NewsItem} to add to the next open edition
-     * @param section
-     *          {@link Section} to add the {@link NewsItem}
+     *
+     * @param newsItem {@link NewsItem} to add to the next open edition
+     * @param section {@link Section} to add the {@link NewsItem}
      * @return Placement of the {@link NewsItem}
-     * @throws DataNotFoundException
-     *          If an {@link Edition} could not be located
+     * @throws DataNotFoundException If an {@link Edition} could not be located
      */
     NewsItemPlacement addToNextEdition(NewsItem newsItem, Section section) throws DataNotFoundException;
 
@@ -340,4 +312,12 @@ public interface NewsItemFacadeLocal {
     java.util.List<dk.i2m.converge.core.views.InboxView> findOutletBox(java.lang.String username, dk.i2m.converge.core.workflow.Outlet outlet, dk.i2m.converge.core.workflow.WorkflowState state, int start, int results);
 
     NewsItemPlacement findNewsItemPlacementById(Long id) throws DataNotFoundException;
+
+    NewsItemEditionState addNewsItemEditionState(Long editionId, Long newsItemId, String property, String value);
+
+    NewsItemEditionState updateNewsItemEditionState(NewsItemEditionState newsItemEditionState);
+
+    NewsItemEditionState findNewsItemEditionState(Long editionId, Long newsItemId, String property) throws DataNotFoundException;
+
+    NewsItemEditionState findNewsItemEditionStateOrCreate(Long editionId, Long newsItemId, String property, String value);
 }

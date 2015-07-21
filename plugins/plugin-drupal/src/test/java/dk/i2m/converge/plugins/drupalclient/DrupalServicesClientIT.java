@@ -180,6 +180,42 @@ public class DrupalServicesClientIT {
     }
 
     @Test
+    public void drupalServicesClient_createNode_returnNodePath() throws Exception {
+        // Arrange
+        DrupalServicesClient client = new DrupalServicesClient(DRUPAL_URL, SERVICE_END_POINT, DRUPAL_UID, DRUPAL_PWD);
+        client.login();
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        Calendar publishOn = Calendar.getInstance();
+        publishOn.add(Calendar.HOUR_OF_DAY, 2);
+        params.add(new BasicNameValuePair("type", "newsitem"));
+        params.add(new BasicNameValuePair("date", DRUPAL_DATE_FORMAT.format(publishOn.getTime())));
+        params.add(new BasicNameValuePair("title", "Story created by integration test. Can be deleted"));
+        params.add(new BasicNameValuePair("language", "und"));
+        params.add(new BasicNameValuePair("body[und][0][summary]", "This is the summary of the story. You can delete this story."));
+        params.add(new BasicNameValuePair("body[und][0][value]", "This is the body. You can delete this story"));
+        params.add(new BasicNameValuePair("body[und][0][format]", "full_html"));
+        params.add(new BasicNameValuePair("publish_on", DRUPAL_DATE_FORMAT.format(publishOn.getTime())));
+        params.add(new BasicNameValuePair("field_author[und][0][value]", "Mr. Integration Tester"));
+        params.add(new BasicNameValuePair("field_newsitem[und][0][value]", "123456"));
+        params.add(new BasicNameValuePair("field_edition[und][0][value]", "1"));
+        params.add(new BasicNameValuePair("field_section[und][0]", "2"));
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, Charset.defaultCharset());
+
+        // Act
+        NodeInfo nodeInfo = client.createNode(entity);
+        try {
+            String nodePath = client.retrieveNodePath(nodeInfo.getId());
+
+            // Assert
+            assertNotNull(nodePath);
+            assertEquals(DRUPAL_URL + "/node/" + nodeInfo.getId(), nodePath);
+            // Assert
+        } catch (DrupalServerConnectionException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
     public void drupalServicesClient_createNode_returnNodeInfo() throws Exception {
         // Arrange
         DrupalServicesClient client = new DrupalServicesClient(DRUPAL_URL, SERVICE_END_POINT, DRUPAL_UID, DRUPAL_PWD);

@@ -18,6 +18,7 @@
 package dk.i2m.converge.plugins.drupalclient;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -174,7 +175,7 @@ public class DrupalServicesClient {
         } catch (IOException ex) {
             LOG.log(Level.WARNING, ex.getMessage());
             LOG.log(Level.FINEST, null, ex);
-            throw new DrupalServerConnectionException("Could not login", ex);
+            throw new DrupalServerConnectionException("Could not login. " + ex.getMessage(), ex);
         } catch (URISyntaxException ex) {
             throw new DrupalServerConnectionException("Could not login. Server URI incorrect.", ex);
         }
@@ -274,6 +275,7 @@ public class DrupalServicesClient {
             method.setEntity(entity);
             ResponseHandler<String> handler = new BasicResponseHandler();
             String response = getHttpClient().execute(method, handler);
+            LOG.log(Level.FINEST, "Node created by Drupal: {0}", response);
             return new Gson().fromJson(response, NodeInfo.class);
         } catch (IOException ex) {
             throw new DrupalServerConnectionException("Could not create node on " + url + ". " + ex.getMessage(), ex);
@@ -308,15 +310,33 @@ public class DrupalServicesClient {
     }
 
     /**
+     * Retrieves a node path (the actual URL) with a given unique node
+     * identifier.
+     *
+     * @param id Unique identifier of the node
+     * @return Node path matching the unique identifier
+     * @throws DrupalServerConnectionException If a node could not be matched or
+     * if an unexpected response was received from the server
+     */
+    public String retrieveNodePath(Long id) throws DrupalServerConnectionException {
+        String node = retrieveNode(id);
+        LOG.log(Level.FINEST, "JSON object of Node #{0}: {1}", new Object[]{id, node});
+        JsonParser parser = new JsonParser();
+        JsonObject element = (JsonObject) parser.parse(node);
+        JsonElement responseWrapper = element.get("path");
+        return responseWrapper.getAsString();
+    }
+
+    /**
      * Updates an existing node.
      *
      * @param id Unique identifier of the node
      * @param entity Entity containing fields to update
-     * @return Response from the server
+     * @return Response from the server containing the Node ID and URI.
      * @throws DrupalServerConnectionException If the entity could not be
      * updated or an unexpected response from the server
      */
-    public String updateNode(Long id, UrlEncodedFormEntity entity) throws DrupalServerConnectionException {
+    public NodeInfo updateNode(Long id, UrlEncodedFormEntity entity) throws DrupalServerConnectionException {
         String url = getHostnameWithEndpoint() + NODE_URL_PART + FORWARD_SLASH + id;
         try {
             HttpPut method = createHttpPut(url);
@@ -324,7 +344,8 @@ public class DrupalServicesClient {
 
             ResponseHandler<String> handler = new BasicResponseHandler();
             String response = getHttpClient().execute(method, handler);
-            return response;
+            LOG.log(Level.FINEST, "Node updated by Drupal: {0}", response);
+            return new Gson().fromJson(response, NodeInfo.class);
         } catch (IOException ex) {
             throw new DrupalServerConnectionException("Could not update node on " + url + ". " + ex.getMessage(), ex);
         } catch (URISyntaxException ex) {

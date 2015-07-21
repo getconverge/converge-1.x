@@ -26,6 +26,11 @@
                             <f:convertDateTime timeZone="#{common.systemTimeZone}" pattern="#{i18n.Generic_FORMAT_SHORT_DATE_AND_TIME}" />
                         </h:outputText>
                         <h:outputText value="#{msgs.newsitem_SUBMITTED_NOT_SET}" rendered="#{!newsItem.selectedNewsItem.submitted}" />
+
+                        <h:outputText value="#{i18n.NewsItem_LAST_UPDATED}"/>
+                        <h:outputText value="#{newsItem.selectedNewsItem.updated.time}">
+                            <f:convertDateTime timeZone="#{common.systemTimeZone}" pattern="#{i18n.Generic_FORMAT_SHORT_DATE_AND_TIME}" />
+                        </h:outputText>
                     </h:panelGrid>
                 </div>
                 <converge:moduleSpacer />

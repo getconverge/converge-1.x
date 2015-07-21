@@ -48,7 +48,6 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -172,8 +171,8 @@ public class PluginContextBean implements PluginContextBeanLocal {
 
     @Override
     public ContentTag findOrCreateContentTag(String name) {
-        Map<String, Object> params =
-                QueryBuilder.with("name", name).parameters();
+        Map<String, Object> params
+                = QueryBuilder.with("name", name).parameters();
 
         ContentTag tag;
 
@@ -327,29 +326,23 @@ public class PluginContextBean implements PluginContextBeanLocal {
         return newsItemFacade.createPlacement(placement);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public NewsItemEditionState addNewsItemEditionState(Long editionId, Long newsItemId, String property, String value) {
-        try {
-            Edition edition = outletFacade.findEditionById(editionId);
-            NewsItem newsitem = newsItemFacade.findNewsItemById(newsItemId);
-            NewsItemEditionState editionState = new NewsItemEditionState(edition, newsitem, "", property, value, false);
-            return daoService.create(editionState);
-        } catch (DataNotFoundException ex) {
-            LOG.log(Level.SEVERE, ex.getMessage());
-            LOG.log(Level.FINEST, "", ex);
-        }
-
-        return new NewsItemEditionState();
+        return newsItemFacade.addNewsItemEditionState(editionId, newsItemId, property, value);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public NewsItemEditionState updateNewsItemEditionState(NewsItemEditionState newsItemEditionState) {
-        return daoService.update(newsItemEditionState);
+        return newsItemFacade.updateNewsItemEditionState(newsItemEditionState);
+    }
+
+    @Override
+    public NewsItemEditionState findNewsItemEditionState(Long editionId, Long newsItemId, String property) throws DataNotFoundException {
+        return newsItemFacade.findNewsItemEditionState(editionId, newsItemId, property);
+    }
+
+    @Override
+    public NewsItemEditionState findNewsItemEditionStateOrCreate(Long editionId, Long newsItemId, String property, String value) {
+        return newsItemFacade.findNewsItemEditionStateOrCreate(editionId, newsItemId, property, value);
     }
 }

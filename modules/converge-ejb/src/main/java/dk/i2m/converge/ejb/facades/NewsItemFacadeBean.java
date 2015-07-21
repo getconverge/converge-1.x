@@ -50,7 +50,7 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
 
     private static final Logger LOG = Logger.getLogger(NewsItemFacadeBean.class.
             getName());
-    
+
     @EJB
     private ConfigurationServiceLocal cfgService;
     @EJB
@@ -94,7 +94,6 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
         if (newsItem.getOutlet() == null) {
             throw new WorkflowStateTransitionException("Outlet must be selected");
         }
-
 
         WorkflowState startState = newsItem.getOutlet().getWorkflow().
                 getStartState();
@@ -419,9 +418,9 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
 
                 // Look at each story in the outlet
                 Map params = QueryBuilder.with("outlet", outlet).parameters();
-                List<NewsItem> itemsInOutlet =
-                        daoService.findWithNamedQuery(NewsItem.FIND_BY_OUTLET,
-                        params);
+                List<NewsItem> itemsInOutlet
+                        = daoService.findWithNamedQuery(NewsItem.FIND_BY_OUTLET,
+                                params);
 
                 for (NewsItem ni : itemsInOutlet) {
 
@@ -828,8 +827,8 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
         try {
             UserAccount updaterUser = userService.findById(ctx.
                     getCallerPrincipal().getName());
-            NewsItem orig =
-                    daoService.findById(NewsItem.class, newsItem.getId());
+            NewsItem orig
+                    = daoService.findById(NewsItem.class, newsItem.getId());
 
             if (!orig.isLocked()) {
                 throw new LockingException(
@@ -933,7 +932,7 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
         ContentItemPermission permission = getPermission(newsItem, user);
 
         LOG.log(Level.INFO, "Permission of #{0} for {1} is {2}", new Object[]{id,
-                    user, permission.toString()});
+            user, permission.toString()});
 
         if (newsItem.isLocked() && !newsItem.getCheckedOutBy().equals(user)) {
             // The item has been checked out and the check-out user is not the same as the one who has already checked it out
@@ -1229,5 +1228,45 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
             ni.setPrecalculatedCurrentActor(ni.getCurrentActor());
             ni.setPrecalculatedWordCount(ni.getWordCount());
         }
+    }
+
+    @Override
+    public NewsItemEditionState addNewsItemEditionState(Long editionId, Long newsItemId, String property, String value) {
+        try {
+            Edition edition = outletFacade.findEditionById(editionId);
+            NewsItem newsitem = findNewsItemById(newsItemId);
+            NewsItemEditionState editionState = new NewsItemEditionState(edition, newsitem, "", property, value, false);
+            return daoService.create(editionState);
+        } catch (DataNotFoundException ex) {
+            LOG.log(Level.SEVERE, ex.getMessage());
+            LOG.log(Level.FINEST, "", ex);
+        }
+
+        return new NewsItemEditionState();
+    }
+
+    @Override
+    public NewsItemEditionState updateNewsItemEditionState(NewsItemEditionState newsItemEditionState) {
+        return daoService.update(newsItemEditionState);
+    }
+
+    @Override
+    public NewsItemEditionState findNewsItemEditionState(Long editionId, Long newsItemId, String property) throws DataNotFoundException {
+        QueryBuilder criteria = QueryBuilder.with(NewsItemEditionState.PARAM_EDITION_ID, editionId).and(NewsItemEditionState.PARAM_NEWS_ITEM_ID, newsItemId).and(NewsItemEditionState.PARAM_PROPERTY, property);
+        return daoService.findObjectWithNamedQuery(NewsItemEditionState.class, NewsItemEditionState.FIND_BY_EDITION_NEWSITEM_PROPERTY, criteria.parameters());
+    }
+
+    @Override
+    public NewsItemEditionState findNewsItemEditionStateOrCreate(Long editionId, Long newsItemId, String property, String value) {
+        LOG.log(Level.FINER, "Looking for NewsItemEditionState. Edition: {0}, NewsItemId: {1}, Property:{2}", new Object[]{editionId, newsItemId, property});
+        NewsItemEditionState state;
+        try {
+            state = findNewsItemEditionState(editionId, newsItemId, property);
+            LOG.log(Level.FINER, "NewsItemEditionState found: {0}", state.getId());
+        } catch (DataNotFoundException ex) {
+            LOG.log(Level.FINER, "NewsItemEditionState was not found. Creating new NewsItemEditionState");
+            state = addNewsItemEditionState(editionId, newsItemId, property, value);
+        }
+        return state;
     }
 }

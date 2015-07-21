@@ -96,6 +96,7 @@ public class DrupalEditionActionIT {
     public PluginContext getPluginContext() {
         PluginContext ctx = mock(PluginContext.class);
         when(ctx.addNewsItemEditionState(anyLong(), anyLong(), anyString(), anyString())).thenReturn(new NewsItemEditionState());
+        when(ctx.findNewsItemEditionStateOrCreate(anyLong(), anyLong(), anyString(), anyString())).thenReturn(new NewsItemEditionState());
         return ctx;
     }
 
@@ -155,6 +156,7 @@ public class DrupalEditionActionIT {
         when(newsItem.getStory()).thenReturn("This is a sample story");
         when(newsItem.getByLine()).thenReturn("By Reporter");
         when(newsItem.isEndState()).thenReturn(true);
+        when(newsItem.getUpdated()).thenReturn(Calendar.getInstance());
         return newsItem;
     }
 

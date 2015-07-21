@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 Interactive Media Management
+ * Copyright (C) 2015 Allan Lykke Christensen
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +17,7 @@
  */
 package dk.i2m.converge.core.content;
 
+import dk.i2m.converge.core.plugin.EditionAction;
 import dk.i2m.converge.core.workflow.Edition;
 import java.io.Serializable;
 import javax.persistence.*;
@@ -24,10 +26,33 @@ import javax.persistence.*;
  * Tracking state of a {@link NewsItem} in an {@link EditionAction}.
  *
  * @author Raymond Wanyoike
+ * @author Allan Lykke Christensen
  */
 @Entity
 @Table(name = "news_item_edition_state")
+@NamedQueries({
+    @NamedQuery(name = NewsItemEditionState.FIND_BY_EDITION_NEWSITEM_PROPERTY, query = "SELECT n FROM NewsItemEditionState AS n WHERE n.edition.id = :" + NewsItemEditionState.PARAM_EDITION_ID + " AND n.newsItem.id = :" + NewsItemEditionState.PARAM_NEWS_ITEM_ID + " AND n.property = :" + NewsItemEditionState.PARAM_PROPERTY),})
 public class NewsItemEditionState implements Serializable {
+
+    /**
+     * Query for locating a {@link NewsItemEditionSate} based on the Edition,
+     * NewsItem and Property name using
+     * {@link NewsItemEditionState.PARAM_EDITION_ID}, {@link NewsItemEditionState.PARAM_NEWS_ITEM_ID}
+     * and {@link NewsItemEditionState.PARAM_PROPERTY}.
+     */
+    public static final String FIND_BY_EDITION_NEWSITEM_PROPERTY = "NewsItemEditionState.findByEditionNewsItemProperty";
+    /**
+     * Query parameter for specifying the ID of an Edition.
+     */
+    public static final String PARAM_EDITION_ID = "editionId";
+    /**
+     * Query parameter for specifying the ID of a News Item.
+     */
+    public static final String PARAM_NEWS_ITEM_ID = "newsItemId";
+    /**
+     * Query parameter for specifying the ID of a Property.
+     */
+    public static final String PARAM_PROPERTY = "property";
 
     @Id
     @Column(name = "id")
