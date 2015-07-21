@@ -273,7 +273,7 @@ public class SearchEngineBean implements SearchEngineLocal {
             solrQuery.addFilterQuery(filterQueries);
             solrQuery.setFacetMinCount(1);
             solrQuery.setIncludeScore(true);
-            solrQuery.setHighlight(true).setHighlightSnippets(1); //set other params as needed
+            solrQuery.setHighlight(true).setHighlightSnippets(1);
             solrQuery.setParam("hl.fl", "title,story,caption");
             solrQuery.setParam("hl.fragsize", "500");
             solrQuery.setParam("hl.simple.pre", "<span class=\"searchHighlight\">");

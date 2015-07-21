@@ -283,7 +283,7 @@ public class TextOutputAction implements WorkflowAction {
             BufferedWriter out = new BufferedWriter(fstream);
             out.write(outputText);
             out.close();
-        } catch (Exception e) {//Catch exception if any
+        } catch (Exception e) {
             LOG.log(Level.SEVERE, "Failed writing file to disk. {0}", e.
                     getMessage());
             LOG.log(Level.FINE, "", e);

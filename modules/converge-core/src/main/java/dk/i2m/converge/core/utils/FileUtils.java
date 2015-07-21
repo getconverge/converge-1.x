@@ -173,7 +173,7 @@ public class FileUtils {
         if (contentLength != -1) {
             tmpOut = new ByteArrayOutputStream(contentLength);
         } else {
-            tmpOut = new ByteArrayOutputStream(16384); // Pick some appropriate size
+            tmpOut = new ByteArrayOutputStream(16384);
         }
 
         byte[] buf = new byte[512];
