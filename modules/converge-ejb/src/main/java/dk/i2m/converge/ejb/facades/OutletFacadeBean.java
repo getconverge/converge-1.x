@@ -21,6 +21,7 @@ import dk.i2m.converge.core.content.NewsItemPlacement;
 import dk.i2m.converge.core.dto.EditionAssignmentView;
 import dk.i2m.converge.core.dto.EditionView;
 import dk.i2m.converge.core.dto.OutletActionView;
+import dk.i2m.converge.core.plugin.EditionAction;
 import dk.i2m.converge.core.security.UserRole;
 import dk.i2m.converge.core.utils.BeanComparator;
 import dk.i2m.converge.core.workflow.*;
@@ -713,32 +714,27 @@ public class OutletFacadeBean implements OutletFacadeLocal {
     }
 
     /**
-     * Schedules the execution of all actions of an edition
+     * Schedules the execution of all {@link edition actions EditionAction} of an {@link Edition}.
      *
-     * @param editionId Unique identifier of the edition
+     * @param editionId Unique identifier of the {@link Edition} to schedule actions
      */
     @Override
     public void scheduleActions(Long editionId) {
         Connection connection = null;
         try {
             Edition edition = daoService.findById(Edition.class, editionId);
-            List<OutletEditionAction> actions = edition.getOutlet().
-                    getAutomaticEditionActions();
+            
+            List<OutletEditionAction> actions = edition.getOutlet().getAutomaticEditionActions();
 
             connection = jmsConnectionFactory.createConnection();
-            Session session = connection.createSession(true,
-                    Session.AUTO_ACKNOWLEDGE);
+            Session session = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
 
             MessageProducer producer = session.createProducer(destination);
 
             for (OutletEditionAction action : actions) {
                 MapMessage message = session.createMapMessage();
-                message.
-                        setLongProperty(EditionServiceMessageBean.Property.EDITION_ID.
-                        name(), editionId);
-                message.
-                        setLongProperty(EditionServiceMessageBean.Property.ACTION_ID.
-                        name(), action.getId());
+                message.setLongProperty(EditionServiceMessageBean.Property.EDITION_ID.name(), editionId);
+                message.setLongProperty(EditionServiceMessageBean.Property.ACTION_ID.name(), action.getId());
                 producer.send(message);
             }
             session.close();
@@ -747,13 +743,15 @@ public class OutletFacadeBean implements OutletFacadeLocal {
         } catch (DataNotFoundException ex) {
             LOG.log(Level.WARNING, ex.getMessage());
         } catch (JMSException ex) {
-            Logger.getLogger(OutletFacadeBean.class.getName()).log(Level.SEVERE,
-                    null, ex);
+            LOG.log(Level.SEVERE, ex.getMessage());
+            LOG.log(Level.FINEST, "", ex);
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
                 } catch (Exception e) {
+                    LOG.log(Level.SEVERE, e.getMessage());
+                    LOG.log(Level.FINEST, "", e);
                 }
             }
         }
