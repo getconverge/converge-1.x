@@ -14,13 +14,22 @@ Story writing - That is, the process of a writer securely typing a story directl
 Converge is a Java Enterprise Edition 6 (JEE6) applications and must be installed on a JEE6-compliant application server. Converge uses the Java Persistence API (JPA) and Java Database Connectivity (JDBC) to communicate with the database server and is therefore database independent. Converge has been extensively tested and used in production with the MySQL Database Server 5.5. User management is done through the Lightweight Directory Access Protocol (LDAP) such as OpenDS, OpenLDAP or Microsoft Active Directory. Converge operates on a full open source stack consisting of:
 
 - Operating System: Ubuntu 12.04+
-- Application Server: Glassfish v4.0 
+- Application Server: Glassfish v2.1 (Upgrade to Glassfish v4.0 on the Roadmap)
 - Database Server: MySQL Server 5.5 
 - Web Server: Apache 2+
 - Java Virtual Machine: Oracle Java 1.7
 - Directory Service: OpenDS 2+
 
 Converge can also operate on proprietary platforms using Microsoft Windows Server, Oracle Database and Application Servers, and Microsoft Active Directory. 
+
+## More Information
+
+- Product Information: [http://www.getconverge.com](http://www.getconverge.com)
+- Issue Tracking: [http://issues.getconverge.com](http://issues.getconverge.com)
+- User Documentation: [http://docs.getconverge.com/user](http://docs.getconverge.com/user)
+- Developer Documentation: [http://docs.getconverge.com/dev](http://docs.getconverge.com/dev)
+- Continuous Integration: [http://ci.getconverge.com](http://ci.getconverge.com)
+- Source Code Quality: [http://sonarqube.getconverge.com](http://sonarqube.getconverge.com)
 
 ## License 
 
