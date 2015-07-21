@@ -210,7 +210,7 @@ public class HttpUtils {
      */
     public static String getFullContextPath(final HttpServletRequest request) {
 
-        StringBuffer path = new StringBuffer();
+        StringBuilder path = new StringBuilder();
 
         path.append(request.getScheme());
         path.append("://");
@@ -249,7 +249,7 @@ public class HttpUtils {
 
         // Generate the two parameters used in the digest
         long systime = System.currentTimeMillis();
-        byte[] time = new Long(systime).toString().getBytes();
+        byte[] time = Long.toString(systime).getBytes();
         byte[] id = session.getId().getBytes();
 
         // Create and set the digest
@@ -271,8 +271,8 @@ public class HttpUtils {
      *
      * @param request
      *            Request containing the flow to validate
-     * @return <code>true</code>, if the request flow has a valid token,
-     *         otherwise <code>false</code;
+     * @return {@code true}, if the request flow has a valid token,
+     *         otherwise {@code false}
      */
     public static boolean isTokenValid(HttpServletRequest request) {
         return isTokenValid(request, TOKEN_PARAM);
@@ -286,8 +286,8 @@ public class HttpUtils {
      *            Request containing the flow to validate
      * @param paramName
      *            Name of the parameter containing the token
-     * @return <code>true</code>, if the request flow has a valid token,
-     *         otherwise <code>false</code;
+     * @return {@code true}, if the request flow has a valid token,
+     *         otherwise {@code false};
      */
     public static boolean isTokenValid(HttpServletRequest request,
             String paramName) {
@@ -315,7 +315,7 @@ public class HttpUtils {
      */
     private static String toHex(byte[] byteArray) {
 
-        StringBuffer hexString = new StringBuffer();
+        StringBuilder hexString = new StringBuilder();
 
         for (int i = 0; i < byteArray.length; i++) {
             hexString.append(Integer.toHexString((int) byteArray[i] & 0x00ff));
@@ -324,6 +324,15 @@ public class HttpUtils {
         return hexString.toString();
     }
 
+    private static final String BINARY_HEADER_CONTENT_DISPOSITION = "Content-Disposition";
+    private static final String BINARY_HEADER_CONTENT_TRANSFER_ENCODING = "Content-Transfer-Encoding";
+    private static final String BINARY_HEADER_CONTENT_TRANSFER_ENCODING_VALUE = "Binary";
+    private static final String BINARY_HEADER_PRAGMA = "Pragma";
+    private static final String BINARY_HEADER_PRAGMA_VALUE = "private";
+    private static final String BINARY_HEADER_CACHE_CONTROL = "cache-control";
+    private static final String BINARY_HEADER_CACHE_CONTROL_VALUE = "private, must-revalidate";
+    private static final String BINARY_HEADER_CONTENT_TYPE = "Content-Type";
+    
     /**
      * Sends a binary file to the user through a {@link HttpServletResponse}.
      * The response will be encoded as binary, disregarding any cache on the
@@ -340,11 +349,10 @@ public class HttpUtils {
      */
     public static void sendBinary(HttpServletResponse response, String filename,
             byte[] filedata) throws IOException {
-        response.setHeader("Content-Disposition", "attachment; filename=\"" +
-                filename + "\"");
-        response.setHeader("Content-Transfer-Encoding", "Binary");
-        response.setHeader("Pragma", "private");
-        response.setHeader("cache-control", "private, must-revalidate");
+        response.setHeader(BINARY_HEADER_CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"");
+        response.setHeader(BINARY_HEADER_CONTENT_TRANSFER_ENCODING, BINARY_HEADER_CONTENT_TRANSFER_ENCODING_VALUE);
+        response.setHeader(BINARY_HEADER_PRAGMA, BINARY_HEADER_PRAGMA_VALUE);
+        response.setHeader(BINARY_HEADER_CACHE_CONTROL, BINARY_HEADER_CACHE_CONTROL_VALUE);
 
         ServletOutputStream outs = response.getOutputStream();
         outs.write(filedata);
@@ -371,11 +379,10 @@ public class HttpUtils {
      */
     public static void sendBinary(HttpServletResponse response, String filename,
             byte[] filedata, String contentType) throws IOException {
-        response.setHeader("Content-Disposition", "inline; filename=\"" +
-                filename + "\"");
-        response.setHeader("Content-Type", contentType);
-        response.setHeader("Pragma", "private");
-        response.setHeader("cache-control", "private, must-revalidate");
+        response.setHeader(BINARY_HEADER_CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"");
+        response.setHeader(BINARY_HEADER_CONTENT_TYPE, contentType);
+        response.setHeader(BINARY_HEADER_PRAGMA, BINARY_HEADER_PRAGMA_VALUE);
+        response.setHeader(BINARY_HEADER_CACHE_CONTROL, BINARY_HEADER_CACHE_CONTROL_VALUE);
 
         ServletOutputStream outs = response.getOutputStream();
         outs.write(filedata);
