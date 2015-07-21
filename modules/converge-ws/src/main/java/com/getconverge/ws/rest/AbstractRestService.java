@@ -39,4 +39,19 @@ public abstract class AbstractRestService {
         }
     }
 
+    /**
+     * Checks if the user has logged in and has a given role.
+     *
+     * @param securityContext REST {@link SecurityContext}
+     * @param role Role which the user must have
+     * @throws WebApplicationException If the user is not logged in or does not
+     * have the given {@code role}
+     */
+    public void authCheck(SecurityContext securityContext, SecurityRole role) {
+        authCheck(securityContext);
+
+        if (!securityContext.isUserInRole(role.name())) {
+            throw new WebApplicationException(Status.UNAUTHORIZED);
+        }
+    }
 }
