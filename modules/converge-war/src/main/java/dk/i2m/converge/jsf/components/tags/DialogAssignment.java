@@ -44,7 +44,7 @@ import javax.faces.event.ValueChangeEvent;
  */
 public class DialogAssignment {
 
-    private static final Logger log = Logger.getLogger(DialogAssignment.class.
+    private static final Logger LOG = Logger.getLogger(DialogAssignment.class.
             getName());
 
     private OutletFacadeLocal outletFacade;
@@ -575,7 +575,7 @@ public class DialogAssignment {
                             outletFacade.findEditionById(getEditionCandidate().
                             getEditionId()));
                 } catch (DataNotFoundException ex) {
-                    log.log(Level.INFO, "Edition {0} does not exist",
+                    LOG.log(Level.INFO, "Edition {0} does not exist",
                             getEditionCandidate().getEditionId());
                 }
             } else {
@@ -601,7 +601,7 @@ public class DialogAssignment {
                 selectedNewsItemPlacement.setEdition(outletFacade.
                         findEditionById(getEditionCandidate().getEditionId()));
             } catch (DataNotFoundException ex) {
-                log.log(Level.INFO, "Edition {0} does not exist",
+                LOG.log(Level.INFO, "Edition {0} does not exist",
                         getEditionCandidate().getEditionId());
             }
         } else {

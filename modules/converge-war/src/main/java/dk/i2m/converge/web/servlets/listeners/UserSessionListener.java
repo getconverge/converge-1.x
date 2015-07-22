@@ -31,33 +31,33 @@ import javax.servlet.http.HttpSessionListener;
  */
 public class UserSessionListener implements HttpSessionListener {
 
-    private static final Logger log = Logger.getLogger(UserSessionListener.class.getName());
+    private static final Logger LOG = Logger.getLogger(UserSessionListener.class.getName());
 
     @EJB private NewsItemFacadeLocal newsItemFacade;
 
     @Override
     public void sessionCreated(HttpSessionEvent se) {
-        log.log(Level.INFO, "User session {0} created", se.getSession().getId());
+        LOG.log(Level.INFO, "User session {0} created", se.getSession().getId());
         UserSessions.getInstance().add(se.getSession());
-        log.log(Level.INFO, "{0} active user {0, choice, 0#sessions|1#session|2#sessions}", UserSessions.getInstance().getNumberOfActiveSessions());
+        LOG.log(Level.INFO, "{0} active user {0, choice, 0#sessions|1#session|2#sessions}", UserSessions.getInstance().getNumberOfActiveSessions());
     }
 
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
-        log.log(Level.INFO, "User session {0} destroyed", se.getSession().getId());
+        LOG.log(Level.INFO, "User session {0} destroyed", se.getSession().getId());
         UserSessions.getInstance().remove(se.getSession().getId());
-        log.log(Level.INFO, "{0} active user sessions", UserSessions.getInstance().getNumberOfActiveSessions());
+        LOG.log(Level.INFO, "{0} active user sessions", UserSessions.getInstance().getNumberOfActiveSessions());
 
         if (se.getSession().getAttribute("uid") != null) {
             String uid = (String) se.getSession().getAttribute("uid");
             boolean loggedin = UserSessions.getInstance().isUserLoggedIn(uid);
 
             if (loggedin) {
-                log.log(Level.INFO, "{0} is logged-in in a different session", uid);
+                LOG.log(Level.INFO, "{0} is logged-in in a different session", uid);
             } else {
-                log.log(Level.INFO, "{0} is completely logged off. Clearing locks", uid);
+                LOG.log(Level.INFO, "{0} is completely logged off. Clearing locks", uid);
                 int removed = newsItemFacade.revokeLocks(uid);
-                log.log(Level.INFO, "{0} {0, choice, 0#locks|1#lock|2#locks} removed", removed);
+                LOG.log(Level.INFO, "{0} {0, choice, 0#locks|1#lock|2#locks} removed", removed);
             }
         }
     }

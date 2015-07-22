@@ -32,7 +32,7 @@ import javax.faces.convert.Converter;
  */
 public class DepartmentConverter implements Converter {
 
-    private static final Logger log = Logger.getLogger(DepartmentConverter.class.
+    private static final Logger LOG = Logger.getLogger(DepartmentConverter.class.
             getName());
 
     private OutletFacadeLocal outletFacade;
@@ -51,7 +51,7 @@ public class DepartmentConverter implements Converter {
             return outletFacade.findDepartmentById(Long.valueOf(value));
 
         } catch (DataNotFoundException ex) {
-            log.log(Level.WARNING, "No department matching [{0}]", value);
+            LOG.log(Level.WARNING, "No department matching [{0}]", value);
             return null;
         }
     }

@@ -31,7 +31,7 @@ import javax.faces.convert.Converter;
  */
 public class CurrencyConverter implements Converter {
 
-    private static final Logger log = Logger.getLogger(CurrencyConverter.class.getName());
+    private static final Logger LOG = Logger.getLogger(CurrencyConverter.class.getName());
 
     private final ListingFacadeLocal facade;
 
@@ -48,10 +48,10 @@ public class CurrencyConverter implements Converter {
         try {
             return facade.findCurrencyById(Long.valueOf(value));
         } catch (DataNotFoundException ex) {
-            log.log(Level.WARNING, "No matching currency", ex);
+            LOG.log(Level.WARNING, "No matching currency", ex);
             return null;
         } catch (NumberFormatException ex) {
-            log.log(Level.SEVERE, "Invalid object passed to Converter. Expected Long object received {0} ({1})", new Object[]{value.getClass(), value});
+            LOG.log(Level.SEVERE, "Invalid object passed to Converter. Expected Long object received {0} ({1})", new Object[]{value.getClass(), value});
             return null;
         }
     }
@@ -63,7 +63,7 @@ public class CurrencyConverter implements Converter {
             return "";
         } else {
             if (currency.getId() == null) {
-                log.log(Level.SEVERE, "Currency does not exist in database");
+                LOG.log(Level.SEVERE, "Currency does not exist in database");
                 return null;
             } else {
                 return String.valueOf(currency.getId());

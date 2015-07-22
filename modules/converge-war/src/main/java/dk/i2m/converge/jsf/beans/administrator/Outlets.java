@@ -419,7 +419,7 @@ public class Outlets extends BaseBean {
         try {
             selectedOutlet = outletFacade.findOutletById(selectedOutlet.getId());
         } catch (DataNotFoundException ex) {
-            logger.log(Level.SEVERE, ex.getMessage(), ex);
+            LOG.log(Level.SEVERE, ex.getMessage(), ex);
         }
     }
 
@@ -469,7 +469,7 @@ public class Outlets extends BaseBean {
         try {
             selectedOutlet = outletFacade.findOutletById(selectedOutlet.getId());
         } catch (DataNotFoundException ex) {
-            logger.log(Level.SEVERE, ex.getMessage(), ex);
+            LOG.log(Level.SEVERE, ex.getMessage(), ex);
         }
 
     }

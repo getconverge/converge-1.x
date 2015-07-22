@@ -43,7 +43,7 @@ import javax.faces.event.ActionEvent;
  */
 public class NewsReader {
 
-    private static final Logger log = Logger.getLogger(NewsReader.class.getName());
+    private static final Logger LOG = Logger.getLogger(NewsReader.class.getName());
 
     @EJB private OutletFacadeLocal outletFacade;
 
@@ -122,7 +122,7 @@ public class NewsReader {
             //selectedEditions = outletFacade.findEditionByOutletAndDate(selectedOutlet.getId(), editionDate);
             selectedEditions = outletFacade.findEditionsByDate(selectedOutlet, editionDate);
         } else {
-            log.log(Level.FINEST, "Outlet [{0}] or date [{1}] is not selected", new Object[]{selectedOutlet, selectedDate});
+            LOG.log(Level.FINEST, "Outlet [{0}] or date [{1}] is not selected", new Object[]{selectedOutlet, selectedDate});
         }
     }
 

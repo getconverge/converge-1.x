@@ -32,7 +32,7 @@ import javax.faces.context.FacesContext;
  */
 public abstract class BaseBean {
 
-    protected static final Logger logger = Logger.getLogger(BaseBean.class.getName());
+    protected static final Logger LOG = Logger.getLogger(BaseBean.class.getName());
 
     @EJB private UserFacadeLocal userFacade;
 
@@ -55,7 +55,7 @@ public abstract class BaseBean {
                 try {
                     currentUserAccount = userFacade.findById(uid);
                 } catch (DataNotFoundException ex) {
-                    logger.log(Level.INFO, "User [{0}] could not be found", uid);
+                    LOG.log(Level.INFO, "User [{0}] could not be found", uid);
                 }
             }
 

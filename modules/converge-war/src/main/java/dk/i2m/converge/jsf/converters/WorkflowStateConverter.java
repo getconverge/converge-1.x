@@ -35,7 +35,7 @@ import javax.faces.convert.Converter;
 public class WorkflowStateConverter implements Converter {
 
     /** Application logger. */
-    private static Logger logger = Logger.getLogger(
+    private static final Logger LOG = Logger.getLogger(
             WorkflowStateConverter.class.getName());
 
     /** Facade used for looking up domain objects. */
@@ -56,7 +56,7 @@ public class WorkflowStateConverter implements Converter {
         try {
             return workflowFacade.findWorkflowStateById(Long.valueOf(value));
         } catch (DataNotFoundException ex) {
-            logger.log(Level.WARNING, "No workflow state matching [" + value +
+            LOG.log(Level.WARNING, "No workflow state matching [" + value +
                     "]", ex);
             return null;
         }

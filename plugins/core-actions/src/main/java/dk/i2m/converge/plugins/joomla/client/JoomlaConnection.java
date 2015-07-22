@@ -37,7 +37,7 @@ import org.apache.xmlrpc.client.TimingOutCallback.TimeoutException;
 public class JoomlaConnection {
 
     /** API logger. */
-    private static final Logger logger = Logger.getLogger(JoomlaConnection.class.getName());
+    private static final Logger LOG = Logger.getLogger(JoomlaConnection.class.getName());
 
     /** Plug-in version for which the API is compatible. */
     private static final String COMPATIBILITY = "1.0";
@@ -263,7 +263,7 @@ public class JoomlaConnection {
      * @throws JoomlaException
      */
     public Integer newArticle(String foreignId, String title, String intro, String story, String author, String categoryId, boolean frontPage, String displayOrder, String keywords, String description, Date publish, Date expire) throws JoomlaException {
-        logger.log(Level.INFO, "Executing {0} at {1} ", new Object[]{XMLRPC_METHOD_NEW_ARTICLE, url});
+        LOG.log(Level.INFO, "Executing {0} at {1} ", new Object[]{XMLRPC_METHOD_NEW_ARTICLE, url});
         try {
             TimingOutCallback callback = new TimingOutCallback(getTimeout() * 1000);
             XmlRpcClient client = getXmlRpcClient();
@@ -311,7 +311,7 @@ public class JoomlaConnection {
      *          Unique identifier of the article outside of Joomla
      */
     public void deleteArticle(String foreignId) throws JoomlaException {
-        logger.log(Level.INFO, "Executing {0} at {1} ", new Object[]{XMLRPC_METHOD_DELETE_ARTICLE, url});
+        LOG.log(Level.INFO, "Executing {0} at {1} ", new Object[]{XMLRPC_METHOD_DELETE_ARTICLE, url});
         try {
             TimingOutCallback callback = new TimingOutCallback(getTimeout() * 1000);
             XmlRpcClient client = getXmlRpcClient();
@@ -341,7 +341,7 @@ public class JoomlaConnection {
      * @throws JoomlaException If the categories could not be obtained due to a connection error
      */
     public Map<Integer, String> listCategories() throws JoomlaException {
-        logger.log(Level.INFO, "Executing {0} at {1} ", new Object[]{XMLRPC_METHOD_LIST_CATEGORIES, url});
+        LOG.log(Level.INFO, "Executing {0} at {1} ", new Object[]{XMLRPC_METHOD_LIST_CATEGORIES, url});
         Map<Integer, String> categories = new HashMap<Integer, String>();
         try {
             int callTimeout = getTimeout() * 1000;
@@ -351,16 +351,16 @@ public class JoomlaConnection {
 
             client.executeAsync(XMLRPC_METHOD_LIST_CATEGORIES, params, callback);
 
-            logger.log(Level.INFO, "Calling {0} and waiting for response (Timeout: {1} seconds)", new Object[]{XMLRPC_METHOD_LIST_CATEGORIES, callTimeout});
+            LOG.log(Level.INFO, "Calling {0} and waiting for response (Timeout: {1} seconds)", new Object[]{XMLRPC_METHOD_LIST_CATEGORIES, callTimeout});
             Object[] cats = (Object[]) callback.waitForResponse();
-            logger.log(Level.INFO, "Got response {0} from {1}. {2} results", new Object[]{XMLRPC_METHOD_LIST_CATEGORIES, url, callTimeout, cats.length});
+            LOG.log(Level.INFO, "Got response {0} from {1}. {2} results", new Object[]{XMLRPC_METHOD_LIST_CATEGORIES, url, callTimeout, cats.length});
 
             for (Object objCat : cats) {
                 HashMap<String, String> cat = (HashMap<String, String>) objCat;
                 try {
                     categories.put(Integer.valueOf(cat.get("id")), cat.get("title"));
                 } catch (Exception ex) {
-                    logger.log(Level.WARNING, "Unknown value found as category id: {0}. Skipping category.", cat.get("id"));
+                    LOG.log(Level.WARNING, "Unknown value found as category id: {0}. Skipping category.", cat.get("id"));
                 }
             }
 
@@ -393,7 +393,7 @@ public class JoomlaConnection {
      */
     public String uploadMediaFile(String subfolder, String filename, byte[] filedata) throws JoomlaException {
         try {
-            logger.log(Level.INFO, "Uploading {0}", new Object[]{filename});
+            LOG.log(Level.INFO, "Uploading {0}", new Object[]{filename});
             TimingOutCallback callback = new TimingOutCallback((getTimeout() + 120) * 1000);
             XmlRpcClient client = getXmlRpcClient();
 
@@ -403,7 +403,7 @@ public class JoomlaConnection {
 
             String location = (String) callback.waitForResponse();
 
-            logger.log(Level.INFO, "Media file #{0} uploaded to {1}", new Object[]{filename, location});
+            LOG.log(Level.INFO, "Media file #{0} uploaded to {1}", new Object[]{filename, location});
             return location;
         } catch (TimeoutException ex) {
             throw new JoomlaException(ex);

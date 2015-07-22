@@ -398,7 +398,7 @@ public class Workflows extends BaseBean {
             workflowFacade.updateWorkflow(selected);
             selected = workflowFacade.findWorkflowById(selected.getId());
         } catch (DataNotFoundException ex) {
-            logger.log(Level.WARNING, "Workflow does not exist", ex);
+            LOG.log(Level.WARNING, "Workflow does not exist", ex);
         }
     }
 
@@ -411,7 +411,7 @@ public class Workflows extends BaseBean {
             workflowFacade.deleteWorkflowStateById(selectedWorkflowState.getId());
             selected = workflowFacade.findWorkflowById(selected.getId());
         } catch (DataNotFoundException ex) {
-            logger.log(Level.WARNING, "Workflow does not exist", ex);
+            LOG.log(Level.WARNING, "Workflow does not exist", ex);
         }
     }
 
@@ -462,7 +462,7 @@ public class Workflows extends BaseBean {
                     workflowFacade.findWorkflowStateById(selectedWorkflowState.
                     getId());
         } catch (DataNotFoundException ex) {
-            logger.log(Level.SEVERE, ex.getMessage(), ex);
+            LOG.log(Level.SEVERE, ex.getMessage(), ex);
         }
     }
 
@@ -477,7 +477,7 @@ public class Workflows extends BaseBean {
                     workflowFacade.findWorkflowStateById(selectedWorkflowState.
                     getId());
         } catch (DataNotFoundException ex) {
-            logger.log(Level.WARNING, "Workflow does not exist", ex);
+            LOG.log(Level.WARNING, "Workflow does not exist", ex);
         }
     }
 
@@ -659,7 +659,7 @@ public class Workflows extends BaseBean {
                     workflowFacade.findWorkflowStepById(selectedWorkflowStep.
                     getId());
         } catch (DataNotFoundException ex) {
-            logger.log(Level.SEVERE, ex.getMessage(), ex);
+            LOG.log(Level.SEVERE, ex.getMessage(), ex);
         }
 
     }
@@ -687,7 +687,7 @@ public class Workflows extends BaseBean {
                     workflowFacade.findWorkflowStepById(selectedWorkflowStep.
                     getId());
         } catch (DataNotFoundException ex) {
-            logger.log(Level.SEVERE, ex.getMessage(), ex);
+            LOG.log(Level.SEVERE, ex.getMessage(), ex);
         }
 
     }

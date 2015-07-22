@@ -45,7 +45,7 @@ import org.richfaces.model.UploadItem;
  */
 public class Concepts {
 
-    private static final Logger log = Logger.getLogger(Concepts.class.getName());
+    private static final Logger LOG = Logger.getLogger(Concepts.class.getName());
 
     @EJB private MetaDataFacadeLocal metaDataFacade;
 
@@ -259,8 +259,8 @@ public class Concepts {
  
             fctx.responseComplete();
         } catch (IOException ex) {
-            log.log(Level.WARNING, "Writing the Excel Document was NOT Successfull");
-            log.log(Level.FINEST, "", ex);
+            LOG.log(Level.WARNING, "Writing the Excel Document was NOT Successfull");
+            LOG.log(Level.FINEST, "", ex);
         }
     }
 

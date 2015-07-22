@@ -58,7 +58,7 @@ public class Users extends BaseBean {
         try {
             this.displayUser = userFacade.findById(uid);
         } catch (DataNotFoundException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         }
     }
 

@@ -28,7 +28,6 @@ import dk.i2m.converge.jsf.beans.Bundle;
 import dk.i2m.jsf.JsfUtils;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
@@ -41,9 +40,6 @@ import javax.faces.model.ListDataModel;
  * @author Allan Lykke Christensen
  */
 public class Catalogues {
-
-    protected static final Logger LOG = Logger.getLogger(Catalogues.class.
-            getName());
 
     @EJB private CatalogueFacadeLocal catalogueFacade;
 

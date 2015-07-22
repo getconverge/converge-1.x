@@ -32,7 +32,7 @@ import javax.faces.convert.Converter;
  */
 public class ConceptConverter implements Converter {
 
-    private static final Logger log = Logger.getLogger(ConceptConverter.class.
+    private static final Logger LOG = Logger.getLogger(ConceptConverter.class.
             getName());
 
     private MetaDataFacadeLocal metaDataFacade;
@@ -47,7 +47,7 @@ public class ConceptConverter implements Converter {
         try {
             return metaDataFacade.findConceptById(Long.valueOf(value));
         } catch (DataNotFoundException ex) {
-            log.log(Level.WARNING, "No matching concept", ex);
+            LOG.log(Level.WARNING, "No matching concept", ex);
             return null;
         }
     }

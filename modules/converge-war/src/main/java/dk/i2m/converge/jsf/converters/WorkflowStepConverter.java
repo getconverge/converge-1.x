@@ -32,7 +32,7 @@ import javax.faces.convert.Converter;
  */
 public class WorkflowStepConverter implements Converter {
 
-    private static final Logger logger = Logger.getLogger(
+    private static final Logger LOG = Logger.getLogger(
             WorkflowStepConverter.class.getName());
 
     private WorkflowFacadeLocal workflowFacade;
@@ -57,7 +57,7 @@ public class WorkflowStepConverter implements Converter {
         try {
             return workflowFacade.findWorkflowStepById(Long.valueOf(value));
         } catch (DataNotFoundException ex) {
-            logger.log(Level.WARNING, "No WorkflowStep matching [" + value
+            LOG.log(Level.WARNING, "No WorkflowStep matching [" + value
                     + "]", ex);
             return null;
         }

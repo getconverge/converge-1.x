@@ -33,7 +33,7 @@ import javax.ejb.EJB;
  */
 public class NewsItemArchive {
 
-    private static final Logger log = Logger.getLogger(NewsItemArchive.class.getName());
+    private static final Logger LOG = Logger.getLogger(NewsItemArchive.class.getName());
 
     @EJB private NewsItemFacadeLocal newsItemFacade;
 
@@ -61,7 +61,7 @@ public class NewsItemArchive {
      *          Unique identifier of the news item to load
      */
     public void setId(Long id) {
-        log.log(Level.INFO, "Setting News Item #{0}", id);
+        LOG.log(Level.INFO, "Setting News Item #{0}", id);
         this.id = id;
 
         if (selectedNewsItem == null || (selectedNewsItem.getId() != id)) {

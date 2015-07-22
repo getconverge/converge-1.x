@@ -32,7 +32,7 @@ import javax.faces.convert.Converter;
  */
 public class EditionConverter implements Converter {
 
-    private static final Logger log = Logger.getLogger(EditionConverter.class.getName());
+    private static final Logger LOG = Logger.getLogger(EditionConverter.class.getName());
 
     private OutletFacadeLocal outletFacade;
 
@@ -56,10 +56,10 @@ public class EditionConverter implements Converter {
         try {
             return outletFacade.findEditionById(Long.valueOf(value));
         } catch (DataNotFoundException ex) {
-            log.log(Level.WARNING, "No matching edition", ex);
+            LOG.log(Level.WARNING, "No matching edition", ex);
             return null;
         } catch (NumberFormatException ex) {
-            log.log(Level.SEVERE, "Invalid object passed to Converter. Expected Long object received {0} ({1})", new Object[]{value.getClass(), value});
+            LOG.log(Level.SEVERE, "Invalid object passed to Converter. Expected Long object received {0} ({1})", new Object[]{value.getClass(), value});
             return null;
         }
     }
@@ -71,7 +71,7 @@ public class EditionConverter implements Converter {
             return "";
         } else {
             if (edition.getId() == null) {
-                log.log(Level.SEVERE, "Edition does not exist in database");
+                LOG.log(Level.SEVERE, "Edition does not exist in database");
                 return null;
             } else {
                 return String.valueOf(edition.getId());

@@ -32,7 +32,7 @@ import javax.faces.convert.Converter;
  */
 public class UserAccountConverter implements Converter {
 
-    private static final Logger log = Logger.getLogger(UserAccountConverter.class.
+    private static final Logger LOG = Logger.getLogger(UserAccountConverter.class.
             getName());
 
     private UserFacadeLocal userFacade;
@@ -51,7 +51,7 @@ public class UserAccountConverter implements Converter {
             return userFacade.findById(value);
 
         } catch (DataNotFoundException ex) {
-            log.log(Level.WARNING, "No users matching [" + value + "]");
+            LOG.log(Level.WARNING, "No users matching [" + value + "]");
             return null;
         }
     }

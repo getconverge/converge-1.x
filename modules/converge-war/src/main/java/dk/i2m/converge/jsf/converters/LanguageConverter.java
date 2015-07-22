@@ -32,7 +32,7 @@ import javax.faces.convert.Converter;
  */
 public class LanguageConverter implements Converter {
 
-    private static final Logger logger = Logger.getLogger(LanguageConverter.class.getName());
+    private static final Logger LOG = Logger.getLogger(LanguageConverter.class.getName());
 
     private SystemFacadeLocal systemFacade;
 
@@ -51,7 +51,7 @@ public class LanguageConverter implements Converter {
         try {
             return systemFacade.findLanguageById(Long.valueOf(value));
         } catch (DataNotFoundException ex) {
-            logger.log(Level.WARNING, "No matching Language {0}", value);
+            LOG.log(Level.WARNING, "No matching Language {0}", value);
             return null;
         }
     }
