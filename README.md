@@ -11,7 +11,7 @@ Story writing - That is, the process of a writer securely typing a story directl
 
 ## Technology
 
-Converge is a Java Enterprise Edition 6 (JEE6) applications and must be installed on a JEE6-compliant application server. Converge uses the Java Persistence API (JPA) and Java Database Connectivity (JDBC) to communicate with the database server and is therefore database independent. Converge has been extensively tested and used in production with the MySQL Database Server 5.5. User management is done through the Lightweight Directory Access Protocol (LDAP) such as OpenDS, OpenLDAP or Microsoft Active Directory. Converge operates on a full open source stack consisting of:
+Converge is a Java Enterprise Edition 5 (JEE5) applications and must be installed on a JEE6-compliant application server. Converge uses the Java Persistence API (JPA) and Java Database Connectivity (JDBC) to communicate with the database server and is therefore database independent. Converge has been extensively tested and used in production with the MySQL Database Server 5.5. User management is done through the Lightweight Directory Access Protocol (LDAP) such as OpenDS, OpenLDAP or Microsoft Active Directory. Converge operates on a full open source stack consisting of:
 
 - Operating System: Ubuntu 12.04+
 - Application Server: Glassfish v2.1 (Upgrade to Glassfish v4.0 on the Roadmap)
@@ -21,6 +21,10 @@ Converge is a Java Enterprise Edition 6 (JEE6) applications and must be installe
 - Directory Service: OpenDS 2+
 
 Converge can also operate on proprietary platforms using Microsoft Windows Server, Oracle Database and Application Servers, and Microsoft Active Directory. 
+
+## Installing Converge
+
+You'll find the installation guide for Converge at [https://getconverge.atlassian.net/wiki/display/CON/Installation+Guide](https://getconverge.atlassian.net/wiki/display/CON/Installation+Guide)
 
 ## More Information
 
