@@ -153,13 +153,13 @@ public class FileUtils {
     /**
      * Turns a {@link URL} into a byte array.
      *
-     * @param file
-     *          {@link URL} to turn into a byte array
+     * @param url {@link URL} to turn into a byte array
      * @return Byte array of the {@link URL}
-     * @throws java.io.IOException
-     *              If the URL could not be converted
+     * @throws IOException If the URL could not be converted
      */
     public static byte[] getBytes(URL url) throws IOException {
+        // Default byte array size if content length of URL cannot be determined
+        final int DEFAULT_BYTE_ARRAY_SIZE = 16384;
         URLConnection connection = url.openConnection();
         // Since you get a URLConnection, use it to get the InputStream
         InputStream in = connection.getInputStream();
@@ -173,7 +173,7 @@ public class FileUtils {
         if (contentLength != -1) {
             tmpOut = new ByteArrayOutputStream(contentLength);
         } else {
-            tmpOut = new ByteArrayOutputStream(16384);
+            tmpOut = new ByteArrayOutputStream(DEFAULT_BYTE_ARRAY_SIZE);
         }
 
         byte[] buf = new byte[512];
@@ -185,14 +185,9 @@ public class FileUtils {
             tmpOut.write(buf, 0, len);
         }
         in.close();
-        tmpOut.close(); // No effect, but good to do anyway to keep the metaphor alive
+        tmpOut.close(); 
 
-        byte[] array = tmpOut.toByteArray();
-
-        //Lines below used to test if file is corrupt
-       
-
-        return array;
+        return tmpOut.toByteArray();
     }
 
     public static String getString(InputStream is) throws IOException {
