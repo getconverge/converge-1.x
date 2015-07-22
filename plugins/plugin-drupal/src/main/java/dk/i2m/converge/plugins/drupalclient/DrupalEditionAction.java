@@ -21,6 +21,8 @@ import dk.i2m.converge.core.annotations.OutletAction;
 import dk.i2m.converge.core.content.NewsItem;
 import dk.i2m.converge.core.content.NewsItemEditionState;
 import dk.i2m.converge.core.content.NewsItemPlacement;
+import dk.i2m.converge.core.logging.LogSeverity;
+import dk.i2m.converge.core.logging.LogSubject;
 import dk.i2m.converge.core.plugin.EditionAction;
 import dk.i2m.converge.core.plugin.PluginContext;
 import dk.i2m.converge.core.workflow.Edition;
@@ -40,6 +42,8 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import static dk.i2m.converge.plugins.drupalclient.DrupalEditionActionHelper.*;
+import java.util.ArrayList;
+import java.util.MissingResourceException;
 
 /**
  * {@link EditionAction} for uploading content to Drupal websites using the
@@ -75,8 +79,8 @@ public class DrupalEditionAction implements EditionAction {
      * This is the resource type created for the Converge service in Drupal.
      */
     private static final String CONVERGE_DRUPAL_RESOURCE_TYPE = "newsitem";
+    private static final String DRUPAL_IMAGE_FIELD_NAME = "field_image";
     private static final Logger LOG = Logger.getLogger(DrupalEditionAction.class.getName());
-    private static final String LOG_PREFIX = "[#{0}:{1}] ";
     private static final DateFormat DRUPAL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static final String UPLOADING = "UPLOADING";
     private static final String UPLOADED = "UPLOADED";
@@ -94,75 +98,122 @@ public class DrupalEditionAction implements EditionAction {
     private DrupalServicesClient drupalServiceClient;
     private int errors = 0;
 
+    // Keys from the resource bundle
+    public enum BundleKey {
+
+        PLUGIN_NAME,
+        PLUGIN_DESCRIPTION,
+        PLUGIN_VENDOR,
+        PLUGIN_BUILD_TIME,
+        PLUGIN_ABOUT,
+        LOG_UPLOAD_INITIATED,
+        LOG_COULD_NOT_LOGIN,
+        LOG_NEWS_ITEMS_IN_EDITION,
+        LOG_COULD_NOT_CONNECT,
+        LOG_ERRORS_ENCOUNTERED_DURING_PROCESSING,
+        LOG_NO_ERRORS_ENCOUNTERED_DURING_PROCESSING,
+        LOG_FINISHED_UPLOADING_EDITION,
+        LOG_PROCESSING_PLACEMENT,
+        LOG_LOGIN_SUCCESSFUL,
+        LOG_COULD_NOT_PROCESS,
+        LOG_PLACEMENT_UPLOADED,
+        LOG_NEWS_ITEM_INCOMPLETE,
+        LOG_NEWS_ITEM_SECTION_UNMAPPED,
+        LOG_COULD_NOT_CHECK_IF_EXISTS,
+        LOG_CREATING_STATE_FOR_NEWS_ITEM,
+        LOG_CREATING_DRUPAL_NODE_AND_UPLOADING_IMAGES,
+        LOG_CREATED_DRUPAL_NODE,
+        LOG_IMAGES_UPLOADED_TO_DRUPAL,
+        LOG_GETTING_DRUPAL_PATH,
+        LOG_COULD_NOT_CREATE,
+        LOG_UPDATING_STATE_FOR_NEWS_ITEM,
+        LOG_FINISHED_UPLOAD_NEWS_ITEM,
+        LOG_NODE_OUTDATED,
+        LOG_NODE_UP_TO_DATE,
+        LOG_UPDATING_DRUPAL_NODE_AND_UPLOADING_IMAGES,
+        LOG_COULD_NOT_UPDATE
+    }
+
     @Override
     public void execute(PluginContext ctx, Edition edition, OutletEditionAction action) {
-        LOG.log(Level.INFO, LOG_PREFIX + "Executing DrupalEditionAction on Edition #{2}", new Object[]{action.getId(), action.getLabel(), edition.getId()});
+        this.pluginContext = ctx;
         this.errors = 0;
         this.action = action;
-        this.pluginContext = ctx;
+
+        log(LogSeverity.INFO, BundleKey.LOG_UPLOAD_INITIATED, new Object[]{}, edition.getId());
 
         init();
 
         try {
             if (!this.drupalServiceClient.login()) {
-                LOG.log(Level.SEVERE, LOG_PREFIX + "Could not log-in to the configured Drupal Instance", new Object[]{action.getId(), action.getLabel()});
+                log(LogSeverity.SEVERE, BundleKey.LOG_COULD_NOT_LOGIN, edition.getId());
                 return;
             }
-            LOG.log(Level.INFO, LOG_PREFIX + "Number of items in Edition #{2}: {3}", new Object[]{action.getId(), action.getLabel(), edition.getId(), edition.getNumberOfPlacements()});
+            log(LogSeverity.INFO, BundleKey.LOG_NEWS_ITEMS_IN_EDITION, new Object[]{edition.getNumberOfPlacements()}, edition.getId());
 
             for (NewsItemPlacement nip : edition.getPlacements()) {
                 processPlacement(nip);
             }
 
         } catch (DrupalServerConnectionException ex) {
-            LOG.log(Level.SEVERE, LOG_PREFIX + "{2}", new Object[]{action.getId(), action.getLabel(), ex.getMessage()});
+            log(LogSeverity.SEVERE, BundleKey.LOG_COULD_NOT_CONNECT, new Object[]{ex.getMessage()}, edition.getId());
             LOG.log(Level.FINEST, null, ex);
             return;
         } finally {
             try {
                 drupalServiceClient.logout();
             } catch (DrupalServerConnectionException ex) {
-                LOG.log(Level.SEVERE, LOG_PREFIX + "{2}", new Object[]{action.getId(), action.getLabel(), ex.getMessage()});
+                LOG.log(Level.SEVERE, "{2}", new Object[]{action.getId(), action.getLabel(), ex.getMessage()});
                 LOG.log(Level.FINEST, null, ex);
             }
         }
-        
-        LOG.log(Level.INFO, LOG_PREFIX + "{2} errors encounted", new Object[]{action.getId(), action.getLabel(), this.errors});
-        LOG.log(Level.INFO, LOG_PREFIX + "Finishing action. Edition #{2}", new Object[]{action.getId(), action.getLabel(), edition.getId()});
+
+        if (this.errors > 0) {
+            log(LogSeverity.WARNING, BundleKey.LOG_ERRORS_ENCOUNTERED_DURING_PROCESSING, new Object[]{this.errors}, edition.getId());
+        } else {
+            log(LogSeverity.INFO, BundleKey.LOG_NO_ERRORS_ENCOUNTERED_DURING_PROCESSING, edition.getId());
+        }
+        log(LogSeverity.INFO, BundleKey.LOG_FINISHED_UPLOADING_EDITION, edition.getId());
     }
 
     @Override
     public void executePlacement(PluginContext ctx, NewsItemPlacement placement, Edition edition, OutletEditionAction action) {
-        LOG.log(Level.INFO, LOG_PREFIX + "Executing DrupalEditionAction for NewsItem #{2} in Edition #{3}", new Object[]{action.getId(), action.getLabel(), placement.getNewsItem().getId(), edition.getId()});
         this.errors = 0;
         this.action = action;
         this.pluginContext = ctx;
+        NewsItem newsItem = placement.getNewsItem();
+        Long editionId = edition.getId();
+        Long newsItemId = newsItem.getId();
+
+        log(LogSeverity.INFO, BundleKey.LOG_PROCESSING_PLACEMENT, new Object[]{newsItemId, newsItem.getTitle()}, editionId, newsItemId);
 
         init();
 
         try {
             if (!drupalServiceClient.login()) {
-                LOG.log(Level.SEVERE, LOG_PREFIX + "Could not log-in to the configured Drupal Instance", new Object[]{action.getId(), action.getLabel()});
+                log(LogSeverity.SEVERE, BundleKey.LOG_COULD_NOT_LOGIN, editionId, newsItemId);
                 return;
             } else {
-                LOG.log(Level.INFO, LOG_PREFIX + "Logged into Drupal successfully", new Object[]{action.getId(), action.getLabel()});
+                log(LogSeverity.INFO, BundleKey.LOG_LOGIN_SUCCESSFUL, editionId, newsItemId);
             }
             processPlacement(placement);
         } catch (DrupalServerConnectionException ex) {
-            LOG.log(Level.SEVERE, LOG_PREFIX + "{0}", new Object[]{action.getId(), action.getLabel(), ex.getMessage()});
+            log(LogSeverity.SEVERE, BundleKey.LOG_COULD_NOT_PROCESS, new Object[]{newsItemId, newsItem.getTitle(), ex.getMessage()}, editionId, newsItemId);
             LOG.log(Level.FINEST, null, ex);
+            this.errors++;
             return;
         } finally {
             try {
                 drupalServiceClient.logout();
             } catch (DrupalServerConnectionException ex) {
-                LOG.log(Level.SEVERE, LOG_PREFIX + "{2}", new Object[]{action.getId(), action.getLabel(), ex.getMessage()});
+                LOG.log(Level.SEVERE, "{2}", new Object[]{action.getId(), action.getLabel(), ex.getMessage()});
                 LOG.log(Level.FINEST, null, ex);
+                this.errors++;
             }
         }
 
-        LOG.log(Level.INFO, "{0} errors encounted", new Object[]{this.errors});
-        LOG.log(Level.INFO, "Finishing action. Edition #{0}", new Object[]{edition.getId()});
+        log(LogSeverity.INFO, BundleKey.LOG_ERRORS_ENCOUNTERED_DURING_PROCESSING, new Object[]{this.errors}, editionId, newsItemId);
+        log(LogSeverity.INFO, BundleKey.LOG_PLACEMENT_UPLOADED, new Object[]{newsItemId}, editionId, newsItemId);
     }
 
     @Override
@@ -190,23 +241,23 @@ public class DrupalEditionAction implements EditionAction {
 
     @Override
     public String getName() {
-        return bundle.getString("PLUGIN_NAME");
+        return getMsg(BundleKey.PLUGIN_NAME);
     }
 
     @Override
     public String getDescription() {
-        return bundle.getString("PLUGIN_DESCRIPTION");
+        return getMsg(BundleKey.PLUGIN_DESCRIPTION);
     }
 
     @Override
     public String getVendor() {
-        return bundle.getString("PLUGIN_VENDOR");
+        return getMsg(BundleKey.PLUGIN_VENDOR);
     }
 
     @Override
     public Date getDate() {
         try {
-            return DRUPAL_DATE_FORMAT.parse(bundle.getString("PLUGIN_BUILD_TIME"));
+            return DRUPAL_DATE_FORMAT.parse(getMsg(BundleKey.PLUGIN_BUILD_TIME));
         } catch (ParseException e) {
             return new Date();
         }
@@ -219,7 +270,7 @@ public class DrupalEditionAction implements EditionAction {
 
     @Override
     public String getAbout() {
-        return bundle.getString("PLUGIN_ABOUT");
+        return getMsg(BundleKey.PLUGIN_ABOUT);
     }
 
     /**
@@ -257,10 +308,13 @@ public class DrupalEditionAction implements EditionAction {
      */
     private void processPlacement(NewsItemPlacement nip) {
         NewsItem newsItem = nip.getNewsItem();
+        Edition edition = nip.getEdition();
+        Long newsItemId = newsItem.getId();
+        Long editionId = edition.getId();
 
         // Ignore NewsItem if it hasn't reached the end state of the workflow
         if (!newsItem.isEndState()) {
-            LOG.log(Level.INFO, LOG_PREFIX + "Ignoring NewsItemPlacement #{2} / NewsItem #{3}. Not yet complete.", new Object[]{action.getId(), action.getLabel(), nip.getId(), newsItem.getId()});
+            log(LogSeverity.WARNING, BundleKey.LOG_NEWS_ITEM_INCOMPLETE, new Object[]{newsItemId, newsItem.getTitle(), newsItem.getCurrentState().getName()}, editionId, newsItemId);
             return;
         }
 
@@ -270,7 +324,7 @@ public class DrupalEditionAction implements EditionAction {
             NewsItemPlacementToNameValuePairsConverter converter = new NewsItemPlacementToNameValuePairsConverter();
             params = converter.convert(action, nip);
         } catch (UnmappedSectionException ex) {
-            LOG.log(Level.INFO, LOG_PREFIX + "Ignoring NewsItemPlacement #{2} / NewsItem #{3}. {4}", new Object[]{action.getId(), action.getLabel(), nip.getId(), newsItem.getId(), ex.getMessage()});
+            log(LogSeverity.WARNING, BundleKey.LOG_NEWS_ITEM_SECTION_UNMAPPED, new Object[]{newsItemId, newsItem.getTitle(), ex.getMessage()}, editionId, newsItemId);
             LOG.log(Level.FINEST, null, ex);
             return;
         }
@@ -282,7 +336,7 @@ public class DrupalEditionAction implements EditionAction {
             // determine if the news item is already uploaded
             update = this.drupalServiceClient.exists(CONVERGE_DRUPAL_RESOURCE_TYPE, nip.getNewsItem().getId());
         } catch (DrupalServerConnectionException ex) {
-            LOG.log(Level.SEVERE, LOG_PREFIX + "Could not determine if NewsItem #{2} exists. {3}", new Object[]{action.getId(), action.getLabel(), newsItem.getId(), ex.getMessage()});
+            log(LogSeverity.SEVERE, BundleKey.LOG_COULD_NOT_CHECK_IF_EXISTS, new Object[]{newsItemId, newsItem.getTitle(), ex.getMessage()}, editionId, newsItemId);
             LOG.log(Level.FINEST, null, ex);
             errors++;
             return;
@@ -301,8 +355,10 @@ public class DrupalEditionAction implements EditionAction {
     private void createNode(NewsItemPlacement newsItemPlacement, List<FileInfo> mediaItems, UrlEncodedFormEntity entity) {
         NewsItem newsItem = newsItemPlacement.getNewsItem();
         Edition edition = newsItemPlacement.getEdition();
+        Long newsItemId = newsItem.getId();
+        Long editionId = edition.getId();
 
-        LOG.log(Level.INFO, "Creating NewsItem Edition States in Converge");
+        log(LogSeverity.INFO, BundleKey.LOG_CREATING_STATE_FOR_NEWS_ITEM, new Object[]{newsItemId}, editionId, newsItemId);
         NewsItemEditionState status = pluginContext.addNewsItemEditionState(edition.getId(), newsItem.getId(), STATE_STATUS, UPLOADING);
         NewsItemEditionState nid = pluginContext.addNewsItemEditionState(edition.getId(), newsItem.getId(), STATE_NID, null);
         NewsItemEditionState uri = pluginContext.addNewsItemEditionState(edition.getId(), newsItem.getId(), STATE_URI, null);
@@ -310,10 +366,17 @@ public class DrupalEditionAction implements EditionAction {
         NewsItemEditionState version = pluginContext.addNewsItemEditionState(edition.getId(), newsItem.getId(), STATE_LAST_UPDATED, "0");
         pluginContext.addNewsItemEditionState(edition.getId(), newsItem.getId(), STATE_DATE, new Date().toString());
 
-        LOG.log(Level.INFO, "Creating new Node for NewsItem #{0} & {1} image(s) on Drupal", new Object[]{newsItem.getId(), mediaItems.size()});
+        log(LogSeverity.INFO, BundleKey.LOG_CREATING_DRUPAL_NODE_AND_UPLOADING_IMAGES, new Object[]{newsItemId, mediaItems.size()}, editionId, newsItemId);
+
         try {
             NodeInfo newNode = drupalServiceClient.createNode(entity);
-            drupalServiceClient.attachFile(newNode.getId(), "field_image", mediaItems);
+            log(LogSeverity.INFO, BundleKey.LOG_CREATED_DRUPAL_NODE, new Object[]{newsItemId, newsItem.getTitle()}, editionId, newsItemId);
+            if (mediaItems.size() > 0) {
+                drupalServiceClient.attachFile(newNode.getId(), DRUPAL_IMAGE_FIELD_NAME, mediaItems);
+                log(LogSeverity.INFO, BundleKey.LOG_IMAGES_UPLOADED_TO_DRUPAL, new Object[]{newsItemId}, editionId, newsItemId);
+            }
+
+            log(LogSeverity.INFO, BundleKey.LOG_GETTING_DRUPAL_PATH, new Object[]{newsItemId}, editionId, newsItemId);
             String nodePath = drupalServiceClient.retrieveNodePath(newNode.getId());
 
             // Updating NewsItem Edition States
@@ -325,22 +388,25 @@ public class DrupalEditionAction implements EditionAction {
         } catch (DrupalServerConnectionException ex) {
             this.errors++;
             status.setValue(FAILED);
-            LOG.log(Level.SEVERE, ex.getMessage());
+            log(LogSeverity.SEVERE, BundleKey.LOG_COULD_NOT_CREATE, new Object[]{ex.getMessage()}, editionId, newsItemId);
             LOG.log(Level.FINEST, "", ex);
         }
 
-        LOG.log(Level.INFO, "Updating NewsItem Edition States in Converge");
+        log(LogSeverity.INFO, BundleKey.LOG_UPDATING_STATE_FOR_NEWS_ITEM, new Object[]{newsItemId}, editionId, newsItemId);
         pluginContext.updateNewsItemEditionState(status);
         pluginContext.updateNewsItemEditionState(nid);
         pluginContext.updateNewsItemEditionState(uri);
         pluginContext.updateNewsItemEditionState(path);
         pluginContext.updateNewsItemEditionState(version);
+
+        log(LogSeverity.INFO, BundleKey.LOG_FINISHED_UPLOAD_NEWS_ITEM, new Object[]{newsItemId, newsItem.getTitle()}, editionId, newsItemId);
     }
 
     private void updateNode(NewsItemPlacement nip, List<FileInfo> mediaItems, UrlEncodedFormEntity entity) {
         NewsItem ni = nip.getNewsItem();
-        Long newsItemId = ni.getId();
         Edition edition = nip.getEdition();
+        Long newsItemId = ni.getId();
+        Long editionId = edition.getId();
 
         NewsItemEditionState version = pluginContext.findNewsItemEditionStateOrCreate(edition.getId(), newsItemId, STATE_LAST_UPDATED, "0");
         NewsItemEditionState status = pluginContext.findNewsItemEditionStateOrCreate(edition.getId(), newsItemId, STATE_STATUS, UPLOADING);
@@ -351,15 +417,22 @@ public class DrupalEditionAction implements EditionAction {
 
         try {
             if (isDrupalNodeOutdated(ni, version)) {
-                LOG.log(Level.INFO, "NewsItem must be updated on Drupal");
+                log(LogSeverity.INFO, BundleKey.LOG_NODE_OUTDATED, new Object[]{newsItemId}, editionId, newsItemId);
                 submitted.setValue(new Date().toString());
                 pluginContext.updateNewsItemEditionState(submitted);
 
                 Long nodeId = drupalServiceClient.retrieveNodeIdFromResource(CONVERGE_DRUPAL_RESOURCE_TYPE, newsItemId);
 
-                LOG.log(Level.INFO, "Updating node #{0} with NewsItem #{1} & {2} image(s)", new Object[]{nodeId, newsItemId, mediaItems.size()});
+                log(LogSeverity.INFO, BundleKey.LOG_UPDATING_DRUPAL_NODE_AND_UPLOADING_IMAGES, new Object[]{nodeId, newsItemId, mediaItems.size()}, editionId, newsItemId);
+
                 NodeInfo updatedNode = drupalServiceClient.updateNode(nodeId, entity);
-                drupalServiceClient.attachFile(nodeId, "field_image", mediaItems);
+                //TODO; Remove existing media items
+                if (mediaItems.size() > 0) {
+                    drupalServiceClient.attachFile(nodeId, DRUPAL_IMAGE_FIELD_NAME, mediaItems);
+                    log(LogSeverity.INFO, BundleKey.LOG_IMAGES_UPLOADED_TO_DRUPAL, new Object[]{newsItemId}, editionId, newsItemId);
+                }
+
+                log(LogSeverity.INFO, BundleKey.LOG_GETTING_DRUPAL_PATH, new Object[]{newsItemId}, editionId, newsItemId);
                 String nodePath = drupalServiceClient.retrieveNodePath(updatedNode.getId());
 
                 // Updating NewsItem Edition States
@@ -369,20 +442,68 @@ public class DrupalEditionAction implements EditionAction {
                 version.setValue(String.valueOf(ni.getUpdated().getTimeInMillis()));
                 status.setValue(UPLOADED);
             } else {
-                LOG.log(Level.INFO, "NewsItem is already available in the latest version on Drupal. Skipping upload to Drupal");
+                log(LogSeverity.INFO, BundleKey.LOG_NODE_UP_TO_DATE, new Object[]{newsItemId}, editionId, newsItemId);
             }
         } catch (DrupalServerConnectionException ex) {
             this.errors++;
             status.setValue(FAILED);
-            LOG.log(Level.SEVERE, ex.getMessage());
+            log(LogSeverity.SEVERE, BundleKey.LOG_COULD_NOT_UPDATE, new Object[]{ex.getMessage()}, editionId, newsItemId);
             LOG.log(Level.FINEST, "", ex);
         }
 
-        LOG.log(Level.INFO, "Updating NewsItem Edition States in Converge");
+        log(LogSeverity.INFO, BundleKey.LOG_UPDATING_STATE_FOR_NEWS_ITEM, new Object[]{newsItemId}, editionId, newsItemId);
+
         pluginContext.updateNewsItemEditionState(status);
         pluginContext.updateNewsItemEditionState(nid);
         pluginContext.updateNewsItemEditionState(uri);
         pluginContext.updateNewsItemEditionState(path);
         pluginContext.updateNewsItemEditionState(version);
+        log(LogSeverity.INFO, BundleKey.LOG_FINISHED_UPLOAD_NEWS_ITEM, new Object[]{newsItemId, ni.getTitle()}, editionId, newsItemId);
+    }
+
+    private void log(LogSeverity severity, BundleKey message, Long editionId) {
+        log(severity, message, new Object[]{}, editionId);
+    }
+
+    private void log(LogSeverity severity, BundleKey message, Long editionId, Long newsItemId) {
+        log(severity, message, new Object[]{}, editionId, newsItemId);
+    }
+
+    private void log(LogSeverity severity, BundleKey message, Object[] arguments, Long editionId) {
+        if (pluginContext == null) {
+            LOG.log(Level.SEVERE, "PluginContext not yet set. Cannot log");
+            return;
+        }
+        LogSubject logEdition = new LogSubject(Edition.class.getName(), String.valueOf(editionId));
+        List<LogSubject> subjects = new ArrayList<LogSubject>();
+        subjects.add(logEdition);
+        pluginContext.log(severity, getMsg(message), arguments, subjects);
+    }
+
+    private void log(LogSeverity severity, BundleKey message, Object[] arguments, Long editionId, Long newsItemId) {
+        if (pluginContext == null) {
+            LOG.log(Level.SEVERE, "PluginContext not yet set. Cannot log");
+            return;
+        }
+        LogSubject logEdition = new LogSubject(Edition.class.getName(), String.valueOf(editionId));
+        LogSubject logNewsItem = new LogSubject(NewsItem.class.getName(), String.valueOf(newsItemId));
+        List<LogSubject> subjects = new ArrayList<LogSubject>();
+        subjects.add(logEdition);
+        subjects.add(logNewsItem);
+        pluginContext.log(severity, getMsg(message), arguments, subjects);
+    }
+
+    /**
+     * Gets a message from the {@link #bundle}.
+     *
+     * @param key Key of the message to retrieve
+     * @return Message stored behind the key
+     */
+    private String getMsg(BundleKey key) {
+        try {
+            return bundle.getString(key.name());
+        } catch (MissingResourceException ex) {
+            return key.name();
+        }
     }
 }

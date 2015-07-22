@@ -895,7 +895,7 @@ public class Planning implements UIEventListener {
     }
 
     public void onRefreshEditionLogEntries(ActionEvent event) {
-        List<LogEntry> entries = systemFacade.findLogEntries(Edition.class.toString(), String.
+        List<LogEntry> entries = systemFacade.findLogEntries(Edition.class.getName(), String.
                 valueOf(getSelectedEditionView().getId()), 0, 100);
         editionLogEntries = new ListDataModel(entries);
     }
@@ -906,7 +906,7 @@ public class Planning implements UIEventListener {
 
     public void onRefreshNewsItemLogEntries(ActionEvent event) {
         NewsItem logItem = getSelectedNewsItemPlacement().getNewsItem();
-        List<LogEntry> entries = systemFacade.findLogEntries(logItem, String.
+        List<LogEntry> entries = systemFacade.findLogEntries(NewsItem.class.getName(), String.
                 valueOf(logItem.getId()), 0, 100);
         logEntries = new ListDataModel(entries);
     }

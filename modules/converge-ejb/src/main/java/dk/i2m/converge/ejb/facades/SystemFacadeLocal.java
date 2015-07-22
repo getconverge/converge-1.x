@@ -156,11 +156,7 @@ public interface SystemFacadeLocal {
             java.lang.String originId);
 
     java.util.List<dk.i2m.converge.core.logging.LogEntry> findLogEntries(
-            java.lang.Object origin,
-            java.lang.String originId);
-
-    java.util.List<dk.i2m.converge.core.logging.LogEntry> findLogEntries(
-            Object origin,
+            String origin,
             String originId, int start, int count);
 
     List<LogEntry> findLogEntries(int start, int count);

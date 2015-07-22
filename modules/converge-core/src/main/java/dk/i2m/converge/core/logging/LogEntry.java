@@ -237,6 +237,18 @@ public class LogEntry implements Serializable {
      */
     @Override
     public String toString() {
-        return getClass().getName() + "[id=" + id + "]";
+        StringBuilder output = new StringBuilder(description);
+        output.append(" / [");
+        for (LogSubject subject : getSubjects()) {
+            output.append("(");
+            output.append(subject.getEntity());
+            output.append(": ");
+            output.append(subject.getEntityId());
+            output.append(")");
+        }
+        output.append("]");
+        
+        return output.toString();
     }
+    
 }

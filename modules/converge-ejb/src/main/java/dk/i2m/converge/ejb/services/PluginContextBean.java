@@ -282,7 +282,8 @@ public class PluginContextBean implements PluginContextBeanLocal {
     public void log(dk.i2m.converge.core.logging.LogSeverity severity,
             java.lang.String message, java.lang.Object[] messageArguments,
             List<LogSubject> subjects) {
-        systemFacade.log(severity, message, subjects);
+        String msg = MessageFormat.format(message, messageArguments);
+        systemFacade.log(severity, msg, subjects);
     }
 
     /**

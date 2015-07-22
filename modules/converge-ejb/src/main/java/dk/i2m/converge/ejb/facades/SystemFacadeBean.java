@@ -22,6 +22,7 @@ import dk.i2m.converge.core.ConfigurationKey;
 import dk.i2m.converge.core.DataNotFoundException;
 import dk.i2m.converge.core.content.Language;
 import dk.i2m.converge.core.logging.LogEntry;
+import dk.i2m.converge.core.logging.LogHelper;
 import dk.i2m.converge.core.logging.LogSeverity;
 import dk.i2m.converge.core.logging.LogSubject;
 import dk.i2m.converge.core.newswire.NewswireService;
@@ -52,15 +53,20 @@ public class SystemFacadeBean implements SystemFacadeLocal {
     private static final Logger LOG = Logger.getLogger(SystemFacadeBean.class.
             getName());
 
-    @EJB private UserServiceLocal userService;
+    @EJB
+    private UserServiceLocal userService;
 
-    @EJB private ConfigurationServiceLocal cfgService;
+    @EJB
+    private ConfigurationServiceLocal cfgService;
 
-    @EJB private DaoServiceLocal daoService;
+    @EJB
+    private DaoServiceLocal daoService;
 
-    @EJB private NewsItemFacadeLocal newsItemFacade;
+    @EJB
+    private NewsItemFacadeLocal newsItemFacade;
 
-    @EJB private TimerServiceLocal timerService;
+    @EJB
+    private TimerServiceLocal timerService;
 
     /**
      * Creates a new instance of {@link SystemFacadeBean}.
@@ -71,7 +77,8 @@ public class SystemFacadeBean implements SystemFacadeLocal {
     /**
      * Conducts a sanity check of the system.
      *
-     * @return {@code true} if the sanity of the system is OK, otherwise {@code false}
+     * @return {@code true} if the sanity of the system is OK, otherwise
+     * {@code false}
      */
     @Override
     public boolean sanityCheck() {
@@ -80,7 +87,7 @@ public class SystemFacadeBean implements SystemFacadeLocal {
         LOG.log(Level.INFO,
                 "{0} newswire {0, choice, 0#services|1#service|2#services} reset",
                 reset);
-        
+
         int userCount = userService.findAll().size();
         LOG.log(Level.INFO,
                 "{0} user {0, choice, 0#accounts|1#account|2#accounts} in the system",
@@ -93,8 +100,8 @@ public class SystemFacadeBean implements SystemFacadeLocal {
 
         String userPhotoDirectory = cfgService.getString(
                 ConfigurationKey.WORKING_DIRECTORY) + System.getProperty(
-                "file.separator") + "users" + System.getProperty(
-                "file.separator");
+                        "file.separator") + "users" + System.getProperty(
+                        "file.separator");
 
         LOG.log(Level.INFO, "Checking if user photo directory ({0}) exists",
                 new Object[]{userPhotoDirectory});
@@ -329,12 +336,14 @@ public class SystemFacadeBean implements SystemFacadeLocal {
         LogEntry entry = new LogEntry(severity, message, origin, originId);
         entry.setDate(Calendar.getInstance().getTime());
         daoService.create(entry);
+        LOG.log(LogHelper.toLevel(severity), entry.toString());
     }
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void log(dk.i2m.converge.core.logging.LogSeverity severity,
             java.lang.String message, java.util.List<LogSubject> subjects) {
+
         LogEntry entry = new LogEntry(severity, message);
         entry.setDate(Calendar.getInstance().getTime());
         for (LogSubject subject : subjects) {
@@ -342,6 +351,7 @@ public class SystemFacadeBean implements SystemFacadeLocal {
         }
 
         daoService.create(entry);
+        LOG.log(LogHelper.toLevel(severity), entry.toString());
     }
 
     @Override
@@ -352,29 +362,19 @@ public class SystemFacadeBean implements SystemFacadeLocal {
 
     @Override
     public List<LogEntry> findLogEntries(String origin, String originId) {
-        Map<String, Object> parameters =
-                QueryBuilder.with(LogEntry.PARAMETER_ENTITY, origin).and(
-                LogEntry.PARAMETER_ENTITY_ID, originId).
+        Map<String, Object> parameters
+                = QueryBuilder.with(LogEntry.PARAMETER_ENTITY, origin).and(
+                        LogEntry.PARAMETER_ENTITY_ID, originId).
                 parameters();
         return daoService.findWithNamedQuery(LogEntry.FIND_BY_ENTITY, parameters);
     }
 
     @Override
-    public List<LogEntry> findLogEntries(Object origin, String originId) {
-        Map<String, Object> parameters =
-                QueryBuilder.with(LogEntry.PARAMETER_ENTITY, origin.getClass().
-                getName()).and(
-                LogEntry.PARAMETER_ENTITY_ID, originId).parameters();
-        return daoService.findWithNamedQuery(LogEntry.FIND_BY_ENTITY, parameters);
-    }
-
-    @Override
-    public List<LogEntry> findLogEntries(Object origin, String originId,
+    public List<LogEntry> findLogEntries(String origin, String originId,
             int start, int count) {
-        Map<String, Object> parameters =
-                QueryBuilder.with(LogEntry.PARAMETER_ENTITY, origin.getClass().
-                getName()).and(
-                LogEntry.PARAMETER_ENTITY_ID, originId).parameters();
+        Map<String, Object> parameters
+                = QueryBuilder.with(LogEntry.PARAMETER_ENTITY, origin).and(
+                        LogEntry.PARAMETER_ENTITY_ID, originId).parameters();
         return daoService.findWithNamedQuery(LogEntry.FIND_BY_ENTITY, parameters,
                 start, count);
     }
@@ -391,7 +391,7 @@ public class SystemFacadeBean implements SystemFacadeLocal {
 
     @Override
     public void removeLogEntries(Object entryType, String entryId) {
-        List<LogEntry> entries = findLogEntries(entryType, entryId);
+        List<LogEntry> entries = findLogEntries(entryType.getClass().getName(), entryId);
         for (LogEntry entry : entries) {
             daoService.delete(LogEntry.class, entry.getId());
         }

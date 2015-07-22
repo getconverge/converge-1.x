@@ -210,7 +210,7 @@ public class Newsfeeds {
             this.log = new ListDataModel();
         } else {
             List<LogEntry> entries = systemFacade.findLogEntries(
-                    this.selectedNewsfeed, "" + this.selectedNewsfeed.getId(), 0,
+                    NewswireService.class.getName(), String.valueOf(this.selectedNewsfeed.getId()), 0,
                     2000);
             this.log = new ListDataModel(entries);
         }

@@ -507,7 +507,7 @@ public class DrupalServicesClient {
 
     private HttpClient getHttpClient() {
         if (this.httpClient == null) {
-            LOG.log(Level.FINER, "Creating a HttpClient");
+            LOG.log(Level.FINER, "Creating an HttpClient");
             BasicHttpParams params = new BasicHttpParams();
             params.setParameter(AllClientPNames.CONNECTION_TIMEOUT, this.connectionTimeout)
                     .setParameter(AllClientPNames.COOKIE_POLICY, CookiePolicy.BEST_MATCH)
