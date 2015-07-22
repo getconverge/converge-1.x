@@ -320,4 +320,14 @@ public interface NewsItemFacadeLocal {
     NewsItemEditionState findNewsItemEditionState(Long editionId, Long newsItemId, String property) throws DataNotFoundException;
 
     NewsItemEditionState findNewsItemEditionStateOrCreate(Long editionId, Long newsItemId, String property, String value);
+
+    List<NewsItemEditionState> findNewsItemEditionStates(Long editionId);
+    
+    List<NewsItemEditionState> findNewsItemEditionStates(Long editionId, Long newsItemId);
+
+    void clearNewsItemEditionStateById(Long newsItemEditionStateId);
+    
+    void clearNewsItemEditionState(Long editionId);
+
+    void clearNewsItemEditionState(Long editionId, Long newsItemId);
 }

@@ -31,7 +31,12 @@ import javax.persistence.*;
 @Entity
 @Table(name = "news_item_edition_state")
 @NamedQueries({
-    @NamedQuery(name = NewsItemEditionState.FIND_BY_EDITION_NEWSITEM_PROPERTY, query = "SELECT n FROM NewsItemEditionState AS n WHERE n.edition.id = :" + NewsItemEditionState.PARAM_EDITION_ID + " AND n.newsItem.id = :" + NewsItemEditionState.PARAM_NEWS_ITEM_ID + " AND n.property = :" + NewsItemEditionState.PARAM_PROPERTY),})
+    @NamedQuery(name = NewsItemEditionState.FIND_BY_EDITION_NEWSITEM_PROPERTY, query = "SELECT n FROM NewsItemEditionState AS n WHERE n.edition.id = :" + NewsItemEditionState.PARAM_EDITION_ID + " AND n.newsItem.id = :" + NewsItemEditionState.PARAM_NEWS_ITEM_ID + " AND n.property = :" + NewsItemEditionState.PARAM_PROPERTY),
+    @NamedQuery(name = NewsItemEditionState.FIND_BY_EDITION_NEWSITEM, query = "SELECT n FROM NewsItemEditionState AS n WHERE n.edition.id = :" + NewsItemEditionState.PARAM_EDITION_ID + " AND n.newsItem.id = :" + NewsItemEditionState.PARAM_NEWS_ITEM_ID),
+    @NamedQuery(name = NewsItemEditionState.FIND_BY_EDITION, query = "SELECT n FROM NewsItemEditionState AS n WHERE n.edition.id = :" + NewsItemEditionState.PARAM_EDITION_ID),
+    @NamedQuery(name = NewsItemEditionState.DELETE_BY_EDITION_NEWSITEM, query = "DELETE FROM NewsItemEditionState AS n WHERE n.edition.id = :" + NewsItemEditionState.PARAM_EDITION_ID + " AND n.newsItem.id = :" + NewsItemEditionState.PARAM_NEWS_ITEM_ID),
+    @NamedQuery(name = NewsItemEditionState.DELETE_BY_EDITION, query = "DELETE FROM NewsItemEditionState AS n WHERE n.edition.id = :" + NewsItemEditionState.PARAM_EDITION_ID)
+})
 public class NewsItemEditionState implements Serializable {
 
     /**
@@ -41,6 +46,29 @@ public class NewsItemEditionState implements Serializable {
      * and {@link NewsItemEditionState.PARAM_PROPERTY}.
      */
     public static final String FIND_BY_EDITION_NEWSITEM_PROPERTY = "NewsItemEditionState.findByEditionNewsItemProperty";
+    /**
+     * Query for locating a {@link NewsItemEditionSate} based on the Edition,
+     * NewsItem using {@link NewsItemEditionState.PARAM_EDITION_ID} and
+     * {@link NewsItemEditionState.PARAM_NEWS_ITEM_ID}.
+     */
+    public static final String FIND_BY_EDITION_NEWSITEM = "NewsItemEditionState.findByEditionNewsItem";
+    /**
+     * Query for locating a {@link NewsItemEditionSate} based on the Edition
+     * using {@link NewsItemEditionState.PARAM_EDITION_ID}.
+     */
+    public static final String FIND_BY_EDITION = "NewsItemEditionState.findByEdition";
+    /**
+     * Query for deleting {@link NewsItemEditionSate} based on the Edition,
+     * NewsItem using {@link NewsItemEditionState.PARAM_EDITION_ID} and
+     * {@link NewsItemEditionState.PARAM_NEWS_ITEM_ID}.
+     */
+    public static final String DELETE_BY_EDITION_NEWSITEM = "NewsItemEditionState.deleteByEditionNewsItem";
+    /**
+     * Query for deleting {@link NewsItemEditionSate} based on the Edition using
+     * {@link NewsItemEditionState.PARAM_EDITION_ID} and
+     * {@link NewsItemEditionState.PARAM_NEWS_ITEM_ID}.
+     */
+    public static final String DELETE_BY_EDITION = "NewsItemEditionState.deleteByEdition";
     /**
      * Query parameter for specifying the ID of an Edition.
      */

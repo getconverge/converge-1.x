@@ -1269,4 +1269,36 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
         }
         return state;
     }
+
+    @Override
+    public List<NewsItemEditionState> findNewsItemEditionStates(Long editionId, Long newsItemId) {
+        QueryBuilder criteria = QueryBuilder
+                .with(NewsItemEditionState.PARAM_EDITION_ID, editionId)
+                .and(NewsItemEditionState.PARAM_NEWS_ITEM_ID, newsItemId);
+        return daoService.findWithNamedQuery(NewsItemEditionState.FIND_BY_EDITION_NEWSITEM, criteria.parameters());
+    }
+    
+    @Override
+    public List<NewsItemEditionState> findNewsItemEditionStates(Long editionId) {
+        QueryBuilder criteria = QueryBuilder
+                .with(NewsItemEditionState.PARAM_EDITION_ID, editionId);
+        return daoService.findWithNamedQuery(NewsItemEditionState.FIND_BY_EDITION, criteria.parameters());
+    }
+
+    @Override
+    public void clearNewsItemEditionStateById(Long newsItemEditionStateId) {
+        daoService.delete(NewsItemEditionState.class, newsItemEditionStateId);
+    }
+
+    @Override
+    public void clearNewsItemEditionState(Long editionId) {
+        QueryBuilder criteria = QueryBuilder.with(NewsItemEditionState.PARAM_EDITION_ID, editionId);
+        daoService.executeQuery(NewsItemEditionState.DELETE_BY_EDITION, criteria);
+    }
+
+    @Override
+    public void clearNewsItemEditionState(Long editionId, Long newsItemId) {
+        QueryBuilder criteria = QueryBuilder.with(NewsItemEditionState.PARAM_EDITION_ID, editionId).and(NewsItemEditionState.PARAM_NEWS_ITEM_ID, newsItemId);
+        daoService.executeQuery(NewsItemEditionState.DELETE_BY_EDITION_NEWSITEM, criteria);
+    }
 }

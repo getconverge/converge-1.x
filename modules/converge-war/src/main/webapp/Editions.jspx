@@ -267,6 +267,96 @@
                                         <rich:spacer width="450" height="1" />
                                     </h:panelGrid>
                                 </rich:tab>
+
+
+                                <rich:tab id="tabState" label="#{i18n.Editions_EDITION_DETAILS_TAB_STATES}">
+                                    <h:panelGrid columnClasses="tabSheet" style="padding: 10px; width: 100%">
+                                        <h:panelGroup layout="block" class="logEntryList"> 
+
+                                            <h:panelGrid columns="2" columnClasses="left, right" style="width: 100%">
+                                                <h:outputText value="" />
+                                                <a4j:commandButton id="btnClearAllEditionStates" styleClass="button dynamicButton" value="#{i18n.Editions_EDITION_DETAILS_TAB_STATES_CLEAR_STATES}" title="#{i18n.Editions_EDITION_DETAILS_TAB_STATES_CLEAR_STATES_TOOLTIP}" actionListener="#{planning.onDeleteAllNewsItemEditionState}" reRender="dtAllEditionStates" ajaxSingle="true" onclick="if (confirm('#{i18n.Editions_EDITION_DETAILS_TAB_STATES_CLEAR_STATES_CONFIRM}') != true){ return false; };">
+                                                </a4j:commandButton>
+                                            </h:panelGrid>
+
+                                            <rich:dataTable id="dtAllEditionStates" value="#{planning.editionStates}" var="state" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
+                                                <rich:column styleClass="columnIcon center" headerClass="columnIconHeader">
+                                                    <f:facet name="header">
+                                                        <a4j:commandLink ajaxSingle="true" reRender="dtAllEditionStates" actionListener="#{planning.onRefreshEditionStates}">  
+                                                            <h:graphicImage value="#{i18n.resource_ICON_REFRESH}" />
+                                                        </a4j:commandLink>
+                                                    </f:facet>
+                                                    <h:graphicImage value="#{i18n.resource_ICON_LOG_ENTRY}" />
+                                                </rich:column>
+
+                                                <rich:column styleClass="" headerClass="">
+                                                    <f:facet name="header">
+                                                        <h:outputText value="News Item" />
+                                                    </f:facet>
+                                                    <h:outputText value="#{state.newsItem.id}" title="#{state.newsItem.title}" />
+                                                </rich:column>
+                                                
+                                                <rich:column styleClass="" headerClass="">
+                                                    <f:facet name="header">
+                                                        <h:outputText value="Property" />
+                                                    </f:facet>
+                                                    <h:outputText value="#{state.property}" />
+                                                </rich:column>
+
+                                                <rich:column styleClass="" headerClass="">
+                                                    <f:facet name="header">
+                                                        <h:outputText value="Value" />
+                                                    </f:facet>
+                                                    <h:outputText value="#{state.value}"  />
+                                                </rich:column>
+                                            </rich:dataTable>
+                                        </h:panelGroup>
+                                        <rich:spacer width="900" height="1" />
+                                    </h:panelGrid>
+                                </rich:tab>                                                    
+
+                                <rich:tab id="tabEditionLog" label="#{i18n.Editions_EDITION_DETAILS_TAB_LOG}">
+                                    <h:panelGrid columnClasses="tabSheet" style="padding: 10px; width: 100%">
+                                        <h:panelGroup layout="block" class="logEntryList"> 
+                                            <rich:dataTable id="dtLogEntries" value="#{planning.editionLogEntries}" var="logEntry" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
+                                                <rich:column styleClass="columnIcon center" headerClass="columnIconHeader">
+                                                    <f:facet name="header">
+                                                        <a4j:commandLink ajaxSingle="true" reRender="dtLogEntries" actionListener="#{planning.onRefreshEditionLogEntries}">  
+                                                            <h:graphicImage value="#{i18n.resource_ICON_REFRESH}" />
+                                                        </a4j:commandLink>
+                                                    </f:facet>
+                                                    <h:graphicImage value="#{i18n.resource_ICON_LOG_ENTRY}" />
+                                                </rich:column>
+
+                                                <rich:column styleClass="columnDateTime logEntrySeverity#{logEntry.severity}" headerClass="columnDateTime">
+                                                    <f:facet name="header">
+                                                        <h:outputText value="#{i18n.Editions_NEWS_ITEM_PLACEMENT_DETAILS_LOG_DATE}" />
+                                                    </f:facet>
+                                                    <h:outputText value="#{logEntry.date}">
+                                                        <f:convertDateTime pattern="#{i18n.Generic_FORMAT_SHORT_DATE_AND_TIME}" timeZone="#{common.systemTimeZone}" />
+                                                    </h:outputText>
+                                                </rich:column>
+
+                                                <rich:column styleClass="columnSeverity logEntrySeverity#{logEntry.severity}" headerClass="columnSeverity">
+                                                    <f:facet name="header">
+                                                        <h:outputText value="#{i18n.Editions_NEWS_ITEM_PLACEMENT_DETAILS_LOG_SEVERITY}" />
+                                                    </f:facet>
+                                                    <c:set var="severity_key" value="LogEntry_SEVERITY_#{logEntry.severity}" />
+                                                    <h:outputText value="#{i18n[severity_key]}" />
+                                                </rich:column>
+
+                                                <rich:column styleClass="logEntrySeverity#{logEntry.severity}">
+                                                    <f:facet name="header">
+                                                        <h:outputText value="#{i18n.Editions_NEWS_ITEM_PLACEMENT_DETAILS_LOG_LOG}" />
+                                                    </f:facet>
+                                                    <h:outputText value="#{logEntry.description}"  />
+                                                </rich:column>
+                                            </rich:dataTable>
+                                        </h:panelGroup>
+                                        <rich:spacer width="900" height="1" />
+                                    </h:panelGrid>
+                                </rich:tab>                                                
+
                             </rich:tabPanel>
 
                             <h:panelGroup styleClass="dialogueButtons">
@@ -332,6 +422,7 @@
 
                                     </h:panelGrid>
                                 </rich:tab>
+
                                 <rich:tab id="tabNewsItemStory" label="#{i18n.Editions_NEWS_ITEM_PLACEMENT_DETAILS_TAB_NEWS_ITEM_STORY}">
                                     <h:panelGrid columnClasses="tabSheet" style="padding: 10px; width: 100%">
                                         <rich:editor id="reStory"
@@ -424,6 +515,45 @@
                                     </h:panelGrid>
                                 </rich:tab>
 
+                                <rich:tab id="tabState" label="#{i18n.Editions_NEWS_ITEM_PLACEMENT_DETAILS_TAB_STATE}">
+                                    <h:panelGrid columnClasses="tabSheet" style="padding: 10px; width: 100%">
+                                        <h:panelGroup layout="block" class="logEntryList"> 
+
+                                            <h:panelGrid columns="2" columnClasses="left, right" style="width: 100%">
+                                                <h:outputText value="" />
+                                                <a4j:commandButton id="btnClearEditionStates" styleClass="button dynamicButton" value="#{i18n.Editions_NEWS_ITEM_PLACEMENT_DETAILS_TAB_STATE_CLEAR_STATES}" title="#{i18n.Editions_NEWS_ITEM_PLACEMENT_DETAILS_TAB_STATE_CLEAR_STATES_TOOLTIP}" actionListener="#{planning.onDeleteNewsItemEditionStates}" reRender="dtNewsItemEditionStates" ajaxSingle="true" onclick="if (confirm('#{i18n.Editions_NEWS_ITEM_PLACEMENT_DETAILS_TAB_STATE_CLEAR_STATES_CONFIRM}') != true){ return false; };">
+                                                </a4j:commandButton>
+                                            </h:panelGrid>
+
+                                            <rich:dataTable id="dtNewsItemEditionStates" value="#{planning.newsItemEditionStates}" var="state" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
+                                                <rich:column styleClass="columnIcon center" headerClass="columnIconHeader">
+                                                    <f:facet name="header">
+                                                        <a4j:commandLink ajaxSingle="true" reRender="dtNewsItemEditionStates" actionListener="#{planning.onRefreshNewsItemEditionState}">  
+                                                            <h:graphicImage value="#{i18n.resource_ICON_REFRESH}" />
+                                                        </a4j:commandLink>
+                                                    </f:facet>
+                                                    <h:graphicImage value="#{i18n.resource_ICON_LOG_ENTRY}" />
+                                                </rich:column>
+
+                                                <rich:column styleClass="" headerClass="">
+                                                    <f:facet name="header">
+                                                        <h:outputText value="Property" />
+                                                    </f:facet>
+                                                    <h:outputText value="#{state.property}" />
+                                                </rich:column>
+
+                                                <rich:column styleClass="" headerClass="">
+                                                    <f:facet name="header">
+                                                        <h:outputText value="Value" />
+                                                    </f:facet>
+                                                    <h:outputText value="#{state.value}"  />
+                                                </rich:column>
+                                            </rich:dataTable>
+                                        </h:panelGroup>
+                                        <rich:spacer width="900" height="1" />
+                                    </h:panelGrid>
+                                </rich:tab>                                                    
+
                                 <rich:tab id="tabLog" label="#{i18n.Editions_NEWS_ITEM_PLACEMENT_DETAILS_TAB_LOG}">
                                     <h:panelGrid columnClasses="tabSheet" style="padding: 10px; width: 100%">
                                         <h:panelGroup layout="block" class="logEntryList"> 
@@ -465,6 +595,7 @@
                                         <rich:spacer width="900" height="1" />
                                     </h:panelGrid>
                                 </rich:tab>
+
                             </rich:tabPanel>
 
                             <h:panelGroup styleClass="dialogueButtons">

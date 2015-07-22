@@ -21,6 +21,7 @@ import dk.i2m.converge.core.DataNotFoundException;
 import dk.i2m.converge.core.annotations.OutletAction;
 import dk.i2m.converge.core.calendar.Event;
 import dk.i2m.converge.core.content.NewsItem;
+import dk.i2m.converge.core.content.NewsItemEditionState;
 import dk.i2m.converge.core.content.NewsItemPlacement;
 import dk.i2m.converge.core.dto.EditionAssignmentView;
 import dk.i2m.converge.core.dto.EditionView;
@@ -56,17 +57,23 @@ public class Planning implements UIEventListener {
 
     private static final Logger LOG = Logger.getLogger(Planning.class.getName());
 
-    @EJB private OutletFacadeLocal outletFacade;
+    @EJB
+    private OutletFacadeLocal outletFacade;
 
-    @EJB private UserFacadeLocal userFacade;
+    @EJB
+    private UserFacadeLocal userFacade;
 
-    @EJB private CalendarFacadeLocal calendarFacade;
+    @EJB
+    private CalendarFacadeLocal calendarFacade;
 
-    @EJB private NewsItemFacadeLocal newsItemFacade;
+    @EJB
+    private NewsItemFacadeLocal newsItemFacade;
 
-    @EJB private WorkflowFacadeLocal workflowFacade;
+    @EJB
+    private WorkflowFacadeLocal workflowFacade;
 
-    @EJB private SystemFacadeLocal systemFacade;
+    @EJB
+    private SystemFacadeLocal systemFacade;
 
     private DialogAssignment dialogAssignment;
 
@@ -108,8 +115,11 @@ public class Planning implements UIEventListener {
 
     private DataModel openAssignments = null;
 
+    private DataModel editionLogEntries = new ListDataModel();
+    private DataModel editionStates = new ListDataModel();
     private DataModel logEntries = new ListDataModel();
-    
+    private DataModel newsItemEditionStates = new ListDataModel();
+
     private final ResourceBundle bundle = JsfUtils.getResourceBundle(Bundle.i18n.name());
 
     /**
@@ -122,9 +132,9 @@ public class Planning implements UIEventListener {
     public void onInit() {
         Calendar startDate = Calendar.getInstance();
         startDate.setTimeZone(getUser().getTimeZone());
-        
+
         int workDay = getUser().getDefaultWorkDay();
-        
+
         startDate.add(Calendar.DAY_OF_MONTH, workDay);
         selectedDate = startDate.getTime();
 
@@ -144,8 +154,7 @@ public class Planning implements UIEventListener {
     /**
      * Event handler for when an {@link Outlet} is selected.
      *
-     * @param event
-     * Event that invoked the handler
+     * @param event Event that invoked the handler
      */
     public void onSelectOutlet(ActionEvent event) {
         fetchEditions();
@@ -154,8 +163,7 @@ public class Planning implements UIEventListener {
     /**
      * Event handler for when a date is selected from the calendar.
      *
-     * @param event
-     * Event that invoked the handler
+     * @param event Event that invoked the handler
      */
     public void onSelectDate(ActionEvent event) {
         fetchEditions();
@@ -220,11 +228,11 @@ public class Planning implements UIEventListener {
                     "Planning_EDITION_SAVED");
         } else {
             try {
-                selectedEdition =
-                        outletFacade.updateEdition(selectedEditionView.getId(),
-                        selectedEditionView.isOpen(), selectedEditionView.
-                        getPublicationDate(), selectedEditionView.
-                        getExpirationDate(), selectedEditionView.getCloseDate());
+                selectedEdition
+                        = outletFacade.updateEdition(selectedEditionView.getId(),
+                                selectedEditionView.isOpen(), selectedEditionView.
+                                getPublicationDate(), selectedEditionView.
+                                getExpirationDate(), selectedEditionView.getCloseDate());
                 JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO, Bundle.i18n.name(),
                         "Planning_EDITION_UPDATED");
             } catch (DataNotFoundException ex) {
@@ -237,8 +245,7 @@ public class Planning implements UIEventListener {
     }
 
     /**
-     * Event handler for scheduling the execution of
-     * edition actions.
+     * Event handler for scheduling the execution of edition actions.
      *
      * @param event Event that invoked the handler
      */
@@ -251,8 +258,8 @@ public class Planning implements UIEventListener {
     }
 
     /**
-     * Event handler for scheduling the execution of all
-     * edition actions for the {@link #getSelectedNewsItemPlacement() }.
+     * Event handler for scheduling the execution of all edition actions for the {@link #getSelectedNewsItemPlacement()
+     * }.
      *
      * @param event Event that invoked the handler
      */
@@ -284,8 +291,7 @@ public class Planning implements UIEventListener {
     /**
      * Schedules the execution of the given edition action.
      *
-     * @param id
-     *          Unique identifier of the {@link OutletEditionAction} to execute
+     * @param id Unique identifier of the {@link OutletEditionAction} to execute
      */
     public void setExecuteAction(Long id) {
         if (selectedEditionView != null && id != null) {
@@ -375,12 +381,12 @@ public class Planning implements UIEventListener {
      * Gets a {@link Map} of potential authors for a {@link NewsItem} of the
      * selected outlet.
      *
-     * @return {@link Map} of {@link UserAccount}s that are potential authors
-     * of a new {@link NewsItem} for the selected outlet
+     * @return {@link Map} of {@link UserAccount}s that are potential authors of
+     * a new {@link NewsItem} for the selected outlet
      */
     public Map<String, UserAccount> getAuthors() {
-        Map<String, UserAccount> authors =
-                new LinkedHashMap<String, UserAccount>();
+        Map<String, UserAccount> authors
+                = new LinkedHashMap<String, UserAccount>();
 
         WorkflowState start = selectedOutlet.getWorkflow().getStartState();
 
@@ -395,13 +401,13 @@ public class Planning implements UIEventListener {
     }
 
     public Map<String, UserAccount> getOutletDepartmentEditors() {
-        Map<String, UserAccount> editors =
-                new LinkedHashMap<String, UserAccount>();
+        Map<String, UserAccount> editors
+                = new LinkedHashMap<String, UserAccount>();
 
         if (selectedAssignment.getDepartment() != null) {
-            List<UserAccount> members =
-                    userFacade.getMembers(selectedAssignment.getDepartment().
-                    getId());
+            List<UserAccount> members
+                    = userFacade.getMembers(selectedAssignment.getDepartment().
+                            getId());
 
             for (UserAccount acc : members) {
                 editors.put(acc.getFullName(), acc);
@@ -462,9 +468,8 @@ public class Planning implements UIEventListener {
      * {@link Outlet} and date.
      *
      * @return <
-     * code>true</code> if there is an {@link Edition} available for
-     * the selected {@link Outlet} and date, otherwise
-     * <code>false</code>
+     * code>true</code> if there is an {@link Edition} available for the
+     * selected {@link Outlet} and date, otherwise <code>false</code>
      */
     public boolean isEditionAvailable() {
         return selectedEditions != null && !selectedEditions.isEmpty();
@@ -485,8 +490,7 @@ public class Planning implements UIEventListener {
      * Determines if an {@link Outlet} has been selected.
      *
      * @return <
-     * code>true</code> if an {@link Outlet} has been selected,
-     * otherwise
+     * code>true</code> if an {@link Outlet} has been selected, otherwise
      * <code>false</code>
      */
     public boolean isOutletSelected() {
@@ -540,12 +544,12 @@ public class Planning implements UIEventListener {
             return;
         }
 
-        selectedEditions =
-                outletFacade.findEditionViewsByDate(selectedOutlet.getId(),
-                selectedDate, true, true);
+        selectedEditions
+                = outletFacade.findEditionViewsByDate(selectedOutlet.getId(),
+                        selectedDate, true, true);
         try {
-            this.selectedOutletActions =
-                    outletFacade.findOutletActions(selectedOutlet.getId());
+            this.selectedOutletActions
+                    = outletFacade.findOutletActions(selectedOutlet.getId());
             this.selectedPlacementActions = outletFacade.
                     findOutletPlacementActions(selectedOutlet.getId());
         } catch (DataNotFoundException ex) {
@@ -582,7 +586,7 @@ public class Planning implements UIEventListener {
             return;
         }
 
-        String title = JsfUtils.getMessage(Bundle.i18n.name(), "Planning_COVER_X_EVENT", new Object[]{ selectedEventFromCalendar.getSummary()});
+        String title = JsfUtils.getMessage(Bundle.i18n.name(), "Planning_COVER_X_EVENT", new Object[]{selectedEventFromCalendar.getSummary()});
 
         this.selectedAssignment.setTitle(title);
         this.selectedAssignment.setEvent(selectedEventFromCalendar);
@@ -602,8 +606,8 @@ public class Planning implements UIEventListener {
     }
 
     public Map<String, Section> getOutletSectionsMap() {
-        Map<String, Section> activeSections =
-                new LinkedHashMap<String, Section>();
+        Map<String, Section> activeSections
+                = new LinkedHashMap<String, Section>();
 
         for (Section section : selectedOutlet.getSections()) {
             if (section.isActive()) {
@@ -694,8 +698,8 @@ public class Planning implements UIEventListener {
         this.selectedAssignment = selectedAssignment;
 
         try {
-            NewsItemHolder nih =
-                    newsItemFacade.checkout(this.selectedAssignment.getId());
+            NewsItemHolder nih
+                    = newsItemFacade.checkout(this.selectedAssignment.getId());
 
             dialogEventSelection = new DialogEventSelection(calendarFacade);
             dialogAssignment = new DialogAssignment(outletFacade, workflowFacade,
@@ -736,13 +740,13 @@ public class Planning implements UIEventListener {
     }
 
     public Map<String, UserAccount> getAssignmentOutletDepartmentEditors() {
-        Map<String, UserAccount> editors =
-                new LinkedHashMap<String, UserAccount>();
+        Map<String, UserAccount> editors
+                = new LinkedHashMap<String, UserAccount>();
 
         if (selectedAssignment.getDepartment() != null) {
-            List<UserAccount> members =
-                    userFacade.getMembers(selectedAssignment.getDepartment().
-                    getId());
+            List<UserAccount> members
+                    = userFacade.getMembers(selectedAssignment.getDepartment().
+                            getId());
 
             for (UserAccount acc : members) {
                 editors.put(acc.getFullName(), acc);
@@ -769,8 +773,8 @@ public class Planning implements UIEventListener {
     }
 
     public Map<String, WorkflowState> getOutletWorkflowStates() {
-        Map<String, WorkflowState> workflowStates =
-                new LinkedHashMap<String, WorkflowState>();
+        Map<String, WorkflowState> workflowStates
+                = new LinkedHashMap<String, WorkflowState>();
 
         if (selectedOutlet != null) {
             for (WorkflowState state : selectedOutlet.getWorkflow().getStates()) {
@@ -841,6 +845,8 @@ public class Planning implements UIEventListener {
 
     public void setSelectedEditionView(EditionView selectedEditionView) {
         this.selectedEditionView = selectedEditionView;
+        onRefreshEditionLogEntries(null);
+        onRefreshEditionStates(null);
     }
 
     public List<OutletActionView> getSelectedOutletActions() {
@@ -853,11 +859,11 @@ public class Planning implements UIEventListener {
     }
 
     /**
-     * Gets a {@link List} of {@link OutletAction}s that can be executed
-     * on {@link NewsItemPlacement}s.
+     * Gets a {@link List} of {@link OutletAction}s that can be executed on
+     * {@link NewsItemPlacement}s.
      *
-     * @return {@link List} of {@link OutletAction}s that can be executed
-     * on {@link NewsItemPlacement}s.
+     * @return {@link List} of {@link OutletAction}s that can be executed on
+     * {@link NewsItemPlacement}s.
      */
     public List<OutletActionView> getSelectedPlacementActions() {
         return selectedPlacementActions;
@@ -874,13 +880,24 @@ public class Planning implements UIEventListener {
 
     public void setSelectedNewsItemPlacementId(Long id) {
         try {
-            this.selectedNewsItemPlacement = newsItemFacade.
-                    findNewsItemPlacementById(id);
+            this.selectedNewsItemPlacement = newsItemFacade.findNewsItemPlacementById(id);
+
             onRefreshNewsItemLogEntries(null);
+            onRefreshNewsItemEditionState(null);
         } catch (DataNotFoundException ex) {
             JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_ERROR,
                     Bundle.i18n.name(), "Editions_NEWS_ITEM_COULD_NOT_BE_FOUND");
         }
+    }
+
+    public DataModel getEditionLogEntries() {
+        return editionLogEntries;
+    }
+
+    public void onRefreshEditionLogEntries(ActionEvent event) {
+        List<LogEntry> entries = systemFacade.findLogEntries(Edition.class.toString(), String.
+                valueOf(getSelectedEditionView().getId()), 0, 100);
+        editionLogEntries = new ListDataModel(entries);
     }
 
     public DataModel getLogEntries() {
@@ -892,5 +909,40 @@ public class Planning implements UIEventListener {
         List<LogEntry> entries = systemFacade.findLogEntries(logItem, String.
                 valueOf(logItem.getId()), 0, 100);
         logEntries = new ListDataModel(entries);
+    }
+
+    public DataModel getEditionStates() {
+        return this.editionStates;
+    }
+
+    public void onRefreshEditionStates(ActionEvent event) {
+        Long editionId = getSelectedEditionView().getId();
+        List<NewsItemEditionState> properties = newsItemFacade.findNewsItemEditionStates(editionId);
+        this.editionStates = new ListDataModel(properties);
+    }
+
+    public DataModel getNewsItemEditionStates() {
+        return this.newsItemEditionStates;
+    }
+
+    public void onRefreshNewsItemEditionState(ActionEvent event) {
+        Long newsItemId = getSelectedNewsItemPlacement().getNewsItem().getId();
+        Long editionId = getSelectedNewsItemPlacement().getEdition().getId();
+        List<NewsItemEditionState> properties = newsItemFacade.findNewsItemEditionStates(editionId, newsItemId);
+        newsItemEditionStates = new ListDataModel(properties);
+    }
+
+    public void onDeleteNewsItemEditionStates(ActionEvent event) {
+        Long newsItemId = getSelectedNewsItemPlacement().getNewsItem().getId();
+        Long editionId = getSelectedNewsItemPlacement().getEdition().getId();
+        LOG.log(Level.FINE, "Clearing NewsItemEditionState for Edition #{0} NewsItemId #{1}", new Object[]{editionId, newsItemId});
+        newsItemFacade.clearNewsItemEditionState(editionId, newsItemId);
+        onRefreshNewsItemEditionState(event);
+    }
+
+    public void onDeleteAllNewsItemEditionState(ActionEvent event) {
+        Long editionId = getSelectedEditionView().getId();
+        newsItemFacade.clearNewsItemEditionState(editionId);
+        onRefreshEditionStates(event);
     }
 }
