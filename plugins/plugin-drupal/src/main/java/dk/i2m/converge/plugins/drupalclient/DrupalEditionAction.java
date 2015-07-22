@@ -426,7 +426,9 @@ public class DrupalEditionAction implements EditionAction {
                 log(LogSeverity.INFO, BundleKey.LOG_UPDATING_DRUPAL_NODE_AND_UPLOADING_IMAGES, new Object[]{nodeId, newsItemId, mediaItems.size()}, editionId, newsItemId);
 
                 NodeInfo updatedNode = drupalServiceClient.updateNode(nodeId, entity);
-                //TODO; Remove existing media items
+
+                // Removes existing files from the node
+                drupalServiceClient.removeFiles(nodeId, DRUPAL_IMAGE_FIELD_NAME);
                 if (mediaItems.size() > 0) {
                     drupalServiceClient.attachFile(nodeId, DRUPAL_IMAGE_FIELD_NAME, mediaItems);
                     log(LogSeverity.INFO, BundleKey.LOG_IMAGES_UPLOADED_TO_DRUPAL, new Object[]{newsItemId}, editionId, newsItemId);
