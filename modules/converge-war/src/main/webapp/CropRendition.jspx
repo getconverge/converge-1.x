@@ -5,17 +5,17 @@
 
         <ui:define name="header">
             <script type="text/javascript">
-                
-                jQuery(function($){
+
+                jQuery(function ($) {
 
                     // Create variables (in this scope) to hold the API and image size
                     var jcrop_api, boundx, boundy;
-                    
+
                     jQuery('#target').Jcrop({
                         onChange: updatePreview,
                         onSelect: updatePreview,
                         aspectRatio: #{cropRendition.generateRenditionWidth} / #{cropRendition.generateRenditionHeight}
-                    },function(){
+                    }, function () {
                         // Use the API to get the real image size
                         var bounds = this.getBounds();
                         boundx = bounds[0];
@@ -23,34 +23,35 @@
                         // Store the API in the jcrop_api variable
                         jcrop_api = this;
                     });
-                    
-                    
+
+
 
                     function updatePreview(c) {
                         if (parseInt(c.w) > 0) {
                             var rx = #{cropRendition.generateRenditionWidth} / c.w;
                             var ry = #{cropRendition.generateRenditionHeight} / c.h;
-                            
+
                             jQuery('#preview').css({
                                 width: Math.round(rx * boundx) + 'px',
                                 height: Math.round(ry * boundy) + 'px',
                                 marginLeft: '-' + Math.round(rx * c.x) + 'px',
                                 marginTop: '-' + Math.round(ry * c.y) + 'px'
                             });
-                            
+
                             document.getElementById('frmRendition:cropx').value = c.x;
                             document.getElementById('frmRendition:cropy').value = c.y;
                             document.getElementById('frmRendition:cropx2').value = c.x2;
                             document.getElementById('frmRendition:cropy2').value = c.y2;
                             document.getElementById('frmRendition:cropwidth').value = c.w;
                             document.getElementById('frmRendition:cropheight').value = c.h;
-                            
+
                             document.getElementById('frmRendition:targetWidth').value = jQuery('#original').width();
                             document.getElementById('frmRendition:targetHeight').value = jQuery('#original').height();
-                            
-                            
+
+
                         }
-                    };
+                    }
+                    ;
 
                 });
 
@@ -75,6 +76,15 @@
                     <h:inputText value="#{cropRendition.generateRenditionHeight}" />
                     <h:outputText value="Width:" />
                     <h:inputText value="#{cropRendition.generateRenditionWidth}" />
+                    <h:outputText value="Compress: " />
+                    <h:selectOneMenu value="#{cropRendition.compression}">
+                        <f:selectItem itemLabel="No" itemValue="" />
+                        <f:selectItem itemLabel="1.0 compression (best quality, large file size)" itemValue="1.0" />
+                        <f:selectItem itemLabel="0.9 compression (good quality, large file size)" itemValue="0.9" />
+                        <f:selectItem itemLabel="0.6 compression (average quality, medium file size)" itemValue="0.6" />
+                        <f:selectItem itemLabel="0.3 compression (average quality, small file size)" itemValue="0.3" />
+                        <f:selectItem itemLabel="0.1 compression (poor quality, smallest file size)" itemValue="0.1" />
+                    </h:selectOneMenu>
                     <h:commandButton  value="Refresh" />
                     <a4j:commandButton  value="Accept" actionListener="#{cropRendition.onCrop}" oncomplete="window.opener.location.reload(); window.close();" />
                 </h:panelGrid>

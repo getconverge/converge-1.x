@@ -80,8 +80,4 @@ public class ImageUtils {
 
         return baos.toByteArray();
     }
-    
-    public static byte[] cropImage(byte[] img, int width, int height, int quality) throws InterruptedException, IOException {
-        return null;
-    }
 }

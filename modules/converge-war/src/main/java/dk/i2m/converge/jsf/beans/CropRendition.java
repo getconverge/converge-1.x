@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2011 - 2012 Interactive Media Management
+ * Coptright (C) 2015 Allan Lykke Christensen
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -21,9 +22,9 @@ import dk.i2m.converge.core.content.catalogue.MediaItem;
 import dk.i2m.converge.core.content.catalogue.MediaItemRendition;
 import dk.i2m.converge.core.content.catalogue.Rendition;
 import dk.i2m.converge.core.content.catalogue.RenditionNotFoundException;
+import dk.i2m.converge.core.utils.images.CompressImage;
+import dk.i2m.converge.core.utils.images.CropImage;
 import dk.i2m.converge.ejb.facades.CatalogueFacadeLocal;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -43,7 +44,10 @@ import org.apache.commons.io.FileUtils;
  */
 public class CropRendition {
 
-    @EJB private CatalogueFacadeLocal catalogueFacade;
+    private static final Logger LOG = Logger.getLogger(CropRendition.class.getName());
+
+    @EJB
+    private CatalogueFacadeLocal catalogueFacade;
 
     private MediaItem mediaItem;
 
@@ -70,6 +74,8 @@ public class CropRendition {
     private int targetWidth = 0;
 
     private int targetHeight = 0;
+
+    private String compression = "";
 
     private MediaItemRendition sourceMediaItemRendition;
 
@@ -206,41 +212,47 @@ public class CropRendition {
         this.targetWidth = targetWidth;
     }
 
+    public String getCompression() {
+        return compression;
+    }
+
+    public void setCompression(String compression) {
+        this.compression = compression;
+    }
+
     /**
      * Event handler for cropping the image based on the current user selection.
-     * 
+     *
      * @param event Event that invoked the handler
      */
     public void onCrop(ActionEvent event) {
         try {
-            // Calculate the scale of the crop selection depending on the size of the image in the browser
             BufferedImage src = ImageIO.read(new URL(sourceMediaItemRendition.getAbsoluteFilename()));
-            int originalW = src.getWidth(); 
-            float increase = (float) originalW / (float) getTargetWidth();
-            int calcCropX = (int) (getCropX() * (increase));
-            int calcCropY = (int) (getCropY() * (increase));
-            int calcCropWidth = (int) ((float) getCropWidth() * (increase));
-            int calcCropHeight = (int) ((float) getCropHeight() * (increase));
 
             // Crop image
-            BufferedImage dest = src.getSubimage(calcCropX, calcCropY, calcCropWidth, calcCropHeight);
+            CropImage crop = new CropImage(src);
+            BufferedImage croppedImage = crop.crop(getTargetWidth(), getCropX(), getCropY(), getCropWidth(), getCropHeight(), getGenerateRenditionWidth(), getGenerateRenditionHeight());
 
-            // Scale down/up image based on the requested rendition size
-            BufferedImage scaledImage = new BufferedImage(getGenerateRenditionWidth(), getGenerateRenditionHeight(), BufferedImage.TYPE_INT_ARGB);
-            Graphics2D graphics2D = scaledImage.createGraphics();
-            graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-            graphics2D.drawImage(dest, 0, 0, getGenerateRenditionWidth(), getGenerateRenditionHeight(), null);
-            graphics2D.dispose();
-
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(scaledImage, "png", baos);
+            byte[] outputImage;
+            if (compression != null) {
+                // Compress image
+                CompressImage compress = new CompressImage(croppedImage);
+                compress.compress(Float.valueOf(compression), "jpg");
+                outputImage = compress.getCompressedImage();
+            } else {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ImageIO.write(croppedImage, "jpg", baos);
+                outputImage = baos.toByteArray();
+            }
 
             File tempFile = File.createTempFile("000" + getMediaItem().getId(), "" + getTargetRendition().getId());
-            FileUtils.writeByteArrayToFile(tempFile, baos.toByteArray());
+            FileUtils.writeByteArrayToFile(tempFile, outputImage);
 
-            MediaItemRendition mir = catalogueFacade.create(tempFile, mediaItem, targetRendition, targetRendition.getId() + ".png", "image/png", false);
+            // Attach to catalgoue
+            catalogueFacade.create(tempFile, mediaItem, targetRendition, targetRendition.getId() + ".jpg", "image/jpeg", false);
         } catch (IOException ex) {
-            Logger.getLogger(CropRendition.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, ex.getMessage());
+            LOG.log(Level.FINEST, "", ex);
         }
     }
 }
