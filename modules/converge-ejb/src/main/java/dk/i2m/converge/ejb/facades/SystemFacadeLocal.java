@@ -163,5 +163,5 @@ public interface SystemFacadeLocal {
 
     List<LogEntry> findLogEntries();
 
-    void removeLogEntries(Object entryType, String entryId);
+    void removeLogEntries(String entryType, String entryId);
 }

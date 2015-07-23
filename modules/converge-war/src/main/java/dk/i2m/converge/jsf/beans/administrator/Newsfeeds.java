@@ -223,8 +223,7 @@ public class Newsfeeds {
      * @param event Event that invoked the handler
      */
     public void onClearLog(ActionEvent event) {
-        systemFacade.removeLogEntries(
-                this.selectedNewsfeed, "" + this.selectedNewsfeed.getId());
+        systemFacade.removeLogEntries(NewswireService.class.getName(), "" + this.selectedNewsfeed.getId());
         onRefreshLog(null);
     }
 

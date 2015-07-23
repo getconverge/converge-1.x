@@ -390,8 +390,8 @@ public class SystemFacadeBean implements SystemFacadeLocal {
     }
 
     @Override
-    public void removeLogEntries(Object entryType, String entryId) {
-        List<LogEntry> entries = findLogEntries(entryType.getClass().getName(), entryId);
+    public void removeLogEntries(String entryType, String entryId) {
+        List<LogEntry> entries = findLogEntries(entryType, entryId);
         for (LogEntry entry : entries) {
             daoService.delete(LogEntry.class, entry.getId());
         }

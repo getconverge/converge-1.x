@@ -295,7 +295,7 @@
                                                     </f:facet>
                                                     <h:outputText value="#{state.newsItem.id}" title="#{state.newsItem.title}" />
                                                 </rich:column>
-                                                
+
                                                 <rich:column styleClass="" headerClass="">
                                                     <f:facet name="header">
                                                         <h:outputText value="Property" />
@@ -318,10 +318,18 @@
                                 <rich:tab id="tabEditionLog" label="#{i18n.Editions_EDITION_DETAILS_TAB_LOG}">
                                     <h:panelGrid columnClasses="tabSheet" style="padding: 10px; width: 100%">
                                         <h:panelGroup layout="block" class="logEntryList"> 
-                                            <rich:dataTable id="dtLogEntries" value="#{planning.editionLogEntries}" var="logEntry" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
+
+                                            <h:panelGrid columns="2" columnClasses="left, right" style="width: 100%">
+                                                <h:outputText value="" />
+                                                <a4j:commandButton id="btnClearEditionLog" styleClass="button dynamicButton" value="#{i18n.Editions_EDITION_DETAILS_TAB_LOG_CLEAR_LOG}" title="#{i18n.Editions_EDITION_DETAILS_TAB_LOG_CLEAR_LOG_TOOLTIP}" actionListener="#{planning.onClearEditionLogEntries}" reRender="dtEditionLogEntries" ajaxSingle="true" onclick="if (confirm('#{i18n.Editions_EDITION_DETAILS_TAB_LOG_CLEAR_LOG_CONFIRM}') != true){ return false; };">
+                                                </a4j:commandButton>
+                                            </h:panelGrid>
+
+
+                                            <rich:dataTable id="dtEditionLogEntries" value="#{planning.editionLogEntries}" var="logEntry" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
                                                 <rich:column styleClass="columnIcon center" headerClass="columnIconHeader">
                                                     <f:facet name="header">
-                                                        <a4j:commandLink ajaxSingle="true" reRender="dtLogEntries" actionListener="#{planning.onRefreshEditionLogEntries}">  
+                                                        <a4j:commandLink ajaxSingle="true" reRender="dtEditionLogEntries" actionListener="#{planning.onRefreshEditionLogEntries}">  
                                                             <h:graphicImage value="#{i18n.resource_ICON_REFRESH}" />
                                                         </a4j:commandLink>
                                                     </f:facet>
@@ -333,7 +341,7 @@
                                                         <h:outputText value="#{i18n.Editions_NEWS_ITEM_PLACEMENT_DETAILS_LOG_DATE}" />
                                                     </f:facet>
                                                     <h:outputText value="#{logEntry.date}">
-                                                        <f:convertDateTime pattern="#{i18n.Generic_FORMAT_SHORT_DATE_AND_TIME}" timeZone="#{common.systemTimeZone}" />
+                                                        <f:convertDateTime pattern="#{i18n.Generic_FORMAT_SHORT_DATE_AND_LONG_TIME}" timeZone="#{common.systemTimeZone}" />
                                                     </h:outputText>
                                                 </rich:column>
 
@@ -557,6 +565,13 @@
                                 <rich:tab id="tabLog" label="#{i18n.Editions_NEWS_ITEM_PLACEMENT_DETAILS_TAB_LOG}">
                                     <h:panelGrid columnClasses="tabSheet" style="padding: 10px; width: 100%">
                                         <h:panelGroup layout="block" class="logEntryList"> 
+
+                                            <h:panelGrid columns="2" columnClasses="left, right" style="width: 100%">
+                                                <h:outputText value="" />
+                                                <a4j:commandButton id="btnClearNewsItemLog" styleClass="button dynamicButton" value="#{i18n.Editions_NEWS_ITEM_PLACEMENT_DETAILS_TAB_LOG_CLEAR_LOG}" title="#{i18n.Editions_NEWS_ITEM_PLACEMENT_DETAILS_TAB_LOG_CLEAR_LOG_TOOLTIP}" actionListener="#{planning.onClearNewsItemLogEntries}" reRender="dtLogEntries" ajaxSingle="true" onclick="if (confirm('#{i18n.Editions_NEWS_ITEM_PLACEMENT_DETAILS_TAB_LOG_CLEAR_LOG_CONFIRM}') != true){ return false; };">
+                                                </a4j:commandButton>
+                                            </h:panelGrid>
+
                                             <rich:dataTable id="dtLogEntries" value="#{planning.logEntries}" var="logEntry" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
                                                 <rich:column styleClass="columnIcon center" headerClass="columnIconHeader">
                                                     <f:facet name="header">
@@ -572,7 +587,7 @@
                                                         <h:outputText value="#{i18n.Editions_NEWS_ITEM_PLACEMENT_DETAILS_LOG_DATE}" />
                                                     </f:facet>
                                                     <h:outputText value="#{logEntry.date}">
-                                                        <f:convertDateTime pattern="#{i18n.Generic_FORMAT_SHORT_DATE_AND_TIME}" timeZone="#{common.systemTimeZone}" />
+                                                        <f:convertDateTime pattern="#{i18n.Generic_FORMAT_SHORT_DATE_AND_LONG_TIME}" timeZone="#{common.systemTimeZone}" />
                                                     </h:outputText>
                                                 </rich:column>
 

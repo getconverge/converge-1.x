@@ -900,6 +900,11 @@ public class Planning implements UIEventListener {
         editionLogEntries = new ListDataModel(entries);
     }
 
+    public void onClearEditionLogEntries(ActionEvent event) {
+        systemFacade.removeLogEntries(Edition.class.getName(), String.valueOf(getSelectedEditionView().getId()));
+        onRefreshEditionLogEntries(event);
+    }
+
     public DataModel getLogEntries() {
         return logEntries;
     }
@@ -909,6 +914,12 @@ public class Planning implements UIEventListener {
         List<LogEntry> entries = systemFacade.findLogEntries(NewsItem.class.getName(), String.
                 valueOf(logItem.getId()), 0, 100);
         logEntries = new ListDataModel(entries);
+    }
+
+    public void onClearNewsItemLogEntries(ActionEvent event) {
+        NewsItem logItem = getSelectedNewsItemPlacement().getNewsItem();
+        systemFacade.removeLogEntries(NewsItem.class.getName(), String.valueOf(logItem.getId()));
+        onRefreshNewsItemLogEntries(event);
     }
 
     public DataModel getEditionStates() {
