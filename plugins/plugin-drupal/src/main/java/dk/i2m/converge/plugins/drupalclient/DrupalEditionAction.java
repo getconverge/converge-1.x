@@ -96,6 +96,7 @@ public class DrupalEditionAction implements EditionAction {
         LOG_FINISHED_UPLOAD_NEWS_ITEM,
         LOG_GETTING_DRUPAL_PATH,
         LOG_IMAGES_UPLOADED_TO_DRUPAL,
+        LOG_INITIALIZATION_ERROR,
         LOG_LOGIN_SUCCESSFUL,
         LOG_NEWS_ITEMS_IN_EDITION,
         LOG_NEWS_ITEM_INCOMPLETE,
@@ -152,7 +153,12 @@ public class DrupalEditionAction implements EditionAction {
 
         log(LogSeverity.INFO, BundleKey.LOG_UPLOAD_INITIATED, new Object[]{}, edition.getId());
 
-        init();
+        try {
+            init();
+        } catch (IllegalArgumentException ex) {
+            log(LogSeverity.SEVERE, BundleKey.LOG_INITIALIZATION_ERROR, new Object[]{ex.getMessage()}, edition.getId());
+            return;
+        }
 
         try {
             if (!this.drupalServiceClient.login()) {
@@ -197,7 +203,12 @@ public class DrupalEditionAction implements EditionAction {
 
         log(LogSeverity.INFO, BundleKey.LOG_PROCESSING_PLACEMENT, new Object[]{newsItemId, newsItem.getTitle()}, editionId, newsItemId);
 
-        init();
+        try {
+            init();
+        } catch (IllegalArgumentException ex) {
+            log(LogSeverity.SEVERE, BundleKey.LOG_INITIALIZATION_ERROR, new Object[]{ex.getMessage()}, editionId, newsItemId);
+            return;
+        }
 
         try {
             if (!drupalServiceClient.login()) {
@@ -301,7 +312,6 @@ public class DrupalEditionAction implements EditionAction {
         this.uploadSuccessfulWorkflowOptionId = NumberUtils.toLong(properties.get(Property.UPLOADED_TRANSITION.name()));
         this.uploadFailedWorkflowOptionId = NumberUtils.toLong(properties.get(Property.FAILED_TRANSITION.name()));
 
-        // TODO: LOG IllegalArgumentExceptions to LogEntry
         if (hostname == null) {
             throw new IllegalArgumentException("'hostname' cannot be null");
         } else if (endpoint == null) {
