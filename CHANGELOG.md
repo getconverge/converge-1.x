@@ -1,4 +1,43 @@
 
+        Release Notes - Converge - Version 1.1.14
+    
+<h2>        Sub-task
+</h2>
+<ul>
+<li>[<a href='https://getconverge.atlassian.net/browse/CON-33'>CON-33</a>] -         Manage NewsItem workflow state through Drupal Plugin
+</li>
+<li>[<a href='https://getconverge.atlassian.net/browse/CON-35'>CON-35</a>] -         Introduce logging for Editions
+</li>
+<li>[<a href='https://getconverge.atlassian.net/browse/CON-36'>CON-36</a>] -         Only upload content that needs updating
+</li>
+<li>[<a href='https://getconverge.atlassian.net/browse/CON-37'>CON-37</a>] -         Logging of activities in DrupalEditionAction
+</li>
+<li>[<a href='https://getconverge.atlassian.net/browse/CON-38'>CON-38</a>] -         Delete existing images on Drupal before updating
+</li>
+</ul>
+                    
+<h2>        New Feature
+</h2>
+<ul>
+<li>[<a href='https://getconverge.atlassian.net/browse/CON-30'>CON-30</a>] -         Drip feeding Drupal Uploads
+</li>
+</ul>
+    
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://getconverge.atlassian.net/browse/CON-41'>CON-41</a>] -         Delete news item from inbox view
+</li>
+</ul>
+    
+<h2>        Task
+</h2>
+<ul>
+<li>[<a href='https://getconverge.atlassian.net/browse/CON-25'>CON-25</a>] -         Remove Outlet Subscriber features
+</li>
+</ul>
+
+
         Release Notes - Converge - Version 1.1.13
     
 <h2>        Sub-task
