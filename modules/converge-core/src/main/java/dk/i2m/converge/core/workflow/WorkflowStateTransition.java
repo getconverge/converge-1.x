@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2010 - 2011 Interactive Media Management
+ * Copyright (C) 2015 Allan Lykke Christensen
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +44,7 @@ import javax.persistence.TemporalType;
 @Table(name = "news_item_workflow_state_transition")
 public class WorkflowStateTransition implements Serializable {
 
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 3L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,16 +59,20 @@ public class WorkflowStateTransition implements Serializable {
     @Temporal(value = TemporalType.TIMESTAMP)
     private Calendar timestamp;
 
-    @Column(name = "comment") @Lob
+    @Column(name = "comment")
+    @Lob
     private String comment = "";
 
-    @Column(name = "story_version") @Lob
+    @Column(name = "story_version")
+    @Lob
     private String storyVersion = "";
 
-    @Column(name = "headline_version") @Lob
+    @Column(name = "headline_version")
+    @Lob
     private String headlineVersion = "";
 
-    @Column(name = "brief_version") @Lob
+    @Column(name = "brief_version")
+    @Lob
     private String briefVersion = "";
 
     @ManyToOne()
@@ -88,16 +93,47 @@ public class WorkflowStateTransition implements Serializable {
     }
 
     /**
+     * Creates a new instance of {@link WorkflowStateTransition} based on the
+     * {@link NewsItem} of the transition, the transition {@link WorkflowStep},
+     * the actor who performed the transition and a workflow comment by the
+     * actor.
+     *
+     * @param newsItem {@link NewsItem} of the transition
+     * @param transitionStep {@link WorkflowStep} of the transition
+     * @param actor {@link UserAccount actor} of the transition
+     * @param comment Comment submitted along with the transition by the actor
+     */
+    public WorkflowStateTransition(NewsItem newsItem, WorkflowStep transitionStep, UserAccount actor, String comment) {
+        this.newsItem = newsItem;
+        this.timestamp = Calendar.getInstance();
+        this.state = transitionStep.getToState();
+        this.user = actor;
+        this.storyVersion = newsItem.getStory();
+        this.headlineVersion = newsItem.getTitle();
+        this.briefVersion = newsItem.getBrief();
+        this.comment = comment;
+        this.submitted = transitionStep.isTreatAsSubmitted();
+    }
+    
+    public WorkflowStateTransition(NewsItem newsItem, UserAccount actor, String comment, WorkflowState state) {
+        this.newsItem = newsItem;
+        this.timestamp = Calendar.getInstance();
+        this.state = state;
+        this.user = actor;
+        this.storyVersion = newsItem.getStory();
+        this.headlineVersion = newsItem.getTitle();
+        this.briefVersion = newsItem.getBrief();
+        this.comment = comment;
+        this.submitted = false;
+    }
+
+    /**
      * Creates a new instance of {@link WorkflowStateTransition}.
      *
-     * @param newsItem
-     *          {@link NewsItem} that has transitioned
-     * @param timestamp
-     *          Time when the {@link NewsItem} transitioned
-     * @param state
-     *          New {@link WorkflowState} of the {@link NewsItem}
-     * @param user
-     *          {@link UserAccount} who initiated the transition
+     * @param newsItem {@link NewsItem} that has transitioned
+     * @param timestamp Time when the {@link NewsItem} transitioned
+     * @param state New {@link WorkflowState} of the {@link NewsItem}
+     * @param user {@link UserAccount} who initiated the transition
      */
     public WorkflowStateTransition(NewsItem newsItem, Calendar timestamp,
             WorkflowState state, UserAccount user) {
@@ -110,8 +146,7 @@ public class WorkflowStateTransition implements Serializable {
     /**
      * Sets the unique identifier of the transition.
      *
-     * @param id
-     *          Unique identifier of the transition
+     * @param id Unique identifier of the transition
      */
     public void setId(Long id) {
         this.id = id;
@@ -138,8 +173,7 @@ public class WorkflowStateTransition implements Serializable {
     /**
      * Sets the {@link NewsItem} for which the transition belongs.
      *
-     * @param newsItem
-     *          {@link NewsItem} for which the transition belongs
+     * @param newsItem {@link NewsItem} for which the transition belongs
      */
     public void setNewsItem(NewsItem newsItem) {
         this.newsItem = newsItem;
@@ -157,8 +191,7 @@ public class WorkflowStateTransition implements Serializable {
     /**
      * Sets the new workflow state of the {@link NewsItem}.
      *
-     * @param state
-     *          New {@link WorkflowState} of the {@link NewsItem}
+     * @param state New {@link WorkflowState} of the {@link NewsItem}
      */
     public void setState(WorkflowState state) {
         this.state = state;
@@ -176,8 +209,7 @@ public class WorkflowStateTransition implements Serializable {
     /**
      * Sets the date and time when the transition occurred.
      *
-     * @param timestamp
-     *          Date and time when the transition occurred
+     * @param timestamp Date and time when the transition occurred
      */
     public void setTimestamp(Calendar timestamp) {
         this.timestamp = timestamp;
@@ -195,19 +227,18 @@ public class WorkflowStateTransition implements Serializable {
     /**
      * Sets the comment passed by the previous actor.
      *
-     * @param comment
-     *          Comment passed by the previous actor
+     * @param comment Comment passed by the previous actor
      */
     public void setComment(String comment) {
         this.comment = comment;
     }
-    
+
     /**
      * Determine if there is a comment available in the
      * {@link WorkflowStateTransition}.
-     * 
-     * @return {@code true} if there is a comment available,
-     *         otherwise {@code false}
+     *
+     * @return {@code true} if there is a comment available, otherwise
+     * {@code false}
      */
     public boolean isCommentAvailable() {
         if (this.comment == null || this.comment.trim().isEmpty()) {
@@ -222,7 +253,7 @@ public class WorkflowStateTransition implements Serializable {
      * occurred.
      *
      * @return Content of the {@link NewsItem} story when the transition
-     *         occurred
+     * occurred
      */
     public String getStoryVersion() {
         return storyVersion;
@@ -232,9 +263,8 @@ public class WorkflowStateTransition implements Serializable {
      * Sets the content of the {@link NewsItem} story when the transition
      * occurred.
      *
-     * @param storyVersion
-     *          Content of the {@link NewsItem} story when the transition
-     *          occurred
+     * @param storyVersion Content of the {@link NewsItem} story when the
+     * transition occurred
      */
     public void setStoryVersion(String storyVersion) {
         this.storyVersion = storyVersion;
@@ -244,8 +274,7 @@ public class WorkflowStateTransition implements Serializable {
      * Gets the brief of the {@link NewsItem} story when the transition
      * occurred.
      *
-     * @return Brief of the {@link NewsItem} story when the transition
-     *         occurred
+     * @return Brief of the {@link NewsItem} story when the transition occurred
      */
     public String getBriefVersion() {
         return briefVersion;
@@ -255,9 +284,8 @@ public class WorkflowStateTransition implements Serializable {
      * Sets the brief of the {@link NewsItem} story when the transition
      * occurred.
      *
-     * @param briefVersion
-     *          Brief of the {@link NewsItem} story when the transition
-     *          occurred
+     * @param briefVersion Brief of the {@link NewsItem} story when the
+     * transition occurred
      */
     public void setBriefVersion(String briefVersion) {
         this.briefVersion = briefVersion;
@@ -268,7 +296,7 @@ public class WorkflowStateTransition implements Serializable {
      * occurred.
      *
      * @return Headline of the {@link NewsItem} story when the transition
-     *         occurred
+     * occurred
      */
     public String getHeadlineVersion() {
         return headlineVersion;
@@ -278,9 +306,8 @@ public class WorkflowStateTransition implements Serializable {
      * Sets the headline of the {@link NewsItem} story when the transition
      * occurred.
      *
-     * @param headlineVersion
-     *          Headline of the {@link NewsItem} story when the transition
-     *          occurred
+     * @param headlineVersion Headline of the {@link NewsItem} story when the
+     * transition occurred
      */
     public void setHeadlineVersion(String headlineVersion) {
         this.headlineVersion = headlineVersion;
@@ -298,8 +325,7 @@ public class WorkflowStateTransition implements Serializable {
     /**
      * Sets the {@link UserAccount} who initiated the transition.
      *
-     * @param user
-     *          {@link UserAccount} who initiated the transition
+     * @param user {@link UserAccount} who initiated the transition
      */
     public void setUser(UserAccount user) {
         this.user = user;
@@ -307,9 +333,9 @@ public class WorkflowStateTransition implements Serializable {
 
     /**
      * Determine if the {@link NewsItem} has been submitted.
-     * 
-     * @return {@code true} if the {@link NewsItem} was submitted
-     *         at this transition, otherwise {@code false}
+     *
+     * @return {@code true} if the {@link NewsItem} was submitted at this
+     * transition, otherwise {@code false}
      */
     public boolean isSubmitted() {
         return this.submitted;
@@ -317,10 +343,9 @@ public class WorkflowStateTransition implements Serializable {
 
     /**
      * Sets the submitted flag for the {@link NewsItem}.
-     * 
-     * @param submitted
-     *          {@code true} if this state transition represents
-     *          the submission of the {@link NewsItem}
+     *
+     * @param submitted {@code true} if this state transition represents the
+     * submission of the {@link NewsItem}
      */
     public void setSubmitted(boolean submitted) {
         this.submitted = submitted;

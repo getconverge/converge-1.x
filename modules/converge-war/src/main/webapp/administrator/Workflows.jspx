@@ -59,7 +59,7 @@
                             <h:outputText value="#{i18n.administrator_Workflows_WORKFLOW_VALID_VALID}" rendered="#{workflow.valid}" style="color: green; font-weight: bold;" />
                             <h:outputText value="#{i18n.administrator_Workflows_WORKFLOW_VALID_INVALID}" rendered="#{!workflow.valid}" style="color: red; font-weight: bold;" />
                         </rich:column>
-                            
+
                     </rich:dataTable>
                     <rich:spacer height="30" />
                 </div>
@@ -107,7 +107,7 @@
                                     <rich:dataTable id="dtWorkflowProcess"
                                                     value="#{administrator_Workflows.selected.states}"
                                                     var="state" styleClass="table scrollableDialogContent" headerClass="tableHeader"
-                                                    columnClasses="center columnIcon, left nowrap, left nowrap, left nowrap, right columnCount"
+                                                    columnClasses="center columnIcon, left nowrap, left nowrap, left nowrap, left nowrap, right columnCount"
                                                     rowClasses="odd, even">
                                         <rich:column>
                                             <f:facet name="header">&#160;</f:facet>
@@ -120,14 +120,21 @@
                                         </rich:column>
                                         <rich:column>
                                             <f:facet name="header">
-                                                <h:outputText value="#{i18n.administrator_Workflows_STATE_NAME}" title="#{i18n.administrator_Workflows_STATE_NAME_TOOLTIP}" />
+                                                <h:outputText value="#{i18n.administrator_Workflows_STATE_ID}" title="#{i18n.administrator_Workflows_STATE_ID_TOOLTIP}" />
                                             </f:facet>
                                             <a4j:commandLink reRender="mpWorkflowStateDetails" ajaxSingle="true">
                                                 <f:setPropertyActionListener value="#{state}" target="#{administrator_Workflows.selectedWorkflowState}" />
                                                 <f:setPropertyActionListener target="#{administrator_Workflows.selectedWorkflowStateTab}" value="tabWorkflowState" />
                                                 <rich:componentControl for="mpWorkflowStateDetails" operation="show" event="oncomplete" />
-                                                <h:outputText value="#{state.name}" title="#{state.description}" />
+                                                <h:outputText value="#{state.id}" />
                                             </a4j:commandLink>
+                                        </rich:column>
+                                        <rich:column styleClass="#{state.styleFg} bg-#{state.style}">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{i18n.administrator_Workflows_STATE_NAME}" title="#{i18n.administrator_Workflows_STATE_NAME_TOOLTIP}" />
+                                            </f:facet>
+                                            <h:outputText value="#{state.name}" title="#{state.description}" />
+
                                         </rich:column>
                                         <rich:column>
                                             <f:facet name="header">
@@ -226,11 +233,11 @@
                                         <h:outputText value="#{i18n.administrator_Workflows_STATE_NAME}:" />
                                         <converge:message for="txtName" />
                                     </h:column>
-                                        <h:inputText id="txtName" styleClass="text mediumInput" value="#{administrator_Workflows.selectedWorkflowState.name}" title="#{i18n.administrator_Workflows_STATE_NAME_TOOLTIP}" required="true" requiredMessage="#{i18n.administrator_Workflows_STATE_NAME_REQUIRED}"/>
+                                    <h:inputText id="txtName" styleClass="text mediumInput" value="#{administrator_Workflows.selectedWorkflowState.name}" title="#{i18n.administrator_Workflows_STATE_NAME_TOOLTIP}" required="true" requiredMessage="#{i18n.administrator_Workflows_STATE_NAME_REQUIRED}"/>
 
-                                        <h:outputText value="#{i18n.administrator_Workflows_STATE_DESCRIPTION}:" />
-                                        <h:inputTextarea id="txtDescription" styleClass="text mediumTextArea" value="#{administrator_Workflows.selectedWorkflowState.description}" title="#{i18n.administrator_Workflows_STATE_DESCRIPTION_TOOLTIP}" />
-                                        <h:outputText value="#{i18n.administrator_Workflows_STATE_TYPE}:" />
+                                    <h:outputText value="#{i18n.administrator_Workflows_STATE_DESCRIPTION}:" />
+                                    <h:inputTextarea id="txtDescription" styleClass="text mediumTextArea" value="#{administrator_Workflows.selectedWorkflowState.description}" title="#{i18n.administrator_Workflows_STATE_DESCRIPTION_TOOLTIP}" />
+                                    <h:outputText value="#{i18n.administrator_Workflows_STATE_TYPE}:" />
                                     <h:selectOneRadio id="raType" value="#{administrator_Workflows.selectedWorkflowStateType}">
                                         <f:converter converterId="i2m.enumTypeConverter" />
                                         <f:selectItems value="#{common.workflowStateTypes}" />
@@ -259,11 +266,23 @@
                                         <f:selectItems value="#{common.userRoles}" />
                                     </h:selectOneMenu>
 
-                                        <h:outputText value="#{i18n.administrator_Workflows_WORKFLOW_STATE_ALLOW_PULLBACK}" />
+                                    <h:outputText value="#{i18n.administrator_Workflows_WORKFLOW_STATE_ALLOW_PULLBACK}" />
                                     <h:selectBooleanCheckbox id="sorPullBack" value="#{administrator_Workflows.selectedWorkflowState.pullbackEnabled}" />
 
                                     <h:outputText value="#{i18n.administrator_Workflows_WORKFLOW_STATE_SHOW_IN_INBOX}" />
                                     <h:selectBooleanCheckbox id="sbcShowInInbox" value="#{administrator_Workflows.selectedWorkflowState.showInInbox}" />
+
+                                    <h:outputText value="#{i18n.administrator_Workflows_WORKFLOW_STATE_STYLE}" />
+                                    <h:selectOneMenu id="selStyle"
+                                                     value="#{administrator_Workflows.selectedWorkflowState.style}">
+                                        <f:selectItems value="#{common.colorSwatch}" />
+                                    </h:selectOneMenu>
+
+                                    <h:outputText value="#{i18n.administrator_Workflows_WORKFLOW_STATE_STYLE_FOREGROUND}" />
+                                    <h:selectOneMenu id="selStyleFg"
+                                                     value="#{administrator_Workflows.selectedWorkflowState.styleFg}">
+                                        <f:selectItems value="#{common.colorSwatch}" />
+                                    </h:selectOneMenu>
 
                                     <h:column>
                                         <h:outputText value="#{i18n.administrator_Workflows_STATE_DISPLAY_ORDER}:" title="#{i18n.administrator_Workflows_STATE_DISPLAY_ORDER_TOOLTIP}" />
@@ -311,7 +330,7 @@
                                                     var="option"
                                                     styleClass="table scrollableDialogContent"
                                                     headerClass="tableHeader"
-                                                    columnClasses="center columnIcon, left nowrap, left nowrap, left nowrap"
+                                                    columnClasses="center columnIcon, left nowrap, left nowrap, left nowrap, left nowrap"
                                                     rowClasses="odd, even">
                                         <rich:column>
                                             <f:facet name="header">&#160;</f:facet>
@@ -324,6 +343,20 @@
                                                 <h:graphicImage value="/images/icons/workflow_option.gif"
                                                                 alt="#{i18n.administrator_Workflows_STATE_OPTION}"
                                                                 title="#{i18n.administrator_Workflows_STATE_OPTION}" />
+                                            </a4j:commandLink>
+                                        </rich:column>
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{i18n.administrator_Workflows_STATE_OPTION_ID}"
+                                                              title="#{i18n.administrator_Workflows_STATE_OPTION_ID_TOOLTIP}" />
+                                            </f:facet>
+                                            <a4j:commandLink reRender="mpWorkflowStepDetails">
+                                                <f:setPropertyActionListener value="#{option}"
+                                                                             target="#{administrator_Workflows.selectedWorkflowStep}" />
+                                                <rich:componentControl for="mpWorkflowStepDetails"
+                                                                       operation="show"
+                                                                       event="oncomplete" />
+                                                <h:outputText value="#{option.id}" />
                                             </a4j:commandLink>
                                         </rich:column>
                                         <rich:column>
@@ -444,7 +477,7 @@
                                         <f:selectItems value="#{administrator_Workflows.workflowStates}" />
                                     </h:selectOneMenu>
 
-                                        <h:outputText value="#{i18n.administrator_Workflows_STATE_TREAT_AS_SUBMITTED}:" title="#{i18n.administrator_Workflows_STATE_TREAT_AS_SUBMITTED_TOOLTIP}" />
+                                    <h:outputText value="#{i18n.administrator_Workflows_STATE_TREAT_AS_SUBMITTED}:" title="#{i18n.administrator_Workflows_STATE_TREAT_AS_SUBMITTED_TOOLTIP}" />
                                     <h:selectBooleanCheckbox id="sbcTreatAsSubmitted" value="#{administrator_Workflows.selectedWorkflowStep.treatAsSubmitted}" />
 
 
@@ -597,7 +630,7 @@
                             </h:graphicImage>
                         </h:panelGroup>
                     </f:facet>
-                    
+
                     <h:panelGrid id="pgWorkflowStepActionDetails">
 
                         <rich:tabPanel id="tpWorkflowStepAction" switchType="client" activeTabClass="tabActive" inactiveTabClass="tabInactive" selectedTab="#{administrator_Workflows.selectedWorkflowStepActionTab}">

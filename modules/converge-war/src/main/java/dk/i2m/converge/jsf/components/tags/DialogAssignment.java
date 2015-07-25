@@ -16,6 +16,7 @@
  */
 package dk.i2m.converge.jsf.components.tags;
 
+import dk.i2m.converge.core.workflow.WorkflowStateTransitionException;
 import dk.i2m.commons.BeanComparator;
 import dk.i2m.converge.core.DataNotFoundException;
 import dk.i2m.converge.core.calendar.Event;

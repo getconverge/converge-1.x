@@ -17,6 +17,7 @@
  */
 package dk.i2m.converge.jsf.beans;
 
+import dk.i2m.converge.core.workflow.WorkflowStateTransitionException;
 import dk.i2m.converge.core.DataNotFoundException;
 import dk.i2m.converge.core.annotations.OutletAction;
 import dk.i2m.converge.core.calendar.Event;
@@ -536,6 +537,10 @@ public class Planning implements UIEventListener {
         newsItemFacade.updatePlacement(assignment.getPlacementId(), assignment.
                 getStart(), assignment.getPosition());
     }
+    
+    public void onRefreshEditionPlacements(ActionEvent event) {
+        fetchEditions();
+    }
 
     private void fetchEditions() {
         if (!(isOutletSelected() && isDateSelected())) {
@@ -896,7 +901,7 @@ public class Planning implements UIEventListener {
 
     public void onRefreshEditionLogEntries(ActionEvent event) {
         List<LogEntry> entries = systemFacade.findLogEntries(Edition.class.getName(), String.
-                valueOf(getSelectedEditionView().getId()), 0, 100);
+                valueOf(getSelectedEditionView().getId()));
         editionLogEntries = new ListDataModel(entries);
     }
 
@@ -912,7 +917,7 @@ public class Planning implements UIEventListener {
     public void onRefreshNewsItemLogEntries(ActionEvent event) {
         NewsItem logItem = getSelectedNewsItemPlacement().getNewsItem();
         List<LogEntry> entries = systemFacade.findLogEntries(NewsItem.class.getName(), String.
-                valueOf(logItem.getId()), 0, 100);
+                valueOf(logItem.getId()));
         logEntries = new ListDataModel(entries);
     }
 

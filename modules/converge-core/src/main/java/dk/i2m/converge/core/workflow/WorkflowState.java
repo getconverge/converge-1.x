@@ -51,28 +51,52 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 })
 public class WorkflowState implements Serializable {
 
-    /** Query for finding the {@link WorkflowState}s for a given workflow. */
+    /**
+     * Query for finding the {@link WorkflowState}s for a given workflow.
+     */
     public static final String FIND_BY_WORKFLOW = "WorkflowState.findByWorkflow";
 
-    /** Unique ID of the {@link WorkflowState}. */
+    /**
+     * Unique ID of the {@link WorkflowState}.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    /** Name of the state. */
+    /**
+     * Name of the state.
+     */
     @Column(name = "state_name")
     private String name = "";
 
-    /** Description of the state. */
+    /**
+     * Description of the state.
+     */
     @Column(name = "state_description")
     private String description = "";
 
-    /** Order of the state when listed. */
+    /**
+     * Style of the state.
+     */
+    @Column(name = "style")
+    private String style = "";
+
+    /**
+     * Foreground style of the state.
+     */
+    @Column(name = "style_fg")
+    private String styleFg;
+    
+    /**
+     * Order of the state when listed.
+     */
     @Column(name = "display_order")
     private int order = 0;
 
-    /** Name of the role of the actor when in this state. */
+    /**
+     * Name of the role of the actor when in this state.
+     */
     @ManyToOne(optional = false)
     @JoinColumn(name = "role")
     private UserRole actorRole;
@@ -81,7 +105,9 @@ public class WorkflowState implements Serializable {
     @Column(name = "permision")
     private WorkflowStatePermission permission = WorkflowStatePermission.GROUP;
 
-    /** {@link List} of options for progressing to a different state. */
+    /**
+     * {@link List} of options for progressing to a different state.
+     */
     @OneToMany(mappedBy = "fromState", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @OrderBy("order ASC")
     private List<WorkflowStep> nextStates = new ArrayList<WorkflowStep>();
@@ -90,7 +116,9 @@ public class WorkflowState implements Serializable {
     @PrivateOwned
     private List<NewsItemFieldVisible> visibleFields = new ArrayList<NewsItemFieldVisible>();
 
-    /** {@link Workflow} owning the state. */
+    /**
+     * {@link Workflow} owning the state.
+     */
     @ManyToOne(optional = false)
     @JoinColumn(name = "workflow_id", nullable = false)
     private Workflow workflow;
@@ -103,7 +131,7 @@ public class WorkflowState implements Serializable {
 
     @Column(name = "show_in_inbox")
     private boolean showInInbox = true;
-
+    
 
     /**
      * Creates a new instance of {@link WorkflowState}.
@@ -148,11 +176,10 @@ public class WorkflowState implements Serializable {
     }
 
     /**
-     * Gets a {@link List} of valid steps from this 
-     * {@link WorkflowState}.
-     * 
-     * @return {@link List} of valid {@link WorkflowStep}s from
-     *         this {@link WorkflowState}
+     * Gets a {@link List} of valid steps from this {@link WorkflowState}.
+     *
+     * @return {@link List} of valid {@link WorkflowStep}s from this
+     * {@link WorkflowState}
      */
     public List<WorkflowStep> getNextStates() {
         return nextStates;
@@ -180,9 +207,9 @@ public class WorkflowState implements Serializable {
 
     /**
      * Determine if news items in this state should be shown in the inbox.
-     * 
-     * @return {@code true} if news items should be shown in the inbox, 
-     *         otherwise {@code false}
+     *
+     * @return {@code true} if news items should be shown in the inbox,
+     * otherwise {@code false}
      */
     public boolean isShowInInbox() {
         return showInInbox;
@@ -190,19 +217,19 @@ public class WorkflowState implements Serializable {
 
     /**
      * Sets the inbox status.
-     * 
-     * @param showInInbox
-     *          {@code true} if news items should appear in the inbox,
-     *          otherwise {@code false}
+     *
+     * @param showInInbox {@code true} if news items should appear in the inbox,
+     * otherwise {@code false}
      */
     public void setShowInInbox(boolean showInInbox) {
         this.showInInbox = showInInbox;
     }
-    
+
     /**
      * Determines if this state allows the previous user to pull back the story.
      *
-     * @return {@code true} if this state allow pullback, otherwise {@code false}
+     * @return {@code true} if this state allow pullback, otherwise
+     * {@code false}
      */
     public boolean isPullbackEnabled() {
         return pullbackEnabled;
@@ -211,9 +238,8 @@ public class WorkflowState implements Serializable {
     /**
      * Sets the pullback indicator.
      *
-     * @param pullbackEnabled
-     *          {@code true} if the state should allow pullback, otherwise
-     *          {@code false}
+     * @param pullbackEnabled {@code true} if the state should allow pullback,
+     * otherwise {@code false}
      */
     public void setPullbackEnabled(boolean pullbackEnabled) {
         this.pullbackEnabled = pullbackEnabled;
@@ -231,8 +257,7 @@ public class WorkflowState implements Serializable {
     /**
      * Sets the user permission to news items with this state.
      *
-     * @param permission
-     *          User permission to news items with this state
+     * @param permission User permission to news items with this state
      */
     public void setPermission(WorkflowStatePermission permission) {
         this.permission = permission;
@@ -243,10 +268,9 @@ public class WorkflowState implements Serializable {
      * the start and end state of the {@link Workflow} that the state belongs.
      *
      * @return {@link WorkflowStateType#START} if the owning {@link Workflow}
-     *         has this state set as the start state,
-     *         {@link WorkflowStateType#END} if the owning {@link Workflow} has
-     *         this state set as the end state, otherwise
-     *         {@link WorkflowStateType#MIDDLE}
+     * has this state set as the start state, {@link WorkflowStateType#END} if
+     * the owning {@link Workflow} has this state set as the end state,
+     * otherwise {@link WorkflowStateType#MIDDLE}
      */
     public WorkflowStateType getType() {
         if (getWorkflow() == null) {
@@ -305,7 +329,7 @@ public class WorkflowState implements Serializable {
      * Determines if the {@link WorkflowState} is for the current NewsItem user.
      *
      * @return {@code true} if the {@link WorkflowState} is for the current
-     *         NewsItem user, otherwise {@code false}
+     * NewsItem user, otherwise {@code false}
      */
     public boolean isUserPermission() {
         if (getPermission() == null) {
@@ -316,10 +340,11 @@ public class WorkflowState implements Serializable {
     }
 
     /**
-     * Determines if the {@link WorkflowState} is for the current NewsItem group.
+     * Determines if the {@link WorkflowState} is for the current NewsItem
+     * group.
      *
      * @return {@code true} if the {@link WorkflowState} is for the current
-     *         NewsItem group, otherwise {@code false}
+     * NewsItem group, otherwise {@code false}
      */
     public boolean isGroupPermission() {
         if (getPermission() == null) {
@@ -337,6 +362,43 @@ public class WorkflowState implements Serializable {
         this.departmentAssigned = departmentAssigned;
     }
 
+    /**
+     * Gets the style of the {@link WorkflowState}.
+     *
+     * @return Style classes of the {@link WorkflowState}
+     */
+    public String getStyle() {
+        return style;
+    }
+
+    /**
+     * Sets the style of the {@link WorkflowState}.
+     *
+     * @param style Style classes of the {@link WorkflowState}
+     */
+    public void setStyle(String style) {
+        this.style = style;
+    }
+
+    /**
+     * Gets the foreground style of the {@link WorkflowState}.
+     *
+     * @return Foreground style class of the {@link WorkflowState}
+     */
+    public String getStyleFg() {
+        return styleFg;
+    }
+
+    /**
+     * Sets the foreground style of the {@link WorkflowState}.
+     *
+     * @param styleFg Foreground style class of the {@link WorkflowState}
+     */
+    public void setStyleFg(String styleFg) {
+        this.styleFg = styleFg;
+    }
+
+    
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {

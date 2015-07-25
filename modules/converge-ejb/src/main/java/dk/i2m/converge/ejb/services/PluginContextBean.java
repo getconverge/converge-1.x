@@ -16,6 +16,7 @@
  */
 package dk.i2m.converge.ejb.services;
 
+import dk.i2m.converge.core.workflow.WorkflowStateTransitionException;
 import dk.i2m.converge.core.ConfigurationKey;
 import dk.i2m.converge.core.DataNotFoundException;
 import dk.i2m.converge.core.EnrichException;
@@ -48,6 +49,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -86,6 +88,7 @@ public class PluginContextBean implements PluginContextBeanLocal {
     private MetaDataServiceLocal metaDataService;
     @EJB
     private OutletFacadeLocal outletFacade;
+
     private UserAccount currentUserAccount = null;
 
     @Override
@@ -345,5 +348,22 @@ public class PluginContextBean implements PluginContextBeanLocal {
     @Override
     public NewsItemEditionState findNewsItemEditionStateOrCreate(Long editionId, Long newsItemId, String property, String value) {
         return newsItemFacade.findNewsItemEditionStateOrCreate(editionId, newsItemId, property, value);
+    }
+
+    @Override
+    public void workflowTransition(Long newsItemId, String uid, long step) throws WorkflowStateTransitionException {
+        try {
+            UserAccount userAccount = userService.findById(uid);
+            NewsItemHolder checkout = newsItemFacade.checkout(newsItemId, userAccount);
+            newsItemFacade.step(checkout.getNewsItem(), userAccount, step, "");
+        } catch (DataNotFoundException ex) {
+            LOG.log(Level.SEVERE, ex.getMessage());
+            LOG.log(Level.FINEST, "", ex);
+            throw new WorkflowStateTransitionException(ex);
+        } catch (UserNotFoundException ex) {
+            throw new WorkflowStateTransitionException(ex);
+        } catch (DirectoryException ex) {
+            throw new WorkflowStateTransitionException(ex);
+        }
     }
 }

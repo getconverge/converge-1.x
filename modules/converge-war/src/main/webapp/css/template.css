@@ -1956,3 +1956,13 @@ div.metrics > span {margin-left:0.5em !important;}
 .administration_system_table_label_column {
     width: 170px;
 }
+
+.editions_edition_title_open,
+.editions_edition_title_closed {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.editions_edition_title_closed {
+    color: #aaaaaa;
+}

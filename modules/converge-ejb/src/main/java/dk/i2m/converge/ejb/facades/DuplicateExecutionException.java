@@ -16,6 +16,8 @@
  */
 package dk.i2m.converge.ejb.facades;
 
+import dk.i2m.converge.core.workflow.WorkflowStateTransitionException;
+
 /**
  * {@link Exception} thrown when trying to create a duplicate entity.
  *

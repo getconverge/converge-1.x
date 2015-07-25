@@ -17,6 +17,7 @@
 package dk.i2m.converge.jsf.beans;
 
 import dk.i2m.converge.core.Announcement;
+import dk.i2m.converge.core.Color;
 import dk.i2m.converge.core.ConfigurationKey;
 import dk.i2m.converge.core.calendar.EventCategory;
 import dk.i2m.converge.core.content.AssignmentType;
@@ -56,35 +57,44 @@ public class Common {
 
     private static final Logger LOG = Logger.getLogger(Common.class.toString());
 
-    @EJB private CalendarFacadeLocal calendarFacade;
+    @EJB
+    private CalendarFacadeLocal calendarFacade;
 
-    @EJB private UserFacadeLocal userFacade;
+    @EJB
+    private UserFacadeLocal userFacade;
 
-    @EJB private OutletFacadeLocal outletFacade;
+    @EJB
+    private OutletFacadeLocal outletFacade;
 
-    @EJB private SystemFacadeLocal systemFacade;
+    @EJB
+    private SystemFacadeLocal systemFacade;
 
-    @EJB private WorkflowFacadeLocal workflowFacade;
+    @EJB
+    private WorkflowFacadeLocal workflowFacade;
 
-    @EJB private MetaDataFacadeLocal metaDataFacade;
+    @EJB
+    private MetaDataFacadeLocal metaDataFacade;
 
-    @EJB private NewswireServiceLocal newswireService;
+    @EJB
+    private NewswireServiceLocal newswireService;
 
-    @EJB private CatalogueFacadeLocal catalogueFacade;
+    @EJB
+    private CatalogueFacadeLocal catalogueFacade;
 
-    @EJB private ListingFacadeLocal listingFacade;
-    
+    @EJB
+    private ListingFacadeLocal listingFacade;
+
     private ResourceBundle i18n = JsfUtils.getResourceBundle(Bundle.i18n.name());
 
     /**
      * Get the local time on the server.
-     * 
+     *
      * @return Local time on the server
      */
     public Date getLocalTime() {
         return java.util.Calendar.getInstance().getTime();
     }
-    
+
     public TimeZone getSystemTimeZone() {
         try {
             String timeZone = systemFacade.getProperty(ConfigurationKey.TIME_ZONE);
@@ -109,6 +119,21 @@ public class Common {
         }
 
         return map;
+    }
+
+    /**
+     * Gets a {@link Map} of available colors.
+     *
+     * @return {@link Map} of available colors
+     */
+    public Map<String, String> getColorSwatch() {
+        Map<String, String> swatch = new LinkedHashMap<String, String>();
+
+        for (Color color : Color.values()) {
+            swatch.put(i18n.getString("Generic_COLOR_" + color.name()), color.name());
+        }
+
+        return swatch;
     }
 
     /**
@@ -209,7 +234,7 @@ public class Common {
      */
     public Map<String, OutletType> getOutletTypes() {
         Map<String, OutletType> types = new LinkedHashMap<String, OutletType>();
-        
+
         for (OutletType type : OutletType.values()) {
             types.put(i18n.getString("Generic_OUTLET_TYPE_" + type.name()), type);
         }
@@ -238,8 +263,8 @@ public class Common {
      * @return {@link Map} of available {@link EmploymentType}s
      */
     public Map<String, EmploymentType> getEmploymentTypes() {
-        Map<String, EmploymentType> types =
-                new LinkedHashMap<String, EmploymentType>();
+        Map<String, EmploymentType> types
+                = new LinkedHashMap<String, EmploymentType>();
 
         for (EmploymentType type : EmploymentType.values()) {
             types.put(i18n.getString("Generic_EMPLOYMENT_TYPE_" + type.name()), type);
@@ -296,8 +321,8 @@ public class Common {
     }
 
     public Map<String, EventCategory> getEventCategories() {
-        Map<String, EventCategory> map =
-                new LinkedHashMap<String, EventCategory>();
+        Map<String, EventCategory> map
+                = new LinkedHashMap<String, EventCategory>();
 
         for (EventCategory category : calendarFacade.findAllCategories()) {
             map.put(category.getName(), category);
@@ -306,8 +331,8 @@ public class Common {
     }
 
     public Map<String, String> getEventCategoriesAsStrings() {
-        Map<String, String> map =
-                new LinkedHashMap<String, String>();
+        Map<String, String> map
+                = new LinkedHashMap<String, String>();
 
         for (EventCategory category : calendarFacade.findAllCategories()) {
             map.put(category.getName(), category.getName());
@@ -360,7 +385,6 @@ public class Common {
         return map;
     }
 
-
     public String getApplicationVersion() {
         return systemFacade.getApplicationVersion();
     }
@@ -389,7 +413,8 @@ public class Common {
     }
 
     /**
-     * Gets a {@link Map} of available languages supported by the application. The languages are fetched from the JavaServer Faces configuration.
+     * Gets a {@link Map} of available languages supported by the application.
+     * The languages are fetched from the JavaServer Faces configuration.
      *
      * @return {@link Map} of supported languages
      */

@@ -42,30 +42,40 @@
                     <converge:moduleHeader moduleTitle="#{planning.editionTitle}" />
                     <div class="moduleContent">
                         <a4j:repeat value="#{planning.selectedEditions}" var="edition">
+                            
                             <div style="clear: both; padding-bottom: 12px;"></div>
 
-                            <h2 style="#{!edition.open ? 'color: #aaaaaa;' :''}"><h:outputText value="#{edition.publicationDate}" >
-                                    <f:convertDateTime pattern="#{i18n.Generic_FORMAT_TIME}" timeZone="#{common.systemTimeZone}" />
-                                </h:outputText> #{!edition.open ? ' - Closed' :''}</h2>
+                            <h:panelGrid columns="2" columnClasses="left, right" style="width: 100%">
+                                <h:column>
+                                    <h:outputFormat value="#{i18n.Editions_EDITION_TITLE_OPEN}" styleClass="editions_edition_title_open" rendered="#{edition.open}">
+                                        <f:param value="#{planning.selectedOutlet.title}" />
+                                        <f:param value="#{edition.publicationDate}"/>
+                                    </h:outputFormat>
+                                    
+                                    <h:outputFormat value="#{i18n.Editions_EDITION_TITLE_CLOSED}" styleClass="editions_edition_title_closed" rendered="#{!edition.open}">
+                                        <f:param value="#{planning.selectedOutlet.title}" />
+                                        <f:param value="#{edition.publicationDate}"/>
+                                    </h:outputFormat>
+                                </h:column>
+                                <h:column>
+                                    <a4j:commandButton styleClass="button dynamicButton" reRender="frmEditionDetails" rendered="#{edition.id != null}" value="#{i18n.Editions_EDITION_PROPERTIES}" title="#{i18n.Editions_EDITION_PROPERTIES_TOOLTIP}">
+                                        <f:setPropertyActionListener target="#{planning.selectedEditionView}" value="#{edition}" />
+                                        <rich:componentControl for="mpEditionDetails" operation="show" event="oncomplete" />
+                                    </a4j:commandButton>
+
+                                    <a4j:commandButton styleClass="button dynamicButton" reRender="frmPage" rendered="#{edition.id == null &amp;&amp; edition.open}" value="#{i18n.Editions_EDITION_CREATE}" title="#{i18n.Editions_EDITION_CREATE_TOOLTIP}">
+                                        <f:setPropertyActionListener target="#{planning.createEdition}" value="#{edition}" />
+                                    </a4j:commandButton>
+                                </h:column>
+                            </h:panelGrid>
 
                             <rich:dataTable id="dtEditionAssignments" value="#{edition.assignments}" var="assignment" styleClass="table" headerClass="tableHeader" rowClasses="odd, even" sortPriority="#{converge:createList('colPosition,colPriority')}">
-                                <c:set var="rowStyle" value="#{assignment.endState ? 'endState' : ''} #{assignment.trashState ? 'trashState' : ''} #{assignment.inprogressState ? 'intermediateState' : ''}" />
 
-                                <rich:column styleClass="columnIcon center #{rowStyle}" headerClass="subColumnIcon">
+                                <rich:column styleClass="columnIcon center #{assignment.styleFg} bg-#{assignment.style}" headerClass="subColumnIcon">
                                     <f:facet name="header">
-                                        <h:panelGroup>
-                                            <a4j:commandLink reRender="frmEditionDetails" rendered="#{edition.id != null}">
-                                                <f:setPropertyActionListener target="#{planning.selectedEditionView}" value="#{edition}" />
-                                                <rich:componentControl for="mpEditionDetails" operation="show" event="oncomplete" />
-                                                <h:graphicImage value="#{res.PROPERTIES_ICON}" title="#{i18n.Editions_PROPERTIES_TOOLTIP}" alt="#{i18n.Editions_PROPERTIES_TOOLTIP}"  />
-                                            </a4j:commandLink>
-
-                                            <a4j:commandLink reRender="frmPage" rendered="#{edition.id == null &amp;&amp; edition.open}">
-                                                <f:setPropertyActionListener target="#{planning.createEdition}" value="#{edition}" />
-                                                <h:graphicImage value="#{res.ADD_ICON}" title="#{i18n.Editions_CREATE_TOOLTIP}" alt="#{msg.planning_EDITION_CREATE_TOOLTIP}"  />
-                                            </a4j:commandLink>
-                                        </h:panelGroup>
-
+                                        <a4j:commandLink ajaxSingle="true" reRender="dtEditionAssignments" actionListener="#{planning.onRefreshEditionPlacements}">  
+                                            <h:graphicImage value="#{i18n.resource_ICON_REFRESH}" />
+                                        </a4j:commandLink>
                                     </f:facet>
 
                                     <a4j:commandLink reRender="frmNewsItemPlacementDetails, frmPage">
@@ -83,7 +93,7 @@
                                     </rich:toolTip>
                                 </rich:column>
 
-                                <rich:column sortBy="#{assignment.id}" styleClass="right columnId #{rowStyle}" headerClass="columnId">
+                                <rich:column sortBy="#{assignment.id}" styleClass="right columnId #{assignment.styleFg} bg-#{assignment.style}" headerClass="columnId">
                                     <f:facet name="header">
                                         <h:outputText value="#{i18n.Editions_NEWS_ITEM_ID}" title="#{i18n.Editions_ARTICLE_ID_TOOLTIP}" />
                                     </f:facet>
@@ -95,7 +105,7 @@
                                     </h:outputLink>
                                 </rich:column>
 
-                                <rich:column sortBy="#{assignment.title}" styleClass="#{rowStyle}">
+                                <rich:column sortBy="#{assignment.title}" styleClass="#{assignment.styleFg} bg-#{assignment.style}">
                                     <f:facet name="header">
                                         <h:outputText value="#{i18n.Editions_NEWSITEM_HEADLINE}" />
                                     </f:facet>
@@ -105,28 +115,28 @@
                                     </h:outputLink>
                                 </rich:column>
 
-                                <rich:column sortBy="#{assignment.actor}" styleClass="#{rowStyle}">
+                                <rich:column sortBy="#{assignment.actor}" styleClass="#{assignment.styleFg} bg-#{assignment.style}">
                                     <f:facet name="header">
                                         <h:outputText value="#{i18n.Editions_NEWSITEM_ACTOR}" />
                                     </f:facet>
                                     <h:outputText value="#{assignment.actor}" />
                                 </rich:column>
 
-                                <rich:column sortBy="#{assignment.status}" styleClass="#{rowStyle}">
+                                <rich:column sortBy="#{assignment.status}" styleClass="#{assignment.styleFg} bg-#{assignment.style}">
                                     <f:facet name="header">
                                         <h:outputText value="#{i18n.Editions_NEWSITEM_STATUS}" />
                                     </f:facet>
                                     <h:outputText value="#{assignment.status}" />
                                 </rich:column>
 
-                                <rich:column sortBy="#{assignment.section}" styleClass="#{rowStyle}">
+                                <rich:column sortBy="#{assignment.section}" styleClass="#{assignment.styleFg} bg-#{assignment.style}">
                                     <f:facet name="header">
                                         <h:outputText value="#{i18n.Editions_NEWSITEM_SECTION}" />
                                     </f:facet>
                                     <h:outputText value="#{assignment.section}" />
                                 </rich:column>
 
-                                <rich:column sortBy="#{assignment.wordCount}" styleClass="#{rowStyle}">
+                                <rich:column sortBy="#{assignment.wordCount}" styleClass="#{assignment.styleFg} bg-#{assignment.style}">
                                     <f:facet name="header">
                                         <h:outputText value="#{i18n.Editions_NEWSITEM_WORD_COUNT}" />
                                     </f:facet>
@@ -134,7 +144,7 @@
                                     <h:outputText value="#{assignment.wordCount}" rendered="#{assignment.targetWordCount == 0}" />
                                 </rich:column>
 
-                                <rich:column id="colPosition" sortBy="#{assignment.start}" sortOrder="ASCENDING" styleClass="#{rowStyle}">
+                                <rich:column id="colPosition" sortBy="#{assignment.start}" sortOrder="ASCENDING" styleClass="#{assignment.styleFg} bg-#{assignment.style}">
                                     <f:facet name="header">
                                         <h:outputText value="#{i18n.Editions_NEWSITEM_START}" />
                                     </f:facet>
@@ -147,7 +157,7 @@
 
                                 </rich:column>
 
-                                <rich:column id="colPriority" sortBy="#{assignment.position}" sortOrder="ASCENDING" styleClass="#{rowStyle}">
+                                <rich:column id="colPriority" sortBy="#{assignment.position}" sortOrder="ASCENDING" styleClass="#{assignment.styleFg} bg-#{assignment.style}">
                                     <f:facet name="header">
                                         <h:outputText value="#{i18n.Editions_NEWSITEM_POSITION}" />
                                     </f:facet>
@@ -158,7 +168,7 @@
                                     </rich:inplaceInput>
                                 </rich:column>
 
-                                <rich:column styleClass="columnOneButton center #{rowStyle}" headerClass="columnOneButton center">
+                                <rich:column styleClass="columnOneButton center #{assignment.styleFg} bg-#{assignment.style}" headerClass="columnOneButton center">
                                     <f:facet name="header">
                                         <a4j:commandButton styleClass="button smallButton" value="#{i18n.Generic_ADD}" title="#{i18n.Editions_ADD_NEWS_ITEM_TO_THIS_EDITION}" actionListener="#{planning.onNewEditionPlacement}" reRender="frmEditionDetails" ajaxSingle="true" rendered="#{false &amp;&amp; edition.open &amp;&amp; edition.exist}">
                                             <f:setPropertyActionListener target="#{planning.selectedEdition}" value="#{edition}" />

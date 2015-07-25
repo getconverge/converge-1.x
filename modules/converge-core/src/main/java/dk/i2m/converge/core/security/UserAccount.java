@@ -50,6 +50,12 @@ import javax.persistence.*;
     @NamedQuery(name = UserAccount.FIND_PASSIVE_USERS_BY_ROLE, query = "SELECT DISTINCT u FROM NewsItem AS ni JOIN ni.actors AS a JOIN a.user AS u JOIN ni.history AS h WHERE (a.role = :userRole AND h.timestamp >= :startDate AND h.timestamp <= :endDate AND h.submitted = true) ORDER BY a.user.username DESC")
 })
 public class UserAccount implements Serializable {
+    
+    /** 
+     * System account used for automated actions.
+     * @since 1.1.14
+     */
+    public static final String SYSTEM_ACCOUNT = "converge";
 
     private static final long serialVersionUID = 2L;
 

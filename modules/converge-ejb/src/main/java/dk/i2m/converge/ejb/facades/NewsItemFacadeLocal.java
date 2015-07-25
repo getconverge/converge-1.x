@@ -17,6 +17,7 @@
  */
 package dk.i2m.converge.ejb.facades;
 
+import dk.i2m.converge.core.workflow.WorkflowStateTransitionException;
 import dk.i2m.converge.core.content.catalogue.MediaItem;
 import dk.i2m.converge.core.views.CurrentAssignment;
 import dk.i2m.converge.core.DataNotFoundException;
@@ -46,20 +47,13 @@ public interface NewsItemFacadeLocal {
 
     NewsItem step(NewsItem newsItem, Long step, String comment) throws WorkflowStateTransitionException;
 
-    /**
-     * Promotes the {@link NewsItem} in the workflow. This step is done
-     * regardless of any options.
-     *
-     * @param newsItem {@link NewsItem} to promote
-     * @param state New state
-     * @param comment Comment from the sender
-     * @return Promoted {@link NewsItem}
-     * @throws WorkflowStateTransitionException If the transition could not be
-     * completed
-     */
-    NewsItem step(NewsItem newsItem, WorkflowState state, String comment) throws WorkflowStateTransitionException;
+    NewsItem step(NewsItem newsItem, UserAccount ua, Long step, String comment) throws WorkflowStateTransitionException;
 
+    NewsItem step(NewsItem newsItem, WorkflowState state, String comment) throws WorkflowStateTransitionException;
+    
     NewsItemHolder checkout(java.lang.Long id) throws dk.i2m.converge.core.DataNotFoundException;
+
+    NewsItemHolder checkout(Long id, UserAccount user) throws DataNotFoundException;
 
     /**
      * Determines if a given {@link NewsItem} has been checked out.
@@ -139,6 +133,8 @@ public interface NewsItemFacadeLocal {
      * someone else
      */
     NewsItem checkin(NewsItem newsItem) throws LockingException;
+
+    NewsItem checkin(NewsItem newsItem, UserAccount userAccount) throws LockingException;
 
     /**
      * Gets all the {@link NewsItem}s where the given user is the active part.
@@ -322,11 +318,11 @@ public interface NewsItemFacadeLocal {
     NewsItemEditionState findNewsItemEditionStateOrCreate(Long editionId, Long newsItemId, String property, String value);
 
     List<NewsItemEditionState> findNewsItemEditionStates(Long editionId);
-    
+
     List<NewsItemEditionState> findNewsItemEditionStates(Long editionId, Long newsItemId);
 
     void clearNewsItemEditionStateById(Long newsItemEditionStateId);
-    
+
     void clearNewsItemEditionState(Long editionId);
 
     void clearNewsItemEditionState(Long editionId, Long newsItemId);

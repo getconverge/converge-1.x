@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2010 - 2014 Converge Consulting
+ * Copyright (C) 2015 Allan Lykke Christensen
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +17,7 @@
  */
 package dk.i2m.converge.ejb.facades;
 
+import dk.i2m.converge.core.workflow.WorkflowStateTransitionException;
 import dk.i2m.converge.core.DataNotFoundException;
 import dk.i2m.converge.core.content.*;
 import dk.i2m.converge.core.content.catalogue.MediaItem;
@@ -200,144 +202,65 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
      * @throws WorkflowStateTransitionException If the next step is not legal
      */
     @Override
-    public NewsItem step(NewsItem newsItem, Long step, String comment) throws
-            WorkflowStateTransitionException {
-
-        // Get current user
-        String uid = ctx.getCallerPrincipal().getName();
-        UserAccount ua = null;
-        try {
-            ua = userService.findById(uid);
-            pluginContext.setCurrentUserAccount(ua);
-        } catch (Exception ex) {
-            throw new WorkflowStateTransitionException(
-                    "Could not resolve transition initator", ex);
-        }
-
-        // Log the workflow step
-        pluginContext.log(LogSeverity.INFO, "Promoting news item #{0} to {1}",
-                new Object[]{newsItem.getId(), step}, newsItem, newsItem.getId());
-
-        Calendar now = Calendar.getInstance();
-
-        WorkflowStep transitionStep;
-        try {
-            transitionStep = daoService.findById(WorkflowStep.class, step);
-        } catch (DataNotFoundException ex) {
-            throw new WorkflowStateTransitionException("Transition (WorkflowStep) #"
-                    + step + " does not exist", ex);
-        }
-
-        WorkflowState nextState = transitionStep.getToState();
-
-        // Checking validity of step
-        WorkflowState state = newsItem.getCurrentState();
-        boolean legalStep = false;
-        for (WorkflowStep nextWorkflowStep : state.getNextStates()) {
-
-            if (nextWorkflowStep.getToState().equals(nextState)) {
-
-                boolean isInRole = !Collections.disjoint(nextWorkflowStep.
-                        getValidFor(), ua.getUserRoles());
-
-                if (nextWorkflowStep.isValidForAll() || isInRole) {
-                    legalStep = true;
-                }
-                break;
-            }
-        }
-
-        if (!legalStep) {
-            throw new WorkflowStateTransitionException("Illegal transition from "
-                    + state.getId() + " to " + nextState.getId());
-        }
-
-        WorkflowStateTransition transition = new WorkflowStateTransition(
-                newsItem, now, nextState, ua);
-        transition.setStoryVersion(newsItem.getStory());
-        transition.setHeadlineVersion(newsItem.getTitle());
-        transition.setBriefVersion(newsItem.getBrief());
-        transition.setComment(comment);
-        transition.setSubmitted(transitionStep.isTreatAsSubmitted());
-        // Strip unwanted characters
-        newsItem.setStory(newsItem.getStory().replaceAll("\\p{Cntrl}", " "));
-        newsItem.setCurrentState(nextState);
-        newsItem.getHistory().add(transition);
-        newsItem.setUpdated(now);
-        newsItem.setPrecalculatedWordCount(newsItem.getWordCount());
-        newsItem.setPrecalculatedCurrentActor(newsItem.getCurrentActor());
-
-        try {
-            newsItem = checkin(newsItem);
-        } catch (LockingException ex) {
-            throw new WorkflowStateTransitionException(ex);
-        }
-
-        // Actions
-        pluginContext.log(LogSeverity.INFO, "Executing workflow step actions",
-                newsItem, newsItem.getId());
-        LOG.log(Level.INFO, "Executing workflow step actions");
-
-        for (WorkflowStepAction action : transitionStep.getActions()) {
-            try {
-                WorkflowAction act = action.getAction();
-                act.execute(pluginContext, newsItem, action, ua);
-            } catch (WorkflowActionException ex) {
-                LOG.log(Level.SEVERE, "Could not execute action {0}", action.getLabel());
-                pluginContext.log(LogSeverity.SEVERE,
-                        "Could not execute action {0}", new Object[]{action.
-                            getLabel()}, newsItem, newsItem.getId());
-            }
-        }
-
-        return newsItem;
+    public NewsItem step(NewsItem newsItem, Long step, String comment) throws WorkflowStateTransitionException {
+        UserAccount ua = getCurrentWorkflowUser();
+        return step(newsItem, ua, step, comment);
     }
 
     /**
-     * {@inheritDoc}
+     * Promotes the {@link NewsItem} in the workflow.
+     *
+     * @param newsItem {@link NewsItem} to promote
+     * @param ua {@link UserAccount} that is executing the transition
+     * @param step Unique identifier of the next step
+     * @param comment Comment from the sender
+     * @return Promoted {@link NewsItem}
+     * @throws WorkflowStateTransitionException If the next step is not legal
      */
     @Override
-    public NewsItem step(NewsItem newsItem, WorkflowState state, String comment)
-            throws WorkflowStateTransitionException {
-        LOG.log(Level.INFO, "Promoting NewsItem #{0} from {0} to {1}",
-                new Object[]{newsItem.getId(), newsItem.getCurrentState().
-                    getName(), state.getName()});
+    public NewsItem step(NewsItem newsItem, UserAccount ua, Long step, String comment) throws WorkflowStateTransitionException {
+        pluginContext.log(LogSeverity.FINE, "Workflow transition for news item #{0} using workflow step #{1}", new Object[]{newsItem.getId(), step}, newsItem, newsItem.getId());
 
-        String uid = ctx.getCallerPrincipal().getName();
-        UserAccount ua = null;
         try {
-            ua = userService.findById(uid);
-        } catch (Exception ex) {
-            throw new WorkflowStateTransitionException(
-                    "Could not resolve transition initator", ex);
-        }
-
-        Calendar now = Calendar.getInstance();
-
-        WorkflowState nextState;
-        try {
-            nextState = daoService.findById(WorkflowState.class, state.getId());
+            WorkflowStep transitionStep = daoService.findById(WorkflowStep.class, step);
+            newsItem.addTransition(new WorkflowStateTransition(newsItem, transitionStep, ua, comment));
+            newsItem = checkin(newsItem, ua);
+            executeWorkflowStepActions(newsItem, transitionStep, ua);
+            return newsItem;
         } catch (DataNotFoundException ex) {
-            throw new WorkflowStateTransitionException("Invalid workflow state",
-                    ex);
+            throw new WorkflowStateTransitionException(ex.getMessage(), ex);
+        } catch (LockingException ex) {
+            throw new WorkflowStateTransitionException(ex.getMessage(), ex);
         }
+    }
 
-        WorkflowStateTransition transition = new WorkflowStateTransition(
-                newsItem, now, nextState, ua);
-        transition.setStoryVersion(newsItem.getStory());
-        transition.setHeadlineVersion(newsItem.getTitle());
-        transition.setBriefVersion(newsItem.getBrief());
-        transition.setComment(comment);
-        newsItem.setCurrentState(nextState);
-        newsItem.getHistory().add(transition);
-        newsItem.setUpdated(now);
+    /**
+     * Promotes the {@link NewsItem} in the workflow regardless of any options.
+     * Note that no workflow step actions are executed using this variant of the
+     * {@link #step}
+     *
+     * @param newsItem {@link NewsItem} to promote
+     * @param state New state
+     * @param comment Comment from the sender
+     * @return Promoted {@link NewsItem}
+     * @throws WorkflowStateTransitionException If the transition could not be
+     * completed
+     */
+    @Override
+    public NewsItem step(NewsItem newsItem, WorkflowState state, String comment) throws WorkflowStateTransitionException {
+        LOG.log(Level.INFO, "Changing state from {1} to {2} for news item #{0}", new Object[]{newsItem.getId(), newsItem.getCurrentState().getName(), state.getName()});
+
         try {
+            UserAccount userAccount = getCurrentWorkflowUser();
+            WorkflowState nextState = daoService.findById(WorkflowState.class, state.getId());
+            newsItem.addTransition(new WorkflowStateTransition(newsItem, userAccount, comment, nextState));
             newsItem = checkin(newsItem);
+            return newsItem;
+        } catch (DataNotFoundException ex) {
+            throw new WorkflowStateTransitionException("Invalid workflow state", ex);
         } catch (LockingException ex) {
             throw new WorkflowStateTransitionException(ex);
         }
-
-        return newsItem;
     }
 
     /**
@@ -818,82 +741,38 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
                 QueryBuilder.with("id", id).parameters()).isEmpty();
     }
 
-    /**
-     * {@inheritDoc }
-     */
     @Override
     public NewsItem checkin(NewsItem newsItem) throws LockingException {
-
         try {
-            UserAccount updaterUser = userService.findById(ctx.
-                    getCallerPrincipal().getName());
-            NewsItem orig
-                    = daoService.findById(NewsItem.class, newsItem.getId());
-
-            if (!orig.isLocked()) {
-                throw new LockingException(
-                        "News Item #" + newsItem.getId()
-                        + " is not checked-out and can therefore not be checked-in");
-            } else if (orig.isLocked() && !orig.getCheckedOutBy().equals(
-                    updaterUser)) {
-                throw new LockingException("News Item #" + newsItem.getId()
-                        + " is already checked-out by " + orig.getCheckedOutBy());
-            }
-
-            String oldBriefing = orig.getAssignmentBriefing();
-            Calendar now = Calendar.getInstance();
-            newsItem.setUpdated(now);
-            newsItem.setCheckedOut(null);
-            newsItem.setCheckedOutBy(null);
-            newsItem.setPrecalculatedWordCount(newsItem.getWordCount());
-            newsItem.setPrecalculatedCurrentActor(newsItem.getCurrentActor());
-            NewsItem updated = daoService.update(newsItem);
-
-            // Briefing has changed - notify relevant users
-            if (!oldBriefing.equalsIgnoreCase(updated.getAssignmentBriefing())) {
-
-                // Find out which users to notify of the update
-                List<UserAccount> usersToNotify = new ArrayList<UserAccount>();
-                WorkflowState state = newsItem.getCurrentState();
-
-                // Check if the NewsItem is currently open for a group or
-                // for a group attached to the story
-                if (state.getPermission().equals(WorkflowStatePermission.GROUP)) {
-                    List<UserAccount> users = userService.findAll();
-                    for (UserAccount ua : users) {
-                        if (ua.getUserRoles().contains(state.getActorRole())) {
-                            usersToNotify.add(ua);
-                        }
-                    }
-                } else if (state.getPermission().equals(
-                        WorkflowStatePermission.USER)) {
-
-                    // Check all the actors for the news item
-                    for (NewsItemActor actor : updated.getActors()) {
-                        // If the actor has the role of the state, he is a current actor
-                        if (actor.getRole().equals(state.getActorRole())) {
-                            usersToNotify.add(actor.getUser());
-                        }
-                    }
-                }
-
-                String msg = cfgService.getMessage(
-                        "notification_MSG_STORY_BRIEFING_UPDATED");
-                String notifyMsg = MessageFormat.format(msg, newsItem.getTitle(),
-                        updaterUser.getFullName());
-
-                for (UserAccount ua : usersToNotify) {
-                    notificationService.create(ua, notifyMsg);
-                }
-            }
-
-            return updated;
+            UserAccount updaterUser = userService.findById(ctx.getCallerPrincipal().getName());
+            return checkin(newsItem, updaterUser);
         } catch (UserNotFoundException ex) {
             LOG.log(Level.WARNING, "Unknown user", ex);
             throw new LockingException(ex);
         } catch (DirectoryException ex) {
             LOG.log(Level.WARNING, "Could not connect to directory", ex);
             throw new LockingException(ex);
+        }
+    }
+
+    @Override
+    public NewsItem checkin(NewsItem newsItem, UserAccount updaterUser) throws LockingException {
+
+        try {
+            NewsItem orig = daoService.findById(NewsItem.class, newsItem.getId());
+
+            if (!orig.isLocked()) {
+                throw new LockingException("News Item #" + newsItem.getId() + " is not checked-out and can therefore not be checked-in");
+            } else if (orig.isLocked() && !orig.getCheckedOutBy().equals(updaterUser)) {
+                throw new LockingException("News Item #" + newsItem.getId() + " is checked-out by another user: " + orig.getCheckedOutBy());
+            }
+
+            newsItem.setUpdated(Calendar.getInstance());
+            newsItem.setPrecalculatedWordCount(newsItem.getWordCount());
+            newsItem.setPrecalculatedCurrentActor(newsItem.getCurrentActor());
+            newsItem.setCheckedOut(null);
+            newsItem.setCheckedOutBy(null);
+            return daoService.update(newsItem);
 
         } catch (DataNotFoundException ex) {
             LOG.log(Level.WARNING, "Unknown entity", ex);
@@ -912,11 +791,6 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
      */
     @Override
     public NewsItemHolder checkout(Long id) throws DataNotFoundException {
-        LOG.log(Level.INFO, "Checking out news item #{0}", id);
-        boolean checkedOut = false;
-        boolean readOnly = false;
-        boolean pullbackAvailable = false;
-
         UserAccount user = null;
 
         try {
@@ -927,12 +801,30 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
         } catch (DirectoryException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
+        return checkout(id, user);
+    }
+
+    /**
+     * Checks-out a {@link NewsItem} from the database.
+     *
+     * @param id Unique identifier of the {@link NewsItem}
+     * @param user
+     * @return Checked-out {@link NewsItem} in a {@link NewsItemHolder} matching
+     * the given {@code id}
+     * @throws DataNotFoundException If no {@link NewsItem} could be found with
+     * the given {@code id}
+     */
+    @Override
+    public NewsItemHolder checkout(Long id, UserAccount user) throws DataNotFoundException {
+        LOG.log(Level.INFO, "Checking out news item #{0}", id);
+        boolean checkedOut = false;
+        boolean readOnly = false;
+        boolean pullbackAvailable = false;
 
         NewsItem newsItem = daoService.findById(NewsItem.class, id);
         ContentItemPermission permission = getPermission(newsItem, user);
 
-        LOG.log(Level.INFO, "Permission of #{0} for {1} is {2}", new Object[]{id,
-            user, permission.toString()});
+        LOG.log(Level.INFO, "Permission of #{0} for {1} is {2}", new Object[]{id, user, permission.toString()});
 
         if (newsItem.isLocked() && !newsItem.getCheckedOutBy().equals(user)) {
             // The item has been checked out and the check-out user is not the same as the one who has already checked it out
@@ -953,11 +845,8 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
             readOnly = false;
         } else {
             LOG.log(Level.INFO, "News Item #{0} is not locked", new Object[]{id});
-            if (permission == ContentItemPermission.USER || permission
-                    == ContentItemPermission.ROLE) {
-                pluginContext.log(LogSeverity.INFO,
-                        "Locking News Item #{0} for {1}", new Object[]{id, user.
-                            getFullName()}, newsItem, id);
+            if (permission == ContentItemPermission.USER || permission == ContentItemPermission.ROLE) {
+                pluginContext.log(LogSeverity.INFO, "Locking News Item #{0} for {1}", new Object[]{id, user.getFullName()}, newsItem, id);
                 LOG.log(Level.INFO, "Locking News Item #{0} for {1}", new Object[]{id, user});
                 // Check-out user is the same as the current user or role of the content item
                 newsItem.setCheckedOut(Calendar.getInstance());
@@ -967,6 +856,7 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
                 readOnly = false;
             } else {
                 // Check-out user is an actor of the content item, but not the current actor
+                LOG.log(Level.INFO, "Read-only access obtained to News Item #{0} for {1}. News Item was not checked-out", new Object[]{id, user.getFullName()});
                 checkedOut = false;
                 readOnly = true;
             }
@@ -1277,7 +1167,7 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
                 .and(NewsItemEditionState.PARAM_NEWS_ITEM_ID, newsItemId);
         return daoService.findWithNamedQuery(NewsItemEditionState.FIND_BY_EDITION_NEWSITEM, criteria.parameters());
     }
-    
+
     @Override
     public List<NewsItemEditionState> findNewsItemEditionStates(Long editionId) {
         QueryBuilder criteria = QueryBuilder
@@ -1301,4 +1191,51 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
         QueryBuilder criteria = QueryBuilder.with(NewsItemEditionState.PARAM_EDITION_ID, editionId).and(NewsItemEditionState.PARAM_NEWS_ITEM_ID, newsItemId);
         daoService.executeQuery(NewsItemEditionState.DELETE_BY_EDITION_NEWSITEM, criteria);
     }
+
+    /**
+     * Helper function for getting the current workflow user.
+     *
+     * @return {@link UserAccount} matching to currently user logged in to the
+     * EJB context.
+     * @throws WorkflowStateTransitionException If the user could not be found
+     * in the database or directory
+     */
+    private UserAccount getCurrentWorkflowUser() throws WorkflowStateTransitionException {
+        String uid = ctx.getCallerPrincipal().getName();
+        try {
+            UserAccount userAccount = userService.findById(uid);
+            pluginContext.setCurrentUserAccount(userAccount);
+            return userAccount;
+        } catch (UserNotFoundException ex) {
+            throw new WorkflowStateTransitionException("Could not resolve transition initator as the user " + uid + " was not found in the database.", ex);
+        } catch (DirectoryException ex) {
+            throw new WorkflowStateTransitionException("Could not resolve transition initator. " + ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * Helper function for executing all the {@link WorkflowStepAction}s for a
+     * {@link WorkflowStep}.
+     *
+     * @param newsItem {@link NewsItem} for which to execute the
+     * {@link WorkflowStepAction}s
+     * @param workflowStep {@link WorkflowStep} containing the
+     * {@link WorkflowStepAction}s
+     * @param actor {@link UserAccount} initiating the
+     * {@link WorkflowStepAction}s
+     */
+    private void executeWorkflowStepActions(NewsItem newsItem, WorkflowStep workflowStep, UserAccount actor) {
+        pluginContext.log(LogSeverity.FINE, "Executing workflow step actions", newsItem, newsItem.getId());
+
+        for (WorkflowStepAction action : workflowStep.getActions()) {
+            try {
+                WorkflowAction workflowAction = action.getAction();
+                workflowAction.execute(pluginContext, newsItem, action, actor);
+            } catch (WorkflowActionException ex) {
+                pluginContext.log(LogSeverity.SEVERE, "Could not execute action {0}. Reason: {1}", new Object[]{action.getLabel(), ex.getMessage()}, newsItem, newsItem.getId());
+                LOG.log(Level.FINEST, "", ex);
+            }
+        }
+    }
+
 }

@@ -84,7 +84,7 @@ public class DrupalEditionActionTest {
         Map<String, String> availableProperties = plugin.getAvailableProperties();
 
         // Assert
-        assertEquals(13, availableProperties.size());
+        assertEquals(16, availableProperties.size());
     }
 
     @Test

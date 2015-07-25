@@ -469,6 +469,17 @@ public class NewsItem implements Serializable {
         Collections.sort(history, new BeanComparator("timestamp", false));
         return history;
     }
+    
+    /**
+     * Adds a {@link WorkflowTransition} and updates the current state..
+     * 
+     * @param transition {@link WorkflowTransition} to add to the history
+     */
+    public void addTransition(WorkflowStateTransition transition) {
+        getHistory().add(transition);
+        setCurrentState(transition.getState());
+    }
+    
 
     /**
      * Sets the history of the workflow for the {@link NewsItem}.

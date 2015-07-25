@@ -41,7 +41,7 @@ import javax.persistence.Table;
 @Table(name = "news_item_placement")
 @NamedQueries({
     @NamedQuery(name = NewsItemPlacement.VIEW_EDITION_ASSIGNMENTS, query = 
-        "SELECT DISTINCT NEW dk.i2m.converge.core.dto.EditionAssignmentView(n.id, p.id, n.title, n.slugline, n.targetWordCount, n.precalculatedWordCount, n.precalculatedCurrentActor, n.currentState.name, p.section.name, p.start, p.position, n.deadline, n.updated,n.checkedOut, cob.fullName, n.assignmentBriefing, n.currentState.id, n.outlet.workflow.trashState.id, n.outlet.workflow.endState.id) " +
+        "SELECT DISTINCT NEW dk.i2m.converge.core.dto.EditionAssignmentView(n.id, p.id, n.title, n.slugline, n.targetWordCount, n.precalculatedWordCount, n.precalculatedCurrentActor, n.currentState.name, n.currentState.style, n.currentState.styleFg, p.section.name, p.start, p.position, n.deadline, n.updated,n.checkedOut, cob.fullName, n.assignmentBriefing, n.currentState.id, n.outlet.workflow.trashState.id, n.outlet.workflow.endState.id) " +
         "FROM NewsItemPlacement p JOIN p.newsItem n LEFT JOIN n.checkedOutBy cob JOIN n.actors a " +
         "WHERE p.edition.id=:edition " +
         "ORDER BY p.start ASC, p.position ASC")

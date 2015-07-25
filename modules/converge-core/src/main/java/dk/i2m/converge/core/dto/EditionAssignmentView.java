@@ -55,6 +55,10 @@ public class EditionAssignmentView {
     private String checkedOutBy;
 
     private String briefing;
+    
+    private String style;
+    
+    private String styleFg;
 
     private boolean endState = false;
 
@@ -71,7 +75,7 @@ public class EditionAssignmentView {
     public EditionAssignmentView() {
     }
 
-    public EditionAssignmentView(Long id, Long placementId, String title, String slugline, Integer targetWordCount, Long wordCount, String actor, String status, String section, Integer start, Integer position, Calendar deadline, Calendar updated, Calendar checkedOut, String checkedOutBy, String briefing, Long currentStatusId, Long trashStatusId, Long endStatusId) {
+    public EditionAssignmentView(Long id, Long placementId, String title, String slugline, Integer targetWordCount, Long wordCount, String actor, String status, String statusStyle, String statusStyleFg, String section, Integer start, Integer position, Calendar deadline, Calendar updated, Calendar checkedOut, String checkedOutBy, String briefing, Long currentStatusId, Long trashStatusId, Long endStatusId) {
         this.id = id;
         this.placementId = placementId;
         this.title = title;
@@ -80,6 +84,8 @@ public class EditionAssignmentView {
         this.targetWordCount = targetWordCount;
         this.actor = actor;
         this.status = status;
+        this.style = statusStyle;
+        this.styleFg = statusStyleFg;
         this.section = section;
         this.start = start;
         this.position = position;
@@ -211,6 +217,22 @@ public class EditionAssignmentView {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getStyle() {
+        return style;
+    }
+
+    public void setStyle(String style) {
+        this.style = style;
+    }
+
+    public String getStyleFg() {
+        return styleFg;
+    }
+
+    public void setStyleFg(String styleFg) {
+        this.styleFg = styleFg;
     }
 
     public Integer getTargetWordCount() {

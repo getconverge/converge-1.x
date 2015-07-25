@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Allan Lykke Christensen
+ * Copyright (C) 2014 - 2015 Allan Lykke Christensen
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,9 +27,18 @@ import dk.i2m.converge.core.workflow.Outlet;
 import dk.i2m.converge.core.workflow.OutletEditionAction;
 import dk.i2m.converge.core.workflow.OutletEditionActionProperty;
 import dk.i2m.converge.core.workflow.Section;
+import dk.i2m.converge.core.workflow.WorkflowState;
+import dk.i2m.converge.core.workflow.WorkflowStep;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Calendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import static org.mockito.Mockito.*;
 
 /**
@@ -40,6 +49,7 @@ import static org.mockito.Mockito.*;
  */
 public class DrupalEditionActionIT {
 
+    private static final Logger LOG = Logger.getLogger(DrupalEditionActionIT.class.getName());
     private static final String DRUPAL_NODE_TYPE = "newsitem";
     private static final String DRUPAL_PWD = "c0nv3rg3";
     private static final String DRUPAL_UID = "converge";
@@ -47,6 +57,47 @@ public class DrupalEditionActionIT {
     private static final String DRUPAL_URL = "http://int.drupal.getconverge.com";
     private static final Integer DRUPAL_SECTION_SPORT = 1;
     private static final Integer CONVERGE_SECTION_SPORT = 1004;
+    private static final String CONVERGE_UPLOAD_STATE = "1";
+    private static final String CONVERGE_WORKFLOW_OPTION_SUCCESS = "2";
+    private static final String CONVERGE_WORKFLOW_OPTION_FAILURE = "3";
+    private static boolean execute = false;
+
+    /**
+     * Determine whether the test cases should be executed. The {@link #execute}
+     * flag will be set based on the result of checking if the local test site
+     * exists.
+     */
+    @BeforeClass
+    public static void drupalTestInstallationAvailable() {
+        HttpURLConnection http = null;
+        try {
+            URL url = new URL(DRUPAL_URL);
+            http = (HttpURLConnection) url.openConnection();
+            int statusCode = http.getResponseCode();
+            execute = statusCode == 200;
+
+        } catch (IOException ex) {
+            LOG.log(Level.WARNING, ex.getMessage());
+            execute = false;
+        } finally {
+            if (http != null) {
+                http.disconnect();
+            }
+        }
+
+        if (!execute) {
+            LOG.log(Level.WARNING, "Skipping test. Test site {0} is not available", DRUPAL_URL);
+        }
+    }
+
+    /**
+     * Check before each test case if it should be executed (based on the
+     * {@link #execute} flag.
+     */
+    @Before
+    public void shouldExecute() {
+        org.junit.Assume.assumeTrue(execute);
+    }
 
     @Test
     public void drupalEditionAction_createNode_nodeExistsWithCorrectFields() throws Exception {
@@ -84,7 +135,7 @@ public class DrupalEditionActionIT {
                 .get(0).getAsJsonObject()
                 .get("tid").getAsInt();
         client.logout();
-        
+
         assertTrue(nodeExists);
         assertEquals(newsItemPlacement.getNewsItem().getTitle(), titleActual);
         assertEquals(newsItemPlacement.getNewsItem().getStory(), storyActual);
@@ -138,6 +189,9 @@ public class DrupalEditionActionIT {
         action.getProperties().add(new OutletEditionActionProperty(action, DrupalEditionAction.Property.PASSWORD.name(), DRUPAL_PWD));
         action.getProperties().add(new OutletEditionActionProperty(action, DrupalEditionAction.Property.SECTION_MAPPING.name(), String.valueOf(CONVERGE_SECTION_SPORT) + ":" + String.valueOf(DRUPAL_SECTION_SPORT)));
         action.getProperties().add(new OutletEditionActionProperty(action, DrupalEditionAction.Property.NODE_TYPE.name(), DRUPAL_NODE_TYPE));
+        action.getProperties().add(new OutletEditionActionProperty(action, DrupalEditionAction.Property.UPLOAD_STATE.name(), CONVERGE_UPLOAD_STATE));
+        action.getProperties().add(new OutletEditionActionProperty(action, DrupalEditionAction.Property.UPLOADED_TRANSITION.name(), CONVERGE_WORKFLOW_OPTION_SUCCESS));
+        action.getProperties().add(new OutletEditionActionProperty(action, DrupalEditionAction.Property.FAILED_TRANSITION.name(), CONVERGE_WORKFLOW_OPTION_FAILURE));
         return action;
     }
 
@@ -157,6 +211,7 @@ public class DrupalEditionActionIT {
         when(newsItem.getByLine()).thenReturn("By Reporter");
         when(newsItem.isEndState()).thenReturn(true);
         when(newsItem.getUpdated()).thenReturn(Calendar.getInstance());
+        when(newsItem.getCurrentState()).thenReturn(getUploadState());
         return newsItem;
     }
 
@@ -165,5 +220,30 @@ public class DrupalEditionActionIT {
         outlet.setId(1002L);
         outlet.setTitle("My Outlet");
         return outlet;
+    }
+
+    private WorkflowState getUploadState() {
+        WorkflowState ws = new WorkflowState();
+        ws.setId(1L);
+        ws.setName("Upload to website");
+        ws.getNextStates().add(getWorkflowOptionSuccess(ws));
+        ws.getNextStates().add(getWorkflowOptionFailed(ws));
+        return ws;
+    }
+
+    private WorkflowStep getWorkflowOptionSuccess(WorkflowState from) {
+        WorkflowStep step = new WorkflowStep();
+        step.setId(2L);
+        step.setName("Upload Successful");
+        step.setFromState(from);
+        return step;
+    }
+
+    private WorkflowStep getWorkflowOptionFailed(WorkflowState from) {
+        WorkflowStep step = new WorkflowStep();
+        step.setId(3L);
+        step.setName("Upload Failed");
+        step.setFromState(from);
+        return step;
     }
 }

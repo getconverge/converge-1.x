@@ -38,6 +38,7 @@ import dk.i2m.converge.core.security.UserAccount;
 import dk.i2m.converge.core.workflow.Edition;
 import dk.i2m.converge.core.workflow.Outlet;
 import dk.i2m.converge.core.workflow.WorkflowState;
+import dk.i2m.converge.core.workflow.WorkflowStateTransitionException;
 import java.util.List;
 
 /**
@@ -364,4 +365,17 @@ public interface PluginContext {
      * property name
      */
     NewsItemEditionState findNewsItemEditionStateOrCreate(Long editionId, Long newsItemId, String property, String value);
+
+    /**
+     * Execute a workflow transition on the given {@link NewsItem} as the given
+     * {@link UserAccount user}.
+     *
+     * @param newsItemId Unique identifier of the {@link NewsItem}
+     * @param uid Unique identifier of the {@link UserAccount}
+     * @param step Unique identifier of the
+     * {@link dk.i2m.converge.core.workflow.WorkflowStep}
+     * @throws WorkflowStateTransitionException If the transition could not be
+     * completed
+     */
+    void workflowTransition(Long newsItemId, String uid, long step) throws WorkflowStateTransitionException;
 }

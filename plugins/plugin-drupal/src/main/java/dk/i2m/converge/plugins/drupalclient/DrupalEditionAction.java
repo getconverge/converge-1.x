@@ -25,8 +25,10 @@ import dk.i2m.converge.core.logging.LogSeverity;
 import dk.i2m.converge.core.logging.LogSubject;
 import dk.i2m.converge.core.plugin.EditionAction;
 import dk.i2m.converge.core.plugin.PluginContext;
+import dk.i2m.converge.core.security.UserAccount;
 import dk.i2m.converge.core.workflow.Edition;
 import dk.i2m.converge.core.workflow.OutletEditionAction;
+import dk.i2m.converge.core.workflow.WorkflowStateTransitionException;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -55,6 +57,7 @@ import java.util.MissingResourceException;
 @OutletAction
 public class DrupalEditionAction implements EditionAction {
 
+    // Properties exposed by the Plugin
     public enum Property {
 
         CONNECTION_TIMEOUT,
@@ -69,7 +72,47 @@ public class DrupalEditionAction implements EditionAction {
         SERVICE_ENDPOINT,
         SOCKET_TIMEOUT,
         URL,
-        USERNAME
+        USERNAME,
+        UPLOAD_STATE,
+        UPLOADED_TRANSITION,
+        FAILED_TRANSITION,
+    }
+
+    // Keys from the resource bundle
+    public enum BundleKey {
+
+        LOG_COULD_NOT_CHECK_IF_EXISTS,
+        LOG_COULD_NOT_CONNECT,
+        LOG_COULD_NOT_CREATE,
+        LOG_COULD_NOT_LOGIN,
+        LOG_COULD_NOT_PROCESS,
+        LOG_COULD_NOT_TRANSITION_WORKFLOW,
+        LOG_COULD_NOT_UPDATE,
+        LOG_CREATED_DRUPAL_NODE,
+        LOG_CREATING_DRUPAL_NODE_AND_UPLOADING_IMAGES,
+        LOG_CREATING_STATE_FOR_NEWS_ITEM,
+        LOG_ERRORS_ENCOUNTERED_DURING_PROCESSING,
+        LOG_FINISHED_UPLOADING_EDITION,
+        LOG_FINISHED_UPLOAD_NEWS_ITEM,
+        LOG_GETTING_DRUPAL_PATH,
+        LOG_IMAGES_UPLOADED_TO_DRUPAL,
+        LOG_LOGIN_SUCCESSFUL,
+        LOG_NEWS_ITEMS_IN_EDITION,
+        LOG_NEWS_ITEM_INCOMPLETE,
+        LOG_NEWS_ITEM_SECTION_UNMAPPED,
+        LOG_NODE_OUTDATED,
+        LOG_NODE_UP_TO_DATE,
+        LOG_NO_ERRORS_ENCOUNTERED_DURING_PROCESSING,
+        LOG_PLACEMENT_UPLOADED,
+        LOG_PROCESSING_PLACEMENT,
+        LOG_UPDATING_DRUPAL_NODE_AND_UPLOADING_IMAGES,
+        LOG_UPDATING_STATE_FOR_NEWS_ITEM,
+        LOG_UPLOAD_INITIATED,
+        PLUGIN_ABOUT,
+        PLUGIN_BUILD_TIME,
+        PLUGIN_DESCRIPTION,
+        PLUGIN_NAME,
+        PLUGIN_VENDOR
     }
 
     private static final int DEFAULT_SOCKET_TIMEOUT = 30000;
@@ -96,43 +139,10 @@ public class DrupalEditionAction implements EditionAction {
     private OutletEditionAction action;
     private PluginContext pluginContext;
     private DrupalServicesClient drupalServiceClient;
+    private long uploadWorkflowStateId;
+    private long uploadSuccessfulWorkflowOptionId;
+    private long uploadFailedWorkflowOptionId;
     private int errors = 0;
-
-    // Keys from the resource bundle
-    public enum BundleKey {
-
-        PLUGIN_NAME,
-        PLUGIN_DESCRIPTION,
-        PLUGIN_VENDOR,
-        PLUGIN_BUILD_TIME,
-        PLUGIN_ABOUT,
-        LOG_UPLOAD_INITIATED,
-        LOG_COULD_NOT_LOGIN,
-        LOG_NEWS_ITEMS_IN_EDITION,
-        LOG_COULD_NOT_CONNECT,
-        LOG_ERRORS_ENCOUNTERED_DURING_PROCESSING,
-        LOG_NO_ERRORS_ENCOUNTERED_DURING_PROCESSING,
-        LOG_FINISHED_UPLOADING_EDITION,
-        LOG_PROCESSING_PLACEMENT,
-        LOG_LOGIN_SUCCESSFUL,
-        LOG_COULD_NOT_PROCESS,
-        LOG_PLACEMENT_UPLOADED,
-        LOG_NEWS_ITEM_INCOMPLETE,
-        LOG_NEWS_ITEM_SECTION_UNMAPPED,
-        LOG_COULD_NOT_CHECK_IF_EXISTS,
-        LOG_CREATING_STATE_FOR_NEWS_ITEM,
-        LOG_CREATING_DRUPAL_NODE_AND_UPLOADING_IMAGES,
-        LOG_CREATED_DRUPAL_NODE,
-        LOG_IMAGES_UPLOADED_TO_DRUPAL,
-        LOG_GETTING_DRUPAL_PATH,
-        LOG_COULD_NOT_CREATE,
-        LOG_UPDATING_STATE_FOR_NEWS_ITEM,
-        LOG_FINISHED_UPLOAD_NEWS_ITEM,
-        LOG_NODE_OUTDATED,
-        LOG_NODE_UP_TO_DATE,
-        LOG_UPDATING_DRUPAL_NODE_AND_UPLOADING_IMAGES,
-        LOG_COULD_NOT_UPDATE
-    }
 
     @Override
     public void execute(PluginContext ctx, Edition edition, OutletEditionAction action) {
@@ -287,6 +297,11 @@ public class DrupalEditionAction implements EditionAction {
         Integer connectionTimeout = NumberUtils.toInt(properties.get(Property.CONNECTION_TIMEOUT.name()), DEFAULT_CONNECTION_TIMEOUT);
         Integer socketTimeout = NumberUtils.toInt(properties.get(Property.SOCKET_TIMEOUT.name()), DEFAULT_SOCKET_TIMEOUT);
 
+        this.uploadWorkflowStateId = NumberUtils.toLong(properties.get(Property.UPLOAD_STATE.name()));
+        this.uploadSuccessfulWorkflowOptionId = NumberUtils.toLong(properties.get(Property.UPLOADED_TRANSITION.name()));
+        this.uploadFailedWorkflowOptionId = NumberUtils.toLong(properties.get(Property.FAILED_TRANSITION.name()));
+
+        // TODO: LOG IllegalArgumentExceptions to LogEntry
         if (hostname == null) {
             throw new IllegalArgumentException("'hostname' cannot be null");
         } else if (endpoint == null) {
@@ -295,6 +310,12 @@ public class DrupalEditionAction implements EditionAction {
             throw new IllegalArgumentException("'username' cannot be null");
         } else if (password == null) {
             throw new IllegalArgumentException("'password' cannot be null");
+        } else if (uploadWorkflowStateId == 0) {
+            throw new IllegalArgumentException("'upload state' must be a valid identifier of a Workflow State");
+        } else if (uploadSuccessfulWorkflowOptionId == 0) {
+            throw new IllegalArgumentException("'uploaded transition' must be a valid identifier of a Workflow State Option");
+        } else if (uploadFailedWorkflowOptionId == 0) {
+            throw new IllegalArgumentException("'failed transition' must be a valid identifier of a Workflow State Option");
         }
 
         this.drupalServiceClient = new DrupalServicesClient(hostname, endpoint, username, password, socketTimeout, connectionTimeout);
@@ -312,9 +333,9 @@ public class DrupalEditionAction implements EditionAction {
         Long newsItemId = newsItem.getId();
         Long editionId = edition.getId();
 
-        // Ignore NewsItem if it hasn't reached the end state of the workflow
-        if (!newsItem.isEndState()) {
-            log(LogSeverity.WARNING, BundleKey.LOG_NEWS_ITEM_INCOMPLETE, new Object[]{newsItemId, newsItem.getTitle(), newsItem.getCurrentState().getName()}, editionId, newsItemId);
+        // Ignore NewsItem if it hasn't reached the "upload" state of the workflow
+        if (!newsItem.getCurrentState().getId().equals(this.uploadWorkflowStateId)) {
+            log(LogSeverity.FINE, BundleKey.LOG_NEWS_ITEM_INCOMPLETE, new Object[]{newsItemId, newsItem.getTitle(), newsItem.getCurrentState().getName()}, editionId, newsItemId);
             return;
         }
 
@@ -334,11 +355,16 @@ public class DrupalEditionAction implements EditionAction {
         boolean update;
         try {
             // determine if the news item is already uploaded
-            update = this.drupalServiceClient.exists(CONVERGE_DRUPAL_RESOURCE_TYPE, nip.getNewsItem().getId());
+            update = this.drupalServiceClient.exists(CONVERGE_DRUPAL_RESOURCE_TYPE, newsItemId);
         } catch (DrupalServerConnectionException ex) {
             log(LogSeverity.SEVERE, BundleKey.LOG_COULD_NOT_CHECK_IF_EXISTS, new Object[]{newsItemId, newsItem.getTitle(), ex.getMessage()}, editionId, newsItemId);
             LOG.log(Level.FINEST, null, ex);
             errors++;
+            try {
+                this.pluginContext.workflowTransition(newsItemId, UserAccount.SYSTEM_ACCOUNT, this.uploadFailedWorkflowOptionId);
+            } catch (WorkflowStateTransitionException ex1) {
+                log(LogSeverity.SEVERE, BundleKey.LOG_COULD_NOT_TRANSITION_WORKFLOW, new Object[]{newsItemId, newsItem.getTitle(), ex.getMessage()}, editionId, newsItemId);
+            }
             return;
         }
 
@@ -385,11 +411,21 @@ public class DrupalEditionAction implements EditionAction {
             path.setValue(nodePath);
             version.setValue(String.valueOf(newsItem.getUpdated().getTimeInMillis()));
             status.setValue(UPLOADED);
+            try {
+                this.pluginContext.workflowTransition(newsItemId, UserAccount.SYSTEM_ACCOUNT, this.uploadSuccessfulWorkflowOptionId);
+            } catch (WorkflowStateTransitionException wstex) {
+                log(LogSeverity.SEVERE, BundleKey.LOG_COULD_NOT_TRANSITION_WORKFLOW, new Object[]{newsItemId, newsItem.getTitle(), wstex.getMessage()}, editionId, newsItemId);
+            }
         } catch (DrupalServerConnectionException ex) {
             this.errors++;
             status.setValue(FAILED);
             log(LogSeverity.SEVERE, BundleKey.LOG_COULD_NOT_CREATE, new Object[]{ex.getMessage()}, editionId, newsItemId);
             LOG.log(Level.FINEST, "", ex);
+            try {
+                this.pluginContext.workflowTransition(newsItemId, UserAccount.SYSTEM_ACCOUNT, this.uploadFailedWorkflowOptionId);
+            } catch (WorkflowStateTransitionException wstex) {
+                log(LogSeverity.SEVERE, BundleKey.LOG_COULD_NOT_TRANSITION_WORKFLOW, new Object[]{newsItemId, newsItem.getTitle(), wstex.getMessage()}, editionId, newsItemId);
+            }
         }
 
         log(LogSeverity.INFO, BundleKey.LOG_UPDATING_STATE_FOR_NEWS_ITEM, new Object[]{newsItemId}, editionId, newsItemId);
@@ -446,11 +482,21 @@ public class DrupalEditionAction implements EditionAction {
             } else {
                 log(LogSeverity.INFO, BundleKey.LOG_NODE_UP_TO_DATE, new Object[]{newsItemId}, editionId, newsItemId);
             }
+            try {
+                this.pluginContext.workflowTransition(newsItemId, UserAccount.SYSTEM_ACCOUNT, this.uploadSuccessfulWorkflowOptionId);
+            } catch (WorkflowStateTransitionException wstex) {
+                log(LogSeverity.SEVERE, BundleKey.LOG_COULD_NOT_TRANSITION_WORKFLOW, new Object[]{newsItemId, ni.getTitle(), wstex.getMessage()}, editionId, newsItemId);
+            }
         } catch (DrupalServerConnectionException ex) {
             this.errors++;
             status.setValue(FAILED);
             log(LogSeverity.SEVERE, BundleKey.LOG_COULD_NOT_UPDATE, new Object[]{ex.getMessage()}, editionId, newsItemId);
             LOG.log(Level.FINEST, "", ex);
+            try {
+                this.pluginContext.workflowTransition(newsItemId, UserAccount.SYSTEM_ACCOUNT, this.uploadFailedWorkflowOptionId);
+            } catch (WorkflowStateTransitionException wstex) {
+                log(LogSeverity.SEVERE, BundleKey.LOG_COULD_NOT_TRANSITION_WORKFLOW, new Object[]{newsItemId, ni.getTitle(), wstex.getMessage()}, editionId, newsItemId);
+            }
         }
 
         log(LogSeverity.INFO, BundleKey.LOG_UPDATING_STATE_FOR_NEWS_ITEM, new Object[]{newsItemId}, editionId, newsItemId);
