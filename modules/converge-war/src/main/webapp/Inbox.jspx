@@ -45,18 +45,18 @@
                             <h:panelGrid>
                                 <h:outputText value="#{item.slugline}" title="" rendered="#{item.slugline != null || item.slugline != ''}" />
                                 <h:outputText value="#{item.title}" title="" />
-                                
+
                                 <h:outputFormat value="#{i18n.Inbox_NEWS_ITEM_WORD_COUNT_X}" styleClass="small"
                                                 rendered="#{item.targetWordCount &lt;= 0}">
                                     <f:param value="#{item.wordCount}" />
                                 </h:outputFormat>
-                                
+
                                 <h:outputFormat value="#{i18n.Inbox_NEWS_ITEM_WORD_COUNT_X_TARGET_WORD_COUNT_Y}" styleClass="small"
                                                 rendered="#{item.targetWordCount &gt; 0}">
                                     <f:param value="#{item.wordCount}" />
                                     <f:param value="#{item.targetWordCount}" />
                                 </h:outputFormat>
-                                
+
                             </h:panelGrid>
                         </rich:column>
 
@@ -83,15 +83,6 @@
                             </h:panelGrid>
                         </rich:column>
 
-                        <rich:column styleClass="columnDateTime" sortBy="#{item.deadline}">
-                            <f:facet name="header">
-                                <h:outputText value="#{i18n.Inbox_DEADLINE}" title="#{i18n.Inbox_DEADLINE_TOOLTIP}" />
-                            </f:facet>
-                            <h:outputText value="#{item.deadline}">
-                                <f:convertDateTime pattern="#{i18n.Generic_FORMAT_DATE_AND_TIME}" timeZone="#{userSession.user.timeZone}" />
-                            </h:outputText>
-                        </rich:column>
-
                         <rich:column sortBy="#{item.updated}" styleClass="columnDateTime">
                             <f:facet name="header">
                                 <h:outputText value="#{i18n.Inbox_UPDATED}" title="#{i18n.Inbox_ARTICLE_UPDATED_TOOLTIP}" />
@@ -99,6 +90,18 @@
                             <h:outputText value="#{item.updated}">
                                 <f:convertDateTime type="both" pattern="#{i18n.Generic_FORMAT_DATE_AND_TIME}" timeZone="#{userSession.user.timeZone}" />
                             </h:outputText>
+                        </rich:column>
+
+
+                        <rich:column styleClass="center columnIcon">
+                            <f:facet name="header">
+                                <h:graphicImage value="#{i18n.resource_ICON_EMPTY}" width="16" height="16" />
+                            </f:facet>
+                            
+                            <a4j:commandLink rendered="#{!item.locked}" reRender="dtInbox" ajaxSingle="true" onclick="if (confirm('#{i18n.Inbox_ITEM_TRASH_CONFIRM}') != true){ return false; };">
+                                <f:setPropertyActionListener target="#{inbox.selectedItemForTrashing}" value="#{item.id}" />
+                                <h:graphicImage value="#{i18n.resource_ICON_DELETE}" title="#{item.status}" alt="#{item.status}"  />
+                            </a4j:commandLink>
                         </rich:column>
 
                     </rich:dataTable>

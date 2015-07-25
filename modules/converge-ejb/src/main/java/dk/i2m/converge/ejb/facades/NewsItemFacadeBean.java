@@ -553,19 +553,17 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
     @Override
     public boolean deleteNewsItem(Long id) {
         try {
-            NewsItem item = daoService.findById(NewsItem.class, id);
-            Workflow workflow = item.getOutlet().getWorkflow();
+            NewsItemHolder checkout = checkout(id);
+            Workflow workflow = checkout.getNewsItem().getOutlet().getWorkflow();
             WorkflowState trashState = workflow.getTrashState();
-            step(item, trashState, "");
+            step(checkout.getNewsItem(), trashState, "");
             return true;
         } catch (DataNotFoundException ex) {
-            LOG.log(Level.WARNING, "Could not find news item to delete. {0}",
-                    ex.getMessage());
+            LOG.log(Level.WARNING, "Could not find news item to delete. {0}",ex.getMessage());
             LOG.log(Level.FINE, "", ex);
             return false;
         } catch (WorkflowStateTransitionException ex) {
-            LOG.log(Level.WARNING, "Could not delete news item. {0}", ex.
-                    getMessage());
+            LOG.log(Level.WARNING, "Could not delete news item. {0}", ex.getMessage());
             LOG.log(Level.FINE, "", ex);
             return false;
         }

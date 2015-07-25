@@ -86,6 +86,8 @@ public class Inbox {
     private String newAssignmentType = "tabStory";
 
     private String createdItemLink;
+    
+    private Long selectedItemForTrashing;
 
     /**
      * Creates a new instance of {@link Inbox}.
@@ -314,6 +316,20 @@ public class Inbox {
 
     public void setSelectedNewsItem(NewsItem selectedNewsItem) {
         this.selectedNewsItem = selectedNewsItem;
+    }
+
+    public Long getSelectedItemForTrashing() {
+        return selectedItemForTrashing;
+    }
+
+    public void setSelectedItemForTrashing(Long selectedItemForTrashing) {
+        this.selectedItemForTrashing = selectedItemForTrashing;
+        newsItemFacade.deleteNewsItem(selectedItemForTrashing);
+        ((Vector)getNewsItems().getWrappedData()).remove(getNewsItems().getRowData());
+        JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_INFO,
+                Bundle.i18n.name(), "Inbox_ITEM_TRASHED", new Object[]{
+                    ((InboxView)getNewsItems().getRowData()).getId(), 
+                    ((InboxView)getNewsItems().getRowData()).getTitle()});
     }
 
     public Map<String, Outlet> getPrivilegedOutlets() {
