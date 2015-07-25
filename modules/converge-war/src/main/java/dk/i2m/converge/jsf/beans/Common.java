@@ -130,7 +130,7 @@ public class Common {
         Map<String, String> swatch = new LinkedHashMap<String, String>();
 
         for (Color color : Color.values()) {
-            swatch.put(i18n.getString("Generic_COLOR_" + color.name()), color.name());
+            swatch.put(i18n.getString("Generic_COLOR_" + color.name().toLowerCase()), color.name().toLowerCase());
         }
 
         return swatch;

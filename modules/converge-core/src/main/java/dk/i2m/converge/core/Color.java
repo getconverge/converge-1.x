@@ -22,5 +22,6 @@ package dk.i2m.converge.core;
  * @author Allan Lykke Christensen
  */
 public enum Color {
-    navy, blue, aqua, teal, olive, green, lime, yellow, orange, red, fuchsia, purple, maroon, white, silver, gray, black;
+
+    NAVY, BLUE, AQUA, TEAL, OLIVE, GREEN, LIME, YELLOW, ORANGE, RED, FUCHSIA, PURPLE, MAROON, WHITE, SILVER, GRAY, BLACK;
 }
