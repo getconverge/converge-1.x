@@ -309,6 +309,7 @@ public class Outlets extends BaseBean {
         selectedOutletEditionAction.setExecuteOrder(1);
         // A default action class is required to avoid NullPointerException from JSF
         selectedOutletEditionAction.setActionClass(dk.i2m.converge.plugins.indexedition.IndexEditionAction.class.getName());
+        outletEditionActionProperties = null;
     }
 
     public void onAddActionProperty(ActionEvent event) {
