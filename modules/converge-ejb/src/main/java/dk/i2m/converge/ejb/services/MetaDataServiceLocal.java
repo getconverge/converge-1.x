@@ -17,6 +17,11 @@
 package dk.i2m.converge.ejb.services;
 
 import dk.i2m.converge.core.EnrichException;
+import dk.i2m.converge.core.content.catalogue.MediaItemRendition;
+import dk.i2m.converge.core.metadata.Concept;
+import dk.i2m.converge.core.metadata.extract.CannotExtractMetaDataException;
+import java.util.List;
+import java.util.Map;
 import javax.ejb.Local;
 
 /**
@@ -34,31 +39,8 @@ public interface MetaDataServiceLocal {
      * @param location Location of the file
      * @return {@link Map} of meta data
      */
-    java.util.Map<java.lang.String, java.lang.String> extract(
-            java.lang.String location);
-
-    /**
-     * Extract MP3 meta data from audio file.
-     * <p/>
-     * @param location Location of the file
-     * @return {@link Map} of MP3 meta data
-     * @throws CannotExtractMetaDataException If meta data could not be extracted from the given file
-     */
-    java.util.Map<java.lang.String, java.lang.String> extractFromMp3(
-            java.lang.String location) throws
-            dk.i2m.converge.ejb.services.CannotExtractMetaDataException;
-
-    /**
-     * Extract XMP meta data from a media file.
-     * <p/>
-     * @param location Location of the file
-     * @return {@link Map} of XMP meta data
-     * @throws CannotExtractMetaDataException If meta data could not be extracted from the given file
-     */
-    java.util.Map<java.lang.String, java.lang.String> extractXmp(
-            java.lang.String location) throws
-            dk.i2m.converge.ejb.services.CannotExtractMetaDataException;
-
+    Map<String, String> extract(String location);
+    
     /**
      * Extract IPTC meta data from an image file.
      * <p/>
@@ -66,20 +48,7 @@ public interface MetaDataServiceLocal {
      * @return {@link Map} of IPTC meta data
      * @throws CannotExtractMetaDataException If meta data could not be extracted from the given file
      */
-    java.util.Map<java.lang.String, java.lang.String> extractIPTC(
-            java.lang.String location) throws
-            dk.i2m.converge.ejb.services.CannotExtractMetaDataException;
-
-    /**
-     * Extract IPTC meta data from an image file.
-     * <p/>
-     * @param location Location of the file
-     * @return {@link Map} of IPTC meta data
-     * @throws CannotExtractMetaDataException If meta data could not be extracted from the given file
-     */
-    java.util.Map<java.lang.String, java.lang.String> extractImageInfo(
-            java.lang.String location) throws
-            dk.i2m.converge.ejb.services.CannotExtractMetaDataException;
+    Map<String, String> extractIPTC(String location) throws CannotExtractMetaDataException;
 
     /**
      * Gets {@link Concept}s from the given story using the OpenCalais service.
@@ -88,8 +57,7 @@ public interface MetaDataServiceLocal {
      * @return {@link List} of {@link Concept}s matching the story
      * @throws EnrichException If {@link Concept}s could not be extracted
      */
-    java.util.List<dk.i2m.converge.core.metadata.Concept> enrich(
-            java.lang.String story) throws EnrichException;
+    List<Concept> enrich(String story) throws EnrichException;
 
     /**
      * Extracts the content of a given {@link MediaItemRendition}. This is only
@@ -98,6 +66,5 @@ public interface MetaDataServiceLocal {
      * @param mir {@link MediaItemRendition} from which to extract content
      * @return {@link String} containing the extractable content of the {@link MediaItemRendition}
      */
-    java.lang.String extractContent(
-            dk.i2m.converge.core.content.catalogue.MediaItemRendition mir);
+    String extractContent(MediaItemRendition mir);
 }

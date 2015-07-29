@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package dk.i2m.converge.ejb.services;
+package dk.i2m.converge.core.metadata.extract;
 
 /**
  * Exception thrown if meta data could not be extracted from

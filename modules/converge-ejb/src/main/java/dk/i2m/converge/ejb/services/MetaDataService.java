@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2011 - 2012 Interactive Media Management
+ * Copyright (C) 2015 Allan Lykke Christensen
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,10 +17,7 @@
  */
 package dk.i2m.converge.ejb.services;
 
-import com.adobe.xmp.XMPException;
-import com.adobe.xmp.XMPMeta;
-import com.adobe.xmp.XMPMetaFactory;
-import com.adobe.xmp.properties.XMPProperty;
+import dk.i2m.converge.core.metadata.extract.CannotExtractMetaDataException;
 import com.google.common.base.Splitter;
 import com.xuggle.xuggler.*;
 import dk.i2m.converge.core.ConfigurationKey;
@@ -27,6 +25,10 @@ import dk.i2m.converge.core.DataNotFoundException;
 import dk.i2m.converge.core.EnrichException;
 import dk.i2m.converge.core.content.catalogue.MediaItemRendition;
 import dk.i2m.converge.core.metadata.*;
+import dk.i2m.converge.core.metadata.extract.ImageInfoMetaDataExtractor;
+import dk.i2m.converge.core.metadata.extract.MetaDataExtractor;
+import dk.i2m.converge.core.metadata.extract.Mp3MetaDataExtractor;
+import dk.i2m.converge.core.metadata.extract.XmpMetaDataExtractor;
 import dk.i2m.converge.ejb.facades.MetaDataFacadeLocal;
 import java.io.File;
 import java.io.IOException;
@@ -48,19 +50,12 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.extractor.WordExtractor;
-import org.apache.sanselan.ImageInfo;
 import org.apache.sanselan.ImageReadException;
 import org.apache.sanselan.Sanselan;
 import org.apache.sanselan.common.IImageMetadata;
 import org.apache.sanselan.common.ImageMetadata;
 import org.apache.sanselan.formats.tiff.TiffImageMetadata;
 import org.apache.sanselan.formats.tiff.TiffImageMetadata.Item;
-import org.blinkenlights.jid3.ID3Exception;
-import org.blinkenlights.jid3.ID3Tag;
-import org.blinkenlights.jid3.MP3File;
-import org.blinkenlights.jid3.MediaFile;
-import org.blinkenlights.jid3.v1.ID3V1_0Tag;
-import org.blinkenlights.jid3.v2.ID3V2_3_0Tag;
 
 /**
  * Service bean used for extracting meta data from files.
@@ -77,13 +72,6 @@ public class MetaDataService implements MetaDataServiceLocal {
     private static final String OPEN_CALAIS_URL =
             "http://api.opencalais.com/tag/rs/enrich";
 
-    /** Namespace of the dublin core. */
-    private static final String NS_DC = "http://purl.org/dc/elements/1.1/";
-
-    /** Namespace of photoshop tags. */
-    private static final String NS_PHOTOSHOP =
-            "http://ns.adobe.com/photoshop/1.0/";
-
     @EJB private ConfigurationServiceLocal cfgService;
 
     @EJB private MetaDataFacadeLocal metaDataFacade;
@@ -94,139 +82,44 @@ public class MetaDataService implements MetaDataServiceLocal {
         Map<String, String> metaData = new HashMap<String, String>();
 
         try {
-            metaData.putAll(extractFromMp3(location));
+            MetaDataExtractor mp3 = new Mp3MetaDataExtractor();
+            metaData.putAll(mp3.extract(new File(location)));
         } catch (CannotExtractMetaDataException ex) {
             LOG.log(Level.FINE, ex.getMessage());
+            LOG.log(Level.FINEST, "", ex);
         }
 
         try {
-            metaData.putAll(extractXmp(location));
+            MetaDataExtractor xmp = new XmpMetaDataExtractor();            
+            metaData.putAll(xmp.extract(new File(location)));
         } catch (CannotExtractMetaDataException ex) {
             LOG.log(Level.FINE, ex.getMessage());
+            LOG.log(Level.FINEST, "", ex);
         }
 
         try {
             metaData.putAll(extractIPTC(location));
         } catch (CannotExtractMetaDataException ex) {
             LOG.log(Level.FINE, ex.getMessage());
+            LOG.log(Level.FINEST, "", ex);
         }
 
         try {
-            metaData.putAll(extractImageInfo(location));
+            MetaDataExtractor imageInfo = new ImageInfoMetaDataExtractor();
+            metaData.putAll(imageInfo.extract(new File(location)));
         } catch (CannotExtractMetaDataException ex) {
             LOG.log(Level.FINE, ex.getMessage());
+            LOG.log(Level.FINEST, "", ex);
         }
 
         try {
             metaData.putAll(extractMediaContainer(location));
         } catch (CannotExtractMetaDataException ex) {
             LOG.log(Level.FINE, ex.getMessage());
+            LOG.log(Level.FINEST, "", ex);
         }
 
         return metaData;
-    }
-
-    /** {@inheritDoc } */
-    @Override
-    public Map<String, String> extractFromMp3(String location) throws
-            CannotExtractMetaDataException {
-        MediaFile oMediaFile = new MP3File(new File(location));
-        Map<String, String> properties = new HashMap<String, String>();
-        try {
-            ID3Tag[] tags = oMediaFile.getTags();
-            for (ID3Tag tag : tags) {
-                // check to see if we read a v1.0 tag, or a v2.3.0 tag (just for example..)
-                if (tag instanceof ID3V1_0Tag) {
-                    ID3V1_0Tag tagV1 = (ID3V1_0Tag) tag;
-                    // does this tag happen to contain a title?
-                    if (tagV1.getTitle() != null) {
-                        properties.put("headline", tagV1.getTitle());
-                        properties.put("title", tagV1.getTitle());
-                    }
-
-                    if (tagV1.getComment() != null) {
-                        properties.put("description", tagV1.getComment());
-                    }
-                } else if (tag instanceof ID3V2_3_0Tag) {
-                    ID3V2_3_0Tag tagV2 = (ID3V2_3_0Tag) tag;
-                    if (tagV2.getTitle() != null) {
-                        properties.put("title", tagV2.getTitle());
-                        properties.put("headline", tagV2.getTitle());
-                    }
-
-                    if (tagV2.getTIT2TextInformationFrame() != null) {
-                        properties.put("headline", tagV2.
-                                getTIT2TextInformationFrame().getTitle());
-                    }
-
-                    if (tagV2.getComment() != null) {
-                        properties.put("description", tagV2.getComment());
-                    }
-                }
-            }
-
-        } catch (ID3Exception ex) {
-            throw new CannotExtractMetaDataException(ex);
-        }
-
-        return properties;
-    }
-
-    /** {@inheritDoc } */
-    @Override
-    public Map<String, String> extractXmp(String location) throws
-            CannotExtractMetaDataException {
-        Map<String, String> properties = new HashMap<String, String>();
-        try {
-            String xml = Sanselan.getXmpXml(new File(location));
-
-            if (xml == null) {
-                return properties;
-            }
-
-            XMPMeta xmpMeta = XMPMetaFactory.parseFromString(xml);
-
-            if (xmpMeta.doesPropertyExist(NS_PHOTOSHOP, "Headline")) {
-                XMPProperty headlineProperty = xmpMeta.getProperty(NS_PHOTOSHOP,
-                        "Headline");
-                properties.put("headline",
-                        ((String) headlineProperty.getValue()).trim());
-            }
-
-            if (xmpMeta.doesArrayItemExist(NS_DC, "description", 1)) {
-                XMPProperty descriptionProperty = xmpMeta.getArrayItem(NS_DC,
-                        "description", 1);
-                properties.put("description", ((String) descriptionProperty.
-                        getValue()).trim());
-            }
-
-            if (xmpMeta.doesArrayItemExist(NS_DC, "title", 1)) {
-                XMPProperty titleProperty = xmpMeta.getArrayItem(NS_DC, "title",
-                        1);
-                properties.put("title",
-                        ((String) titleProperty.getValue()).trim());
-            }
-
-            int subjectCount = xmpMeta.countArrayItems(NS_DC, "subject");
-            if (subjectCount > 0) {
-
-                for (int i = 1; i <= subjectCount; i++) {
-                    XMPProperty subjectProperty = xmpMeta.getArrayItem(NS_DC,
-                            "subject", i);
-                    properties.put("subject-" + i, ((String) subjectProperty.
-                            getValue()).trim());
-                }
-            }
-
-        } catch (XMPException ex) {
-            throw new CannotExtractMetaDataException(ex);
-        } catch (ImageReadException ex) {
-            throw new CannotExtractMetaDataException(ex);
-        } catch (IOException ex) {
-            throw new CannotExtractMetaDataException(ex);
-        }
-
-        return properties;
     }
 
     /** {@inheritDoc } */
@@ -257,32 +150,6 @@ public class MetaDataService implements MetaDataServiceLocal {
                         LOG.log(Level.FINE, "", ex);
                     }
                 }
-            }
-        } catch (ImageReadException ex) {
-            throw new CannotExtractMetaDataException(ex);
-        } catch (IOException ex) {
-            throw new CannotExtractMetaDataException(ex);
-        }
-
-        return properties;
-    }
-
-    /** {@inheritDoc } */
-    @Override
-    public Map<String, String> extractImageInfo(String location) throws
-            CannotExtractMetaDataException {
-        Map<String, String> properties = new HashMap<String, String>();
-
-        try {
-            ImageInfo imageInfo = Sanselan.getImageInfo(new File(location));
-
-            if (imageInfo != null) {
-                properties.put("colourSpace",
-                        imageInfo.getColorTypeDescription());
-                properties.put("height", String.valueOf(imageInfo.getHeight()));
-                properties.put("width", String.valueOf(imageInfo.getWidth()));
-                properties.put("progressive", String.valueOf(imageInfo.
-                        getIsProgressive()));
             }
         } catch (ImageReadException ex) {
             throw new CannotExtractMetaDataException(ex);
@@ -379,9 +246,11 @@ public class MetaDataService implements MetaDataServiceLocal {
         } catch (UnsatisfiedLinkError ex) {
             LOG.log(Level.SEVERE, "Could not extract meta data. {0}", ex.
                     getMessage());
+            LOG.log(Level.FINEST, "", ex);
         } catch (NoClassDefFoundError ex) {
             LOG.log(Level.SEVERE, "Could not extract meta data. {0}", ex.
                     getMessage());
+            LOG.log(Level.FINEST, "", ex);
         }
 
         return properties;
@@ -555,7 +424,7 @@ public class MetaDataService implements MetaDataServiceLocal {
         } catch (Exception e) {
             fail = true;
             exception = new EnrichException(e);
-            LOG.log(Level.FINE, "", e);
+            LOG.log(Level.FINEST, "", e);
         } finally {
             method.releaseConnection();
         }
@@ -594,13 +463,15 @@ public class MetaDataService implements MetaDataServiceLocal {
                     story = stripper.getText(pdDoc);
 
                 } catch (IOException ex) {
-                    LOG.log(Level.SEVERE, null, ex);
+                    LOG.log(Level.SEVERE, ex.getMessage());
+                    LOG.log(Level.FINEST, "", ex);
                 } finally {
                     if (doc != null) {
                         try {
                             doc.close();
                         } catch (IOException ex) {
-                            LOG.log(Level.SEVERE, null, ex);
+                            LOG.log(Level.SEVERE, ex.getMessage());
+                            LOG.log(Level.FINEST, "", ex);
                         }
                     }
                 }
@@ -617,7 +488,8 @@ public class MetaDataService implements MetaDataServiceLocal {
                 WordExtractor extractor = new WordExtractor(doc);
                 story = extractor.getText();
             } catch (IOException ex) {
-                LOG.log(Level.SEVERE, null, ex);
+                LOG.log(Level.SEVERE, ex.getMessage());
+                LOG.log(Level.FINEST, "", ex);
             }
         }
         return story;
