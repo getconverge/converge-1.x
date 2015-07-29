@@ -42,15 +42,6 @@ public interface MetaDataServiceLocal {
     Map<String, String> extract(String location);
     
     /**
-     * Extract IPTC meta data from an image file.
-     * <p/>
-     * @param location Location of the file
-     * @return {@link Map} of IPTC meta data
-     * @throws CannotExtractMetaDataException If meta data could not be extracted from the given file
-     */
-    Map<String, String> extractIPTC(String location) throws CannotExtractMetaDataException;
-
-    /**
      * Gets {@link Concept}s from the given story using the OpenCalais service.
      * <p/>
      * @param story Story for which to get {@link Concept}s

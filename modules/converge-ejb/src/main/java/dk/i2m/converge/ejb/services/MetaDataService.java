@@ -26,6 +26,7 @@ import dk.i2m.converge.core.EnrichException;
 import dk.i2m.converge.core.content.catalogue.MediaItemRendition;
 import dk.i2m.converge.core.metadata.*;
 import dk.i2m.converge.core.metadata.extract.ImageInfoMetaDataExtractor;
+import dk.i2m.converge.core.metadata.extract.IptcMetaDataExtractor;
 import dk.i2m.converge.core.metadata.extract.MetaDataExtractor;
 import dk.i2m.converge.core.metadata.extract.Mp3MetaDataExtractor;
 import dk.i2m.converge.core.metadata.extract.XmpMetaDataExtractor;
@@ -50,12 +51,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.extractor.WordExtractor;
-import org.apache.sanselan.ImageReadException;
-import org.apache.sanselan.Sanselan;
-import org.apache.sanselan.common.IImageMetadata;
-import org.apache.sanselan.common.ImageMetadata;
-import org.apache.sanselan.formats.tiff.TiffImageMetadata;
-import org.apache.sanselan.formats.tiff.TiffImageMetadata.Item;
 
 /**
  * Service bean used for extracting meta data from files.
@@ -81,9 +76,11 @@ public class MetaDataService implements MetaDataServiceLocal {
     public Map<String, String> extract(String location) {
         Map<String, String> metaData = new HashMap<String, String>();
 
+        File file = new File(location);
+        
         try {
             MetaDataExtractor mp3 = new Mp3MetaDataExtractor();
-            metaData.putAll(mp3.extract(new File(location)));
+            metaData.putAll(mp3.extract(file));
         } catch (CannotExtractMetaDataException ex) {
             LOG.log(Level.FINE, ex.getMessage());
             LOG.log(Level.FINEST, "", ex);
@@ -91,14 +88,15 @@ public class MetaDataService implements MetaDataServiceLocal {
 
         try {
             MetaDataExtractor xmp = new XmpMetaDataExtractor();            
-            metaData.putAll(xmp.extract(new File(location)));
+            metaData.putAll(xmp.extract(file));
         } catch (CannotExtractMetaDataException ex) {
             LOG.log(Level.FINE, ex.getMessage());
             LOG.log(Level.FINEST, "", ex);
         }
 
         try {
-            metaData.putAll(extractIPTC(location));
+            MetaDataExtractor iptc = new IptcMetaDataExtractor();
+            metaData.putAll(iptc.extract(file));
         } catch (CannotExtractMetaDataException ex) {
             LOG.log(Level.FINE, ex.getMessage());
             LOG.log(Level.FINEST, "", ex);
@@ -106,7 +104,7 @@ public class MetaDataService implements MetaDataServiceLocal {
 
         try {
             MetaDataExtractor imageInfo = new ImageInfoMetaDataExtractor();
-            metaData.putAll(imageInfo.extract(new File(location)));
+            metaData.putAll(imageInfo.extract(file));
         } catch (CannotExtractMetaDataException ex) {
             LOG.log(Level.FINE, ex.getMessage());
             LOG.log(Level.FINEST, "", ex);
@@ -120,44 +118,6 @@ public class MetaDataService implements MetaDataServiceLocal {
         }
 
         return metaData;
-    }
-
-    /** {@inheritDoc } */
-    @Override
-    public Map<String, String> extractIPTC(String location) throws
-            CannotExtractMetaDataException {
-        Map<String, String> properties = new HashMap<String, String>();
-
-        try {
-            IImageMetadata meta = Sanselan.getMetadata(new File(location));
-
-            if (meta != null) {
-                ArrayList items = meta.getItems();
-                for (int i = 0; i < items.size(); i++) {
-                    try {
-                        ImageMetadata.Item item =
-                                (ImageMetadata.Item) items.get(i);
-
-                        if (item instanceof TiffImageMetadata.Item) {
-                            TiffImageMetadata.Item tiff = (Item) item;
-                            properties.put(tiff.getTiffField().getTagName(), ""
-                                    + tiff.getTiffField().getValue());
-                        } else {
-                            properties.put(item.getKeyword(), item.getText());
-                        }
-                    } catch (Exception ex) {
-                        LOG.log(Level.INFO, ex.getMessage());
-                        LOG.log(Level.FINE, "", ex);
-                    }
-                }
-            }
-        } catch (ImageReadException ex) {
-            throw new CannotExtractMetaDataException(ex);
-        } catch (IOException ex) {
-            throw new CannotExtractMetaDataException(ex);
-        }
-
-        return properties;
     }
 
     public Map<String, String> extractMediaContainer(String location) throws
