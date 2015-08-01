@@ -16,6 +16,7 @@
         <module>core-actions</module>
         <module>plugin-atompub</module>
         <module>plugin-drupal</module>
+        <module>plugin-wordpress</module>
     </modules>
 
     <dependencies>
