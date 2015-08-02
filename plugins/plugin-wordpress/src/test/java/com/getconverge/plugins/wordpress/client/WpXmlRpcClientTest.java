@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.getconverge.plugins.wordpress;
+package com.getconverge.plugins.wordpress.client;
 
 import dk.i2m.commons.FileUtils;
 import java.io.IOException;
@@ -129,7 +129,7 @@ public class WpXmlRpcClientTest {
     public void wpXmlRpcClient_createNewPostUploadFile_postCreatedWithFile() throws IOException {
         // Arrange
         WpXmlRpcClient client = new WpXmlRpcClient(WORDPRESS_URL, WORDPRESS_UID, WORDPRESS_PWD);
-        byte[] bits = FileUtils.getBytes(getClass().getResourceAsStream("/com/getconverge/plugins/wordpress/test-image-upload.png"));
+        byte[] bits = FileUtils.getBytes(getClass().getResourceAsStream("/com/getconverge/plugins/wordpress/client/test-image-upload.png"));
         Map<String, Object> uploadedFile = null;
         final String FILE_UPLOAD_NAME = "test-image.png";
         final String FILE_UPLOAD_TYPE = "image/png";

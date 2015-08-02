@@ -14,28 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.getconverge.plugins.wordpress;
+package com.getconverge.plugins.wordpress.client;
 
 /**
- * Exception thrown if an error occurred in the {@link WpXmlRpcClient}.
  *
  * @author Allan Lykke Christensen
  */
-class WpXmlRpcClientException extends Exception {
+public enum PostStatus {
 
-    public WpXmlRpcClientException() {
-    }
-
-    public WpXmlRpcClientException(String message) {
-        super(message);
-    }
-
-    public WpXmlRpcClientException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public WpXmlRpcClientException(Throwable cause) {
-        super(cause);
-    }
-
+   DRAFT, PUBLISH, PENDING, FUTURE, PRIVATE;
 }

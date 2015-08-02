@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.getconverge.plugins.wordpress;
+package com.getconverge.plugins.wordpress.client;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -47,7 +47,7 @@ public class WpXmlRpcClient {
      * Wordpress as the BlogId.
      */
     private static final Integer BLOG_ID = 0;
-    private static final String USER_AGENT = "Converge WpXmlRpcClient 1.0";
+    private static final String USER_AGENT = "Converge WpXmlRpcClient 0.1";
     private static final String XML_RPC_ENDPOINT = "/xmlrpc.php";
     private static final Integer DEFAULT_CONNECTION_TIMEOUT = 30000;
     private static final Integer DEFAULT_REPLY_TIMEOUT = 60000;

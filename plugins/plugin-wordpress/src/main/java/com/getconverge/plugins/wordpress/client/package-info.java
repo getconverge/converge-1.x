@@ -14,13 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.getconverge.plugins.wordpress;
-
 /**
- *
- * @author Allan Lykke Christensen
+ * Client for interacting with Wordpress using the built-in XML RPC API.
  */
-public enum PostStatus {
-
-   DRAFT, PUBLISH, PENDING, FUTURE, PRIVATE;
-}
+package com.getconverge.plugins.wordpress.client;

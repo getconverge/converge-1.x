@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.getconverge.plugins.wordpress;
+package com.getconverge.plugins.wordpress.client;
 
 /**
  * Fields of a Wordpress media file.
