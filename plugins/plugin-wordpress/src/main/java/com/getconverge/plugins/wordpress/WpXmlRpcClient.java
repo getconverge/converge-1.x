@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 - 2014 Interactive Media Management
+ * Copyright (C) 2015 Allan Lykke Christensen
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@ package com.getconverge.plugins.wordpress;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.xmlrpc.XmlRpcException;
@@ -26,8 +25,28 @@ import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfig;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
+/**
+ * Client for communicating with the Wordpress XML-RPC API.
+ *
+ * @see <a href="https://codex.wordpress.org/XML-RPC_WordPress_API">XML-RPC
+ * WordPress API</a>
+ * @see
+ * <a href="https://codex.wordpress.org/XML-RPC_WordPress_API/Posts">XML-RPC
+ * Wordpress API - Posts</a>
+ * @see
+ * <a href="https://codex.wordpress.org/XML-RPC_WordPress_API/Media">XML-RPC
+ * Wordpress API - Media</a>
+ * @author Allan Lykke Christensen
+ */
 public class WpXmlRpcClient {
 
+    /**
+     * The Wordpress XML-RPC API has a legacy variable called blogId that must
+     * be given for most calls. The variable is no longer used by Wordpress and
+     * can be ignored. This variable contains the hard coded value sent to
+     * Wordpress as the BlogId.
+     */
+    private static final Integer BLOG_ID = 0;
     private static final String USER_AGENT = "Converge WpXmlRpcClient 1.0";
     private static final String XML_RPC_ENDPOINT = "/xmlrpc.php";
     private static final Integer DEFAULT_CONNECTION_TIMEOUT = 30000;
@@ -40,18 +59,6 @@ public class WpXmlRpcClient {
     private static final String WP_API_GET_MEDIA_FILE = "wp.getMediaItem";
     private static final String FIELD_TAXONOMY_CATEGORY = "category";
     private static final String FIELD_TAXONOMY_POST_TAG = "post_tag";
-    private static final String FIELD_FILE_NAME = "name";
-    private static final String FIELD_FILE_TYPE = "type";
-    private static final String FIELD_FILE_BITS = "bits";
-    private static final String FIELD_FILE_OVERWRITE = "overwrite";
-    private static final String FIELD_FILE_POST_ID = "post_id";
-    private static final String FIELD_POST_POST_DATE = "post_date";
-    private static final String FIELD_POST_TERMS_NAMES = "terms_names";
-    private static final String FIELD_POST_POST_CONTENT = "post_content";
-    private static final String FIELD_POST_POST_EXCERPT = "post_excerpt";
-    private static final String FIELD_POST_POST_TITLE = "post_title";
-    private static final String FIELD_POST_POST_STATUS = "post_status";
-    private static final Integer BLOG_ID = 0;
     private Integer connectionTimeout;
     private String url;
     private String username;
@@ -87,6 +94,7 @@ public class WpXmlRpcClient {
      *
      * @param type Type of post
      * @param status Status of the post after posting
+     * @param authorId Unique id of the Wordpress user who is the author of the post
      * @param title Title of the post
      * @param postContent Content of the post
      * @param excerpt Excerpt of the post
@@ -95,7 +103,7 @@ public class WpXmlRpcClient {
      * @return Unique identifier of the created post
      * @throws WpXmlRpcClientException If the post could not be created
      */
-    public Integer createPost(String type, PostStatus status, String title, String postContent, String excerpt, String[] tags, String[] categories) throws WpXmlRpcClientException {
+    public Integer createPost(String type, PostStatus status, Integer authorId, String title, String postContent, String excerpt, String[] tags, String[] categories) throws WpXmlRpcClientException {
         try {
             XmlRpcClient client = getClient();
 
@@ -105,12 +113,12 @@ public class WpXmlRpcClient {
             terms.put(FIELD_TAXONOMY_CATEGORY, categories);
 
             Map<String, Object> content = new HashMap<String, Object>();
-            content.put(FIELD_POST_POST_STATUS, status.name().toLowerCase());
-            content.put(FIELD_POST_POST_TITLE, title);
-            content.put(FIELD_POST_POST_EXCERPT, excerpt);
-            content.put(FIELD_POST_POST_CONTENT, postContent);
-            content.put(FIELD_POST_TERMS_NAMES, terms);
-            content.put(FIELD_POST_POST_DATE, new Date().toString());
+            content.put(PostField.POST_STATUS.toString(), status.name().toLowerCase());
+            content.put(PostField.POST_TITLE.toString(), title);
+            content.put(PostField.POST_EXCERPT.toString(), excerpt);
+            content.put(PostField.POST_CONTENT.toString(), postContent);
+            content.put(PostField.TERMS_NAMES.toString(), terms);
+            content.put(PostField.POST_AUTHOR.toString(), authorId);
 
             return Integer.valueOf((String) client.execute(WP_API_NEW_POST, new Object[]{0, this.username, this.password, content}));
         } catch (MalformedURLException ex) {
@@ -120,7 +128,7 @@ public class WpXmlRpcClient {
         }
     }
 
-    public boolean editPost(Integer postId, String type, PostStatus status, String title, String postContent, String excerpt, String[] tags, String[] categories) throws WpXmlRpcClientException {
+    public boolean editPost(Integer postId, String type, PostStatus status, Integer authorId, String title, String postContent, String excerpt, String[] tags, String[] categories) throws WpXmlRpcClientException {
         try {
             XmlRpcClient client = getClient();
 
@@ -130,11 +138,12 @@ public class WpXmlRpcClient {
             terms.put(FIELD_TAXONOMY_CATEGORY, categories);
 
             Map<String, Object> content = new HashMap<String, Object>();
-            content.put(FIELD_POST_POST_STATUS, status.name().toLowerCase());
-            content.put(FIELD_POST_POST_TITLE, title);
-            content.put(FIELD_POST_POST_EXCERPT, excerpt);
-            content.put(FIELD_POST_POST_CONTENT, postContent);
-            content.put(FIELD_POST_TERMS_NAMES, terms);
+            content.put(PostField.POST_STATUS.toString(), status.name().toLowerCase());
+            content.put(PostField.POST_TITLE.toString(), title);
+            content.put(PostField.POST_EXCERPT.toString(), excerpt);
+            content.put(PostField.POST_CONTENT.toString(), postContent);
+            content.put(PostField.POST_AUTHOR.toString(), authorId);
+            content.put(PostField.TERMS_NAMES.toString(), terms);
 
             return (Boolean) client.execute(WP_API_EDIT_POST, new Object[]{BLOG_ID, this.username, this.password, postId, content});
         } catch (MalformedURLException ex) {
@@ -206,6 +215,13 @@ public class WpXmlRpcClient {
         }
     }
 
+    /**
+     * Gets an existing media file stored in the Wordpress Media Library.
+     *
+     * @param attachmentId Unique id of the media file
+     * @return {@link Map} of details about the media file
+     * @throws WpXmlRpcClientException If the file could not be fetched
+     */
     public Map<String, Object> getMediaFile(int attachmentId) throws WpXmlRpcClientException {
         try {
             XmlRpcClient client = getClient();
@@ -217,13 +233,24 @@ public class WpXmlRpcClient {
         }
     }
 
+    /**
+     * Uploads a media file to the Wordpress Media Library.
+     *
+     * @param name Name of the file
+     * @param type MIME type of the file
+     * @param bits Byte content of the file
+     * @param overwrite Overwrite the file if it exists
+     * @param postId Unique identifier of the post that it should be attached to
+     * @return {@link Map} containing details of the uploaded file
+     * @throws WpXmlRpcClientException If the file could not be uploaded
+     */
     public Map<String, Object> uploadFile(String name, String type, byte[] bits, boolean overwrite, Integer postId) throws WpXmlRpcClientException {
         Map<String, Object> request = new HashMap<String, Object>();
-        request.put(FIELD_FILE_NAME, name);
-        request.put(FIELD_FILE_TYPE, type);
-        request.put(FIELD_FILE_BITS, bits);
-        request.put(FIELD_FILE_OVERWRITE, overwrite);
-        request.put(FIELD_FILE_POST_ID, postId);
+        request.put(FileField.NAME.toString(), name);
+        request.put(FileField.TYPE.toString(), type);
+        request.put(FileField.BITS.toString(), bits);
+        request.put(FileField.OVERWRITE.toString(), overwrite);
+        request.put(FileField.POST_ID.toString(), postId);
 
         try {
             XmlRpcClient client = getClient();
