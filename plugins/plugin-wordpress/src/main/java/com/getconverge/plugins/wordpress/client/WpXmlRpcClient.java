@@ -82,11 +82,25 @@ public class WpXmlRpcClient {
      * @param password Password for logging into the Wordpress installation
      */
     public WpXmlRpcClient(String url, String username, String password) {
+        this(url, username, password, DEFAULT_CONNECTION_TIMEOUT, DEFAULT_REPLY_TIMEOUT);
+    }
+    
+    /**
+     * Creates a new instance of {@link WpXmlRpcClient} with the URL, username
+     * and password of the Wordpress instance pre-entered.
+     *
+     * @param url URL of the Wordpress installation
+     * @param username Username for logging into the Wordpress installation
+     * @param password Password for logging into the Wordpress installation
+     * @param connectionTimeout Connection timeout in ms
+     * @param replyTimeout Reply timeout in ms
+     */
+    public WpXmlRpcClient(String url, String username, String password, int connectionTimeout, int replyTimeout) {
         this.url = url;
         this.username = username;
         this.password = password;
-        this.connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
-        this.replyTimeout = DEFAULT_REPLY_TIMEOUT;
+        this.connectionTimeout = connectionTimeout;
+        this.replyTimeout = replyTimeout;
     }
 
     /**
