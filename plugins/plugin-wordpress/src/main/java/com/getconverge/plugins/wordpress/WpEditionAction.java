@@ -77,8 +77,6 @@ public class WpEditionAction implements EditionAction {
         REPLY_TIMEOUT,
         IMAGE_RENDITION,
         PASSWORD,
-        SECTION_MAPPING,
-        IGNORED_MAPPING,
         URL,
         USERNAME,
         UPLOAD_STATE,
