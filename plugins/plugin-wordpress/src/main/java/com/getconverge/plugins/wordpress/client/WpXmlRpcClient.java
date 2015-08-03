@@ -84,7 +84,7 @@ public class WpXmlRpcClient {
     public WpXmlRpcClient(String url, String username, String password) {
         this(url, username, password, DEFAULT_CONNECTION_TIMEOUT, DEFAULT_REPLY_TIMEOUT);
     }
-    
+
     /**
      * Creates a new instance of {@link WpXmlRpcClient} with the URL, username
      * and password of the Wordpress instance pre-entered.
@@ -108,12 +108,15 @@ public class WpXmlRpcClient {
      *
      * @param type Type of post
      * @param status Status of the post after posting
-     * @param authorId Unique id of the Wordpress user who is the author of the post
+     * @param authorId Unique id of the Wordpress user who is the author of the
+     * post
      * @param title Title of the post
      * @param postContent Content of the post
      * @param excerpt Excerpt of the post
      * @param tags Tags of the post
      * @param categories Categories of the post
+     * @param thumbnailId Id of the media item that is the thumbnail (or Feature
+     * Image) for the post
      * @return Unique identifier of the created post
      * @throws WpXmlRpcClientException If the post could not be created
      */
@@ -142,7 +145,25 @@ public class WpXmlRpcClient {
             throw new WpXmlRpcClientException(ex);
         }
     }
-    
+
+    /**
+     * Updates an existing post on Wordpress.
+     *
+     * @param postId Id of the post to update
+     * @param type Type of post
+     * @param status Status of the post after posting
+     * @param authorId Unique id of the Wordpress user who is the author of the
+     * post
+     * @param title Title of the post
+     * @param postContent Content of the post
+     * @param excerpt Excerpt of the post
+     * @param tags Tags of the post
+     * @param categories Categories of the post
+     * @param thumbnailId Id of the media item that is the thumbnail (or Feature
+     * Image) for the post
+     * @return {@code true} if the post was updated
+     * @throws WpXmlRpcClientException If the post could not be created
+     */
     public boolean editPost(Integer postId, String type, PostStatus status, Integer authorId, String title, String postContent, String excerpt, String[] tags, String[] categories, Integer thumbnailId) throws WpXmlRpcClientException {
         try {
             XmlRpcClient client = getClient();
