@@ -295,7 +295,7 @@ public class WpEditionAction implements EditionAction {
             }
 
             if (exist) {
-                boolean updated = wordpress.editPost(postId, "post", PostStatus.PUBLISH, this.authorId, newsItem.getTitle(), newsItem.getStory(), newsItem.getBrief(), getConcepts(newsItem), getCategories(edition, newsItem));
+                boolean updated = wordpress.editPost(postId, "post", PostStatus.PUBLISH, this.authorId, newsItem.getTitle(), newsItem.getStory(), newsItem.getBrief(), getConcepts(newsItem), getCategories(edition, newsItem), 0);
                 if (updated) {
                     stateStatus.setValue("Updated");
                     throw new WpXmlRpcClientException("Could not update post on Wordpress");
@@ -303,7 +303,7 @@ public class WpEditionAction implements EditionAction {
                     stateStatus.setValue("Failed updating");
                 }
             } else {
-                postId = wordpress.createPost("post", PostStatus.PUBLISH, this.authorId, newsItem.getTitle(), newsItem.getStory(), newsItem.getBrief(), getConcepts(newsItem), getCategories(edition, newsItem));
+                postId = wordpress.createPost("post", PostStatus.PUBLISH, this.authorId, newsItem.getTitle(), newsItem.getStory(), newsItem.getBrief(), getConcepts(newsItem), getCategories(edition, newsItem), 0);
                 stateStatus.setValue("Created");
             }
 
@@ -319,7 +319,7 @@ public class WpEditionAction implements EditionAction {
                     log(LogSeverity.WARNING, BundleKey.LOG_IMAGE_UPLOAD_MISSING_RENDITION, new Object[]{newsItemId, newsItem.getTitle(), this.rendition}, editionId, newsItemId);
                 }
                 if (!images.toString().isEmpty()) {
-                    wordpress.editPost(postId, "post", PostStatus.PUBLISH, this.authorId, newsItem.getTitle(), images.toString() + newsItem.getStory(), newsItem.getBrief(), getConcepts(newsItem), getCategories(edition, newsItem));
+                    wordpress.editPost(postId, "post", PostStatus.PUBLISH, this.authorId, newsItem.getTitle(), images.toString() + newsItem.getStory(), newsItem.getBrief(), getConcepts(newsItem), getCategories(edition, newsItem), 0);
                 }
             }
 

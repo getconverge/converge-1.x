@@ -55,7 +55,11 @@ public enum PostField {
     /**
      * Terms of the post, used for getting the terms of an existing post.
      */
-    TERMS;
+    TERMS, 
+    /**
+     * Media item id of the thumbnail (aka Feature Image) of the post.
+     */
+    POST_THUMBNAIL;
 
     /**
      * Returns a {@link String} representation of the {@link PostField}. The

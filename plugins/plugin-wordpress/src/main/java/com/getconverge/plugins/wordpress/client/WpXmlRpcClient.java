@@ -117,7 +117,7 @@ public class WpXmlRpcClient {
      * @return Unique identifier of the created post
      * @throws WpXmlRpcClientException If the post could not be created
      */
-    public Integer createPost(String type, PostStatus status, Integer authorId, String title, String postContent, String excerpt, String[] tags, String[] categories) throws WpXmlRpcClientException {
+    public Integer createPost(String type, PostStatus status, Integer authorId, String title, String postContent, String excerpt, String[] tags, String[] categories, Integer thumbnailId) throws WpXmlRpcClientException {
         try {
             XmlRpcClient client = getClient();
 
@@ -133,6 +133,7 @@ public class WpXmlRpcClient {
             content.put(PostField.POST_CONTENT.toString(), postContent);
             content.put(PostField.TERMS_NAMES.toString(), terms);
             content.put(PostField.POST_AUTHOR.toString(), authorId);
+            content.put(PostField.POST_THUMBNAIL.toString(), thumbnailId);
 
             return Integer.valueOf((String) client.execute(WP_API_NEW_POST, new Object[]{0, this.username, this.password, content}));
         } catch (MalformedURLException ex) {
@@ -141,8 +142,8 @@ public class WpXmlRpcClient {
             throw new WpXmlRpcClientException(ex);
         }
     }
-
-    public boolean editPost(Integer postId, String type, PostStatus status, Integer authorId, String title, String postContent, String excerpt, String[] tags, String[] categories) throws WpXmlRpcClientException {
+    
+    public boolean editPost(Integer postId, String type, PostStatus status, Integer authorId, String title, String postContent, String excerpt, String[] tags, String[] categories, Integer thumbnailId) throws WpXmlRpcClientException {
         try {
             XmlRpcClient client = getClient();
 
@@ -158,6 +159,7 @@ public class WpXmlRpcClient {
             content.put(PostField.POST_CONTENT.toString(), postContent);
             content.put(PostField.POST_AUTHOR.toString(), authorId);
             content.put(PostField.TERMS_NAMES.toString(), terms);
+            content.put(PostField.POST_THUMBNAIL.toString(), thumbnailId);
 
             return (Boolean) client.execute(WP_API_EDIT_POST, new Object[]{BLOG_ID, this.username, this.password, postId, content});
         } catch (MalformedURLException ex) {

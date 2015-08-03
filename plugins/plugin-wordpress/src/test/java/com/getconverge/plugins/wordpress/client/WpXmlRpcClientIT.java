@@ -134,7 +134,7 @@ public class WpXmlRpcClientIT {
 
         // Act
         try {
-            postId = client.createPost("post", PostStatus.PUBLISH, POST_AUTHOR, POST_TITLE, POST_CONTENT, POST_EXCERPT, POST_TAXONOMY_POST_TAGS, POST_TAXONOMY_POST_CATEGORIES);
+            postId = client.createPost("post", PostStatus.PUBLISH, POST_AUTHOR, POST_TITLE, POST_CONTENT, POST_EXCERPT, POST_TAXONOMY_POST_TAGS, POST_TAXONOMY_POST_CATEGORIES, 0);
             exist = client.exists(postId);
             post = client.getPost(postId);
         } catch (WpXmlRpcClientException ex) {
@@ -159,7 +159,7 @@ public class WpXmlRpcClientIT {
         boolean deleted = false;
         try {
             // Act
-            Integer postId = client.createPost("post", PostStatus.PUBLISH, 2, "TEST wpXmlRpcClient_createNewPostDeletePost_postDeleted", "the content", "brief", new String[]{"test", "converge", "plugin"}, new String[]{"Integration Testing"});
+            Integer postId = client.createPost("post", PostStatus.PUBLISH, 2, "TEST wpXmlRpcClient_createNewPostDeletePost_postDeleted", "the content", "brief", new String[]{"test", "converge", "plugin"}, new String[]{"Integration Testing"}, 0);
             deleted = client.deletePost(postId);
         } catch (WpXmlRpcClientException ex) {
             fail(ex.getMessage());
@@ -180,8 +180,8 @@ public class WpXmlRpcClientIT {
 
         try {
             // Act
-            Integer postId = client.createPost("post", PostStatus.PUBLISH, 2, "TEST wpXmlRpcClient_createNewPostUploadFile_postCreatedWithFile", "This is the <b>content</b> of a post with a <u>media file</u>", "brief", new String[]{"test", "converge", "file attachment"}, new String[]{"Integration Testing"});
-            uploadedFile = client.uploadFile(FILE_UPLOAD_NAME, FILE_UPLOAD_TYPE, bits, true, postId);
+            uploadedFile = client.uploadFile(FILE_UPLOAD_NAME, FILE_UPLOAD_TYPE, bits, true, 0);
+            Integer postId = client.createPost("post", PostStatus.PUBLISH, 2, "TEST wpXmlRpcClient_createNewPostUploadFile_postCreatedWithFile", "This is the <b>content</b> of a post with a <u>media file</u>", "brief", new String[]{"test", "converge", "file attachment"}, new String[]{"Integration Testing"}, Integer.valueOf((String)uploadedFile.get(FileField.ID.toString())));
         } catch (WpXmlRpcClientException ex) {
             fail(ex.getMessage());
         }
@@ -208,8 +208,8 @@ public class WpXmlRpcClientIT {
 
         try {
             // Act
-            Integer postId = client.createPost("post", PostStatus.PUBLISH, 2, "TEST wpXmlRpcClient_createNewPostEditPost_postCreatedAndUpdated", "This is the <b>content</b> of a post", "brief", new String[]{"test", "converge", "first"}, new String[]{"Integration Testing"});
-            client.editPost(postId, "post", PostStatus.PUBLISH, 2, POST_TITLE_UPDATED, POST_CONTENT_UPDATED, POST_EXCERPT_UPDATED, POST_TAGS_UPDATED, POST_CATEGORY_UPDATED);
+            Integer postId = client.createPost("post", PostStatus.PUBLISH, 2, "TEST wpXmlRpcClient_createNewPostEditPost_postCreatedAndUpdated", "This is the <b>content</b> of a post", "brief", new String[]{"test", "converge", "first"}, new String[]{"Integration Testing"},0);
+            client.editPost(postId, "post", PostStatus.PUBLISH, 2, POST_TITLE_UPDATED, POST_CONTENT_UPDATED, POST_EXCERPT_UPDATED, POST_TAGS_UPDATED, POST_CATEGORY_UPDATED, 0);
             updatedPost = client.getPost(postId);
         } catch (WpXmlRpcClientException ex) {
             fail(ex.getMessage());
