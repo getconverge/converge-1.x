@@ -18,10 +18,16 @@ package com.getconverge.plugins.wordpress.client;
 
 import dk.i2m.commons.FileUtils;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.lang.math.NumberUtils;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.BeforeClass;
 
 /**
  * Unit tests for {@link WpXmlRpcClient}. For the unit tests to pass the
@@ -32,12 +38,50 @@ import static org.junit.Assert.*;
  *
  * @author Allan Lykke Christensen
  */
-public class WpXmlRpcClientTest {
+public class WpXmlRpcClientIT {
 
-    // TODO: Replace local instance with online Integration Testing instance
-    private static final String WORDPRESS_URL = "http://localhost/int.wordpress.getconverge.com";
-    private static final String WORDPRESS_UID = "admin";
-    private static final String WORDPRESS_PWD = "admin";
+    private static final Logger LOG = Logger.getLogger(WpXmlRpcClientIT.class.getName());
+    private static final String WORDPRESS_URL = "http://int.wordpress.getconverge.com";
+    private static final String WORDPRESS_UID = "converge";
+    private static final String WORDPRESS_PWD = "c0nv3rg3";
+    private static boolean execute = false;
+
+    /**
+     * Determine whether the test cases should be executed. The {@link #execute}
+     * flag will be set based on the result of checking if the integration test
+     * site exists.
+     */
+    @BeforeClass
+    public static void integrationTestInstallationAvailable() {
+        HttpURLConnection http = null;
+        try {
+            URL url = new URL(WORDPRESS_URL);
+            http = (HttpURLConnection) url.openConnection();
+            int statusCode = http.getResponseCode();
+            execute = statusCode == 200;
+
+        } catch (IOException ex) {
+            LOG.log(Level.WARNING, ex.getMessage());
+            execute = false;
+        } finally {
+            if (http != null) {
+                http.disconnect();
+            }
+        }
+
+        if (!execute) {
+            LOG.log(Level.WARNING, "Skipping test. Test site {0} is not available", WORDPRESS_URL);
+        }
+    }
+
+    /**
+     * Check before each test case if it should be executed (based on the
+     * {@link #execute} flag.
+     */
+    @Before
+    public void shouldExecute() {
+        org.junit.Assume.assumeTrue(execute);
+    }
 
     @Test
     public void wpXmlRpcClient_requestNonexistingPost_returnFalse() {
