@@ -20,15 +20,6 @@
             </roles>
             <timezone>+1</timezone>
         </developer>
-        <developer>
-            <name>Fred Ondieki</name>
-            <id>fredndk@gmail.com</id>
-            <email>fredndk@gmail.com</email>
-            <roles>
-                <role>Developer</role>
-            </roles>
-            <timezone>+3</timezone>
-        </developer>
     </developers>
 
     <scm>
@@ -120,7 +111,7 @@
         <repository>
             <id>mvn.getconverge.com</id>
             <name>GetConverge Maven Artifact Repository</name>
-            <url>file:///var/www/mvn</url>
+            <url>http://mvn.getconverge.com/</url>
         </repository>
     </distributionManagement>
     
