@@ -22,6 +22,7 @@ import dk.i2m.converge.core.workflow.Outlet;
 import dk.i2m.converge.core.workflow.Workflow;
 import dk.i2m.converge.core.workflow.WorkflowState;
 import dk.i2m.converge.core.workflow.WorkflowStatePermission;
+import java.util.Calendar;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -92,6 +93,79 @@ public class NewsItemTest {
 
         // Assert
         assertEquals("Editor", actualCurrentActor);
+    }
+
+    @Test
+    public void newsItem_checkedOut_returnIsLocked() {
+        // Arrange
+        NewsItem newsItem = getNewsItemCheckedOut();
+
+        // Act
+        boolean locked = newsItem.isLocked();
+
+        // Assert
+        assertTrue(locked);
+
+    }
+
+    @Test
+    public void newsItem_notCheckedOut_returnIsNotLocked() {
+        // Arrange
+        NewsItem newsItem = getNewsItemNotCheckedOut();
+
+        // Act
+        boolean locked = newsItem.isLocked();
+
+        // Assert
+        assertFalse(locked);
+    }
+    
+    @Test
+    public void newsItem_atInitialState_returnIsStartState() {
+        // Arrange
+        NewsItem newsItem = getNewsItemAtInitialState();
+
+        // Act
+        boolean startState = newsItem.isStartState();
+
+        // Assert
+        assertTrue(startState);
+    }
+    
+    @Test
+    public void newsItem_atTrashState_returnIsTrashState() {
+        // Arrange
+        NewsItem newsItem = getNewsItemAtTrashState();
+
+        // Act
+        boolean trashState = newsItem.isTrashState();
+
+        // Assert
+        assertTrue(trashState);
+    }
+    
+    @Test
+    public void newsItem_atTrashState_returnIsEndState() {
+        // Arrange
+        NewsItem newsItem = getNewsItemAtEndState();
+
+        // Act
+        boolean endState = newsItem.isEndState();
+
+        // Assert
+        assertTrue(endState);
+    }
+    
+    @Test
+    public void newsItem_atIntermediateState_returnIsIntermediateState() {
+        // Arrange
+        NewsItem newsItem = getNewsItemAtInitialState();
+
+        // Act
+        boolean intermediateState = newsItem.isIntermediateState();
+
+        // Assert
+        assertTrue(intermediateState);
     }
 
     // <editor-fold defaultstate="collapsed" desc="Methods for obtaining test data">
@@ -165,6 +239,70 @@ public class NewsItemTest {
         newsItem.getActors().add(new NewsItemActor(actor1, startState.getActorRole(), newsItem));
         return newsItem;
     }
+    
+    private NewsItem getNewsItemAtInitialState() {
+        WorkflowState startState = new WorkflowState();
+        startState.setPermission(WorkflowStatePermission.USER);
+        startState.setActorRole(new UserRole(1L, "Author"));
+        Workflow workflow = new Workflow();
+        workflow.setName("Test Workflow");
+        workflow.setStartState(startState);
+        Outlet outlet = new Outlet();
+        outlet.setTitle("Test Outlet");
+        outlet.setWorkflow(workflow);
+        NewsItem newsItem = new NewsItem();
+        newsItem.setOutlet(outlet);
+        newsItem.setCurrentState(startState);
+        return newsItem;
+    }
+    
+    private NewsItem getNewsItemAtEndState() {
+        WorkflowState endState = new WorkflowState();
+        endState.setPermission(WorkflowStatePermission.USER);
+        endState.setActorRole(new UserRole(1L, "Author"));
+        Workflow workflow = new Workflow();
+        workflow.setName("Test Workflow");
+        workflow.setEndState(endState);
+        Outlet outlet = new Outlet();
+        outlet.setTitle("Test Outlet");
+        outlet.setWorkflow(workflow);
+        NewsItem newsItem = new NewsItem();
+        newsItem.setOutlet(outlet);
+        newsItem.setCurrentState(endState);
+        return newsItem;
+    }
+    
+    private NewsItem getNewsItemAtTrashState() {
+        WorkflowState trashState = new WorkflowState();
+        trashState.setPermission(WorkflowStatePermission.USER);
+        trashState.setActorRole(new UserRole(1L, "Author"));
+        Workflow workflow = new Workflow();
+        workflow.setName("Test Workflow");
+        workflow.setTrashState(trashState);
+        Outlet outlet = new Outlet();
+        outlet.setTitle("Test Outlet");
+        outlet.setWorkflow(workflow);
+        NewsItem newsItem = new NewsItem();
+        newsItem.setOutlet(outlet);
+        newsItem.setCurrentState(trashState);
+        return newsItem;
+    }
+    
+    private NewsItem getNewsItemAtIntermediateState() {
+        WorkflowState reviewState = new WorkflowState();
+        reviewState.setPermission(WorkflowStatePermission.USER);
+        reviewState.setActorRole(new UserRole(1L, "Author"));
+        Workflow workflow = new Workflow();
+        workflow.setName("Test Workflow");
+        workflow.addState(reviewState);
+        Outlet outlet = new Outlet();
+        outlet.setTitle("Test Outlet");
+        outlet.setWorkflow(workflow);
+        NewsItem newsItem = new NewsItem();
+        newsItem.setOutlet(outlet);
+        newsItem.setCurrentState(reviewState);
+        return newsItem;
+    }
 
     private NewsItem getNewsItemWithRoleCurrentState() {
         WorkflowState startState = new WorkflowState();
@@ -185,6 +323,20 @@ public class NewsItemTest {
         UserAccount actor1 = new UserAccount();
         actor1.setFullName("Allan Lykke Christensen");
         newsItem.getActors().add(new NewsItemActor(actor1, startState.getActorRole(), newsItem));
+        return newsItem;
+    }
+    
+    private NewsItem getNewsItemCheckedOut() {
+        NewsItem newsItem = new NewsItem();
+        newsItem.setCheckedOut(Calendar.getInstance());
+        newsItem.setCheckedOutBy(new UserAccount("allan"));
+        return newsItem;
+    }
+    
+    private NewsItem getNewsItemNotCheckedOut() {
+        NewsItem newsItem = new NewsItem();
+        newsItem.setCheckedOut(null);
+        newsItem.setCheckedOutBy(null);
         return newsItem;
     }
     // </editor-fold>

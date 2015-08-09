@@ -370,36 +370,35 @@ public class NewsItem implements Serializable {
      * @return Author of the NewsItem
      */
     public String getAuthors() {
-        if (org.apache.commons.lang.StringUtils.isBlank(getByLine())) {
-            // No by-line specified in the news item. 
-            // Generate by-line from actors on news item
-
-            StringBuilder sb = new StringBuilder();
-
-            Workflow workflow = getOutlet().getWorkflow();
-            UserRole authorRole = workflow.getStartState().getActorRole();
-
-            // Iterate through actors specified on the news item
-            boolean firstActor = true;
-            for (NewsItemActor actor : getActors()) {
-
-                // If the actor has the role from the initial state of the 
-                // workflow, he is the author of the story
-                if (actor.getRole().equals(authorRole)) {
-                    if (!firstActor) {
-                        sb.append(", ");
-                    } else {
-                        firstActor = false;
-                    }
-
-                    sb.append(actor.getUser().getFullName());
-                }
-            }
-
-            return sb.toString();
-        } else {
+        if (!org.apache.commons.lang.StringUtils.isBlank(getByLine())) {
             return getByLine();
         }
+        
+        // No by-line specified in the news item. 
+        // Generate by-line from actors on news item
+        StringBuilder sb = new StringBuilder();
+
+        Workflow workflow = getOutlet().getWorkflow();
+        UserRole authorRole = workflow.getStartState().getActorRole();
+
+        // Iterate through actors specified on the news item
+        boolean firstActor = true;
+        for (NewsItemActor actor : getActors()) {
+
+                // If the actor has the role from the initial state of the 
+            // workflow, he is the author of the story
+            if (actor.getRole().equals(authorRole)) {
+                if (!firstActor) {
+                    sb.append(", ");
+                } else {
+                    firstActor = false;
+                }
+
+                sb.append(actor.getUser().getFullName());
+            }
+        }
+
+        return sb.toString();
     }
 
     /**
@@ -547,11 +546,7 @@ public class NewsItem implements Serializable {
      *         {@code false}
      */
     public boolean isLocked() {
-        if (getCheckedOut() == null) {
-            return false;
-        } else {
-            return true;
-        }
+        return getCheckedOut() != null;
     }
 
     public Department getDepartment() {
@@ -866,7 +861,7 @@ public class NewsItem implements Serializable {
         if (getCurrentState() == null) {
             return "";
         }
-        
+
         if (getCurrentState().isGroupPermission()) {
             return getCurrentState().getActorRole().getName();
         } else {
@@ -875,13 +870,11 @@ public class NewsItem implements Serializable {
 
             if (role != null) {
                 for (NewsItemActor actor : getActors()) {
-                    if (actor.getRole() != null) {
-                        if (actor.getRole().equals(role)) {
-                            if (sb.length() > 0) {
-                                sb.append(", ");
-                            }
-                            sb.append(actor.getUser().getFullName());
+                    if (actor.getRole() != null && actor.getRole().equals(role)) {
+                        if (sb.length() > 0) {
+                            sb.append(", ");
                         }
+                        sb.append(actor.getUser().getFullName());
                     }
                 }
             }
@@ -902,12 +895,7 @@ public class NewsItem implements Serializable {
             return false;
         }
 
-
-        if (getCurrentState().equals(getOutlet().getWorkflow().getEndState())) {
-            return true;
-        } else {
-            return false;
-        }
+        return getCurrentState().equals(getOutlet().getWorkflow().getEndState());
     }
 
     /**
@@ -923,11 +911,7 @@ public class NewsItem implements Serializable {
             return false;
         }
 
-        if (getCurrentState().equals(getOutlet().getWorkflow().getStartState())) {
-            return true;
-        } else {
-            return false;
-        }
+        return getCurrentState().equals(getOutlet().getWorkflow().getStartState());
     }
 
     /**
@@ -943,11 +927,7 @@ public class NewsItem implements Serializable {
             return false;
         }
 
-        if (getCurrentState().equals(getOutlet().getWorkflow().getTrashState())) {
-            return true;
-        } else {
-            return false;
-        }
+        return getCurrentState().equals(getOutlet().getWorkflow().getTrashState());
     }
 
     /**
@@ -971,10 +951,8 @@ public class NewsItem implements Serializable {
     public int getNextAssetAttachmentDisplayOrder() {
         int i = 1;
         for (NewsItemMediaAttachment attachment : getMediaAttachments()) {
-            if (attachment != null) {
-                if (attachment.getDisplayOrder() >= i) {
-                    i = attachment.getDisplayOrder() + 1;
-                }
+            if (attachment != null && attachment.getDisplayOrder() >= i) {
+                i = attachment.getDisplayOrder() + 1;
             }
         }
         return i;
