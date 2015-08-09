@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Allan Lykke Christensen
+ * Copyright (C) 2014 - 2015 Allan Lykke Christensen
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ import dk.i2m.converge.core.security.UserRole;
 import dk.i2m.converge.core.workflow.Outlet;
 import dk.i2m.converge.core.workflow.Workflow;
 import dk.i2m.converge.core.workflow.WorkflowState;
+import dk.i2m.converge.core.workflow.WorkflowStatePermission;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -35,7 +36,7 @@ public class NewsItemTest {
     public void newsItem_withoutByLine_returnAuthorsFromInitialActors() {
         // Arrange
         NewsItem newsItem = getNewsItemWithoutByline();
-        String expectedAuthors = "Allan Lykke Christensen, Nikholai Mukalazi";
+        final String expectedAuthors = "Allan Lykke Christensen, Nikholai Mukalazi";
 
         // Act
         String actualAuthors = newsItem.getAuthors();
@@ -48,15 +49,52 @@ public class NewsItemTest {
     public void newsItem_withByLine_returnByLine() {
         // Arrange
         NewsItem newsItem = getNewsItemWithByline();
-        String expectedAuthors = "By Reporters";
+        final String expectedAuthors = "By Reporters";
 
         // Act
-        String actualAuthors = newsItem.getAuthors();
+        final String actualAuthors = newsItem.getAuthors();
 
         // Assert
         assertEquals(expectedAuthors, actualAuthors);
     }
 
+    @Test
+    public void newsItem_withoutCurrentState_returnEmptyCurrentActor() {
+        // Arrange
+        NewsItem newsItem = getNewsItemWithoutCurrentState();
+
+        // Act
+        final String actualCurrentActor = newsItem.getCurrentActor();
+
+        // Assert
+        assertEquals("", actualCurrentActor);
+    }
+
+    @Test
+    public void newsItem_withUserCurrentState_returnCurrentUserName() {
+        // Arrange
+        NewsItem newsItem = getNewsItemWithUserCurrentState();
+
+        // Act
+        final String actualCurrentActor = newsItem.getCurrentActor();
+
+        // Assert
+        assertEquals("Allan Lykke Christensen", actualCurrentActor);
+    }
+
+    @Test
+    public void newsItem_withRoleCurrentState_returnCurrentRoleName() {
+        // Arrange
+        NewsItem newsItem = getNewsItemWithRoleCurrentState();
+
+        // Act
+        final String actualCurrentActor = newsItem.getCurrentActor();
+
+        // Assert
+        assertEquals("Editor", actualCurrentActor);
+    }
+
+    // <editor-fold defaultstate="collapsed" desc="Methods for obtaining test data">
     private NewsItem getNewsItemWithoutByline() {
         WorkflowState startState = new WorkflowState();
         startState.setActorRole(new UserRole(1L, "Author"));
@@ -104,4 +142,50 @@ public class NewsItemTest {
         return newsItem;
     }
 
+    private NewsItem getNewsItemWithoutCurrentState() {
+        NewsItem newsItem = new NewsItem();
+        return newsItem;
+    }
+
+    private NewsItem getNewsItemWithUserCurrentState() {
+        WorkflowState startState = new WorkflowState();
+        startState.setPermission(WorkflowStatePermission.USER);
+        startState.setActorRole(new UserRole(1L, "Author"));
+        Workflow workflow = new Workflow();
+        workflow.setName("Test Workflow");
+        workflow.setStartState(startState);
+        Outlet outlet = new Outlet();
+        outlet.setTitle("Test Outlet");
+        outlet.setWorkflow(workflow);
+        NewsItem newsItem = new NewsItem();
+        newsItem.setOutlet(outlet);
+        newsItem.setCurrentState(startState);
+        UserAccount actor1 = new UserAccount();
+        actor1.setFullName("Allan Lykke Christensen");
+        newsItem.getActors().add(new NewsItemActor(actor1, startState.getActorRole(), newsItem));
+        return newsItem;
+    }
+
+    private NewsItem getNewsItemWithRoleCurrentState() {
+        WorkflowState startState = new WorkflowState();
+        startState.setPermission(WorkflowStatePermission.USER);
+        startState.setActorRole(new UserRole(1L, "Author"));
+        WorkflowState reviewState = new WorkflowState();
+        reviewState.setPermission(WorkflowStatePermission.GROUP);
+        reviewState.setActorRole(new UserRole(2L, "Editor"));
+        Workflow workflow = new Workflow();
+        workflow.setName("Test Workflow");
+        workflow.setStartState(startState);
+        Outlet outlet = new Outlet();
+        outlet.setTitle("Test Outlet");
+        outlet.setWorkflow(workflow);
+        NewsItem newsItem = new NewsItem();
+        newsItem.setOutlet(outlet);
+        newsItem.setCurrentState(reviewState);
+        UserAccount actor1 = new UserAccount();
+        actor1.setFullName("Allan Lykke Christensen");
+        newsItem.getActors().add(new NewsItemActor(actor1, startState.getActorRole(), newsItem));
+        return newsItem;
+    }
+    // </editor-fold>
 }

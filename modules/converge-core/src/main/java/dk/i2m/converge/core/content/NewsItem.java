@@ -856,11 +856,17 @@ public class NewsItem implements Serializable {
     /**
      * Gets the name of the current actor of the news item. If the current actor
      * is a group, the name of the group will be returned, if the current actor
-     * is a user or multiple users, their names will be returned.
+     * is a user or multiple users, their names will be returned. If no state 
+     * has been set for the news item an empty string will be returned as the
+     * actor cannot be determined when the state is not set.
      *
-     * @return Name(s) of the current actor
+     * @return Names of the current actor
      */
     public String getCurrentActor() {
+        if (getCurrentState() == null) {
+            return "";
+        }
+        
         if (getCurrentState().isGroupPermission()) {
             return getCurrentState().getActorRole().getName();
         } else {
