@@ -54,6 +54,18 @@
             <version>5</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.wordnik</groupId>
+            <artifactId>swagger-core</artifactId>
+            <scope>compile</scope>
+            <version>1.5.3-M1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.ws.rs</groupId>
+                    <artifactId>jsr311-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
 
     <repositories>
@@ -82,6 +94,51 @@
                         </manifest>
                     </archive>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.kongchen</groupId>
+                <artifactId>swagger-maven-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <apiSources>
+                        <apiSource>
+                            <springmvc>false</springmvc>
+                            <locations>com.getconverge.ws.rest</locations>
+                            <schemes>http,https</schemes>
+                            <host>localhost:8080</host>
+                            <basePath>/service</basePath>
+                            <outputPath>${basedir}/target/${project.build.finalName}/index.html</outputPath>
+                            <swaggerDirectory>${basedir}/target/generated-sources/swagger/swagger-ui</swaggerDirectory>
+                            <templatePath>${basedir}/src/main/resources/templates/strapdown.html.hbs</templatePath>
+                            <info>
+                                <title>Converge API</title>
+                                <version>v1</version>
+                                <description>
+                                    Description of the Converge API
+                                </description>
+                                <termsOfService>
+                                </termsOfService>
+                                <contact>
+                                    <email>allan@getconverge.com</email>
+                                    <name>Allan Lykke Christensen</name>
+                                    <url>http://www.getconverge.com</url>
+                                </contact>
+                                <license>
+                                    <url>http://www.gnu.org/licenses/gpl-3.0.en.html</url>
+                                    <name>GPL v3</name>
+                                </license>
+                            </info>
+                        </apiSource>
+                    </apiSources>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>

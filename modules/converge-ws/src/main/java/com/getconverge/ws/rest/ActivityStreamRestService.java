@@ -16,6 +16,11 @@
  */
 package com.getconverge.ws.rest;
 
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import dk.i2m.converge.ejb.facades.ActivityStreamFacadeLocal;
 import dk.i2m.converge.core.activitystream.ActivityStream;
 import java.util.logging.Level;
@@ -29,7 +34,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
 
 /**
  * REST Web Service exposing the activity stream and operations surrounding it.
@@ -37,6 +41,7 @@ import javax.ws.rs.core.UriInfo;
  * @author Allan Lykke Christensen
  */
 @Path("activitystream")
+@Api(value = "/activitystream", description = "Exposes the activity stream of the authenticated user")
 @Produces(MediaType.APPLICATION_JSON)
 public class ActivityStreamRestService extends AbstractRestService {
 
@@ -44,9 +49,6 @@ public class ActivityStreamRestService extends AbstractRestService {
     private static final Integer DEFAULT_START = 0;
     private static final Integer DEFAULT_SIZE = 25;
     private final ActivityStreamFacadeLocal activityStreamFacade = lookupActivityStreamFacadeLocal();
-
-    @Context
-    private UriInfo context;
 
     /**
      * Get the {@link ActivityStream} for the currently authorized user
@@ -59,9 +61,13 @@ public class ActivityStreamRestService extends AbstractRestService {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get the activity stream of the current user", notes = "Get the activity stream of the currently logged-in user", response = ActivityStream.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Activity stream found for the current user")})
+    
     public ActivityStream getJson(@Context SecurityContext security,
-            @QueryParam("page") Integer page,
-            @QueryParam("size") Integer size) {
+            @ApiParam(value = "The page number to retrieve.", defaultValue = "1", required = false) @QueryParam("page") Integer page,
+            @ApiParam(value = "Number of activities to retrieve per page.", defaultValue = "25", required = false) @QueryParam("size") Integer size) {
         authCheck(security);
         String username = security.getUserPrincipal().getName();
         int start = DEFAULT_START;
@@ -69,7 +75,7 @@ public class ActivityStreamRestService extends AbstractRestService {
         if (size == null) {
             size = DEFAULT_SIZE;
         }
-        
+
         if (page != null) {
             start = page * size;
         }
