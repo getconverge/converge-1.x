@@ -21,6 +21,7 @@ import dk.i2m.converge.core.DataNotFoundException;
 import dk.i2m.converge.core.EnrichException;
 import dk.i2m.converge.core.Notification;
 import dk.i2m.converge.core.content.NewsItem;
+import dk.i2m.converge.core.content.NewsItemActionState;
 import dk.i2m.converge.core.content.NewsItemEditionState;
 import dk.i2m.converge.core.content.NewsItemPlacement;
 import dk.i2m.converge.core.content.catalogue.Catalogue;
@@ -37,6 +38,7 @@ import dk.i2m.converge.core.search.SearchEngineIndexingException;
 import dk.i2m.converge.core.security.UserAccount;
 import dk.i2m.converge.core.workflow.Edition;
 import dk.i2m.converge.core.workflow.Outlet;
+import dk.i2m.converge.core.workflow.OutletEditionAction;
 import dk.i2m.converge.core.workflow.WorkflowState;
 import dk.i2m.converge.core.workflow.WorkflowStateTransitionException;
 import java.util.List;
@@ -378,4 +380,51 @@ public interface PluginContext {
      * completed
      */
     void workflowTransition(Long newsItemId, String uid, long step) throws WorkflowStateTransitionException;
+
+    /**
+     * Create a new {@link NewsItemActionState} for a {@link NewsItem}.
+     *
+     * @param editionId {@link Edition} id the {@link NewsItem} belongs to
+     * @param newsItemId {@link NewsItem} id that will have a new state created
+     * @param action {@Edition} action (class name)
+     * @param data State
+     * @param data State data
+     * @return Created {@link NewsItemActionState}
+     */
+    NewsItemActionState addNewsItemActionState(Long editionId, Long newsItemId, String action, String state, String data);
+
+    /**
+     * Update an existing {@link NewsItemActionState}
+     *
+     * @param newsItemActionState {@link NewsItemActionState} to update
+     * @return Updated {@link NewsItemActionState}
+     */
+    NewsItemActionState updateNewsItemActionState(NewsItemActionState newsItemActionState);
+
+    /**
+     * Find an existing {@Link NewsItemActionState} based on the edition, news
+     * item, and action identifiers.
+     *
+     * @param editionId {@link Edition} id the {@link NewsItem} belongs to
+     * @param newsItemId {@link NewsItem} id that will have a new state created
+     * @param action {@Edition} action (class name)
+     * @return {@link NewsItemActionState} matching the given variables
+     * @throws DataNotFoundException If the {@link NewsItemActionState} could
+     * not be found
+     */
+    NewsItemActionState findNewsItemActionState(Long editionId, Long newsItemId, String action) throws DataNotFoundException;
+
+    /**
+     * Find an existing {@Link NewsItemActionState} based on the edition, news
+     * item, and action identifiers. If a {@link NewsItemActionState} can not
+     * be found, it is created in the database.
+     *
+     * @param editionId {@link Edition} id the {@link NewsItem} belongs to
+     * @param newsItemId {@link NewsItem} id that will have a new state created
+     * @param action {@Edition} action (class name)
+     * @param data State
+     * @param data State data
+     * @return {@link NewsItemActionState} matching the given variables
+     */
+    NewsItemActionState findNewsItemActionStateOrCreate(Long editionId, Long newsItemId, String action, String state, String data);
 }

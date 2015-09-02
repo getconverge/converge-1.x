@@ -17,16 +17,17 @@
  */
 package dk.i2m.converge.ejb.facades;
 
+import dk.i2m.converge.core.content.ContentItemPermission;
+import dk.i2m.converge.core.content.NewsItem;
+import dk.i2m.converge.core.content.NewsItemActionState;
+import dk.i2m.converge.core.content.NewsItemEditionState;
+import dk.i2m.converge.core.content.NewsItemMediaAttachment;
+import dk.i2m.converge.core.content.NewsItemPlacement;
 import dk.i2m.converge.core.workflow.WorkflowStateTransitionException;
 import dk.i2m.converge.core.content.catalogue.MediaItem;
 import dk.i2m.converge.core.views.CurrentAssignment;
 import dk.i2m.converge.core.DataNotFoundException;
 import dk.i2m.converge.core.workflow.Outlet;
-import dk.i2m.converge.core.content.ContentItemPermission;
-import dk.i2m.converge.core.content.NewsItem;
-import dk.i2m.converge.core.content.NewsItemEditionState;
-import dk.i2m.converge.core.content.NewsItemMediaAttachment;
-import dk.i2m.converge.core.content.NewsItemPlacement;
 import dk.i2m.converge.core.workflow.WorkflowState;
 import dk.i2m.converge.core.security.UserAccount;
 import dk.i2m.converge.core.views.InboxView;
@@ -326,4 +327,22 @@ public interface NewsItemFacadeLocal {
     void clearNewsItemEditionState(Long editionId);
 
     void clearNewsItemEditionState(Long editionId, Long newsItemId);
+
+    NewsItemActionState addNewsItemActionState(Long editionId, Long newsItemId, String action, String state, String data);
+
+    NewsItemActionState updateNewsItemActionState(NewsItemActionState newsItemActionState);
+
+    NewsItemActionState findNewsItemActionState(Long editionId, Long newsItemId, String action) throws DataNotFoundException;
+
+    NewsItemActionState findNewsItemActionStateOrCreate(Long editionId, Long newsItemId, String action, String state, String data);
+
+    List<NewsItemActionState> findNewsItemActionStates(Long editionId);
+
+    List<NewsItemActionState> findNewsItemActionStates(Long editionId, Long newsItemId);
+
+    void clearNewsItemActionStateById(Long newsItemActionStateId);
+
+    void clearNewsItemActionState(Long editionId);
+
+    void clearNewsItemActionState(Long editionId, Long newsItemId);
 }

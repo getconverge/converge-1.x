@@ -1190,6 +1190,81 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
         daoService.executeQuery(NewsItemEditionState.DELETE_BY_EDITION_NEWSITEM, criteria);
     }
 
+    @Override
+    public NewsItemActionState addNewsItemActionState(Long editionId, Long newsItemId, String action, String state, String data) {
+        try {
+            Edition edition = outletFacade.findEditionById(editionId);
+            NewsItem newsitem = findNewsItemById(newsItemId);
+            NewsItemActionState newsItemActionState = new NewsItemActionState(edition, newsitem, action, state, data);
+            return daoService.create(newsItemActionState);
+        } catch (DataNotFoundException ex) {
+            LOG.log(Level.SEVERE, ex.getMessage());
+            LOG.log(Level.FINEST, "", ex);
+        }
+        return new NewsItemActionState();
+    }
+
+    @Override
+    public NewsItemActionState updateNewsItemActionState(NewsItemActionState newsItemActionState) {
+        return daoService.update(newsItemActionState);
+    }
+
+    @Override
+    public NewsItemActionState findNewsItemActionState(Long editionId, Long newsItemId, String action) throws DataNotFoundException {
+        QueryBuilder criteria = QueryBuilder
+                .with(NewsItemActionState.PARAM_EDITION_ID, editionId)
+                .and(NewsItemActionState.PARAM_NEWS_ITEM_ID, newsItemId)
+                .and(NewsItemActionState.PARAM_ACTION, action);
+        return daoService.findObjectWithNamedQuery(NewsItemActionState.class, NewsItemActionState.FIND_BY_EDITION_NEWSITEM_ACTION, criteria.parameters());
+    }
+
+    @Override
+    public NewsItemActionState findNewsItemActionStateOrCreate(Long editionId, Long newsItemId, String action, String state, String data) {
+        LOG.log(Level.FINER, "Looking for NewsItemActionState. Edition: {0}, News Item: {1}, Action: {2}", new Object[]{editionId, newsItemId, action});
+        NewsItemActionState newsItemActionState;
+        try {
+            newsItemActionState = findNewsItemActionState(editionId, newsItemId, action);
+            LOG.log(Level.FINER, "NewsItemActionState found: {0}", newsItemActionState.getId());
+        } catch (DataNotFoundException ex) {
+            LOG.log(Level.FINER, "NewsItemActionState was not found. Creating new NewsItemActionState");
+            newsItemActionState = addNewsItemActionState(editionId, newsItemId, action, state, data);
+        }
+        return newsItemActionState;
+    }
+
+    @Override
+    public List<NewsItemActionState> findNewsItemActionStates(Long editionId) {
+        QueryBuilder criteria = QueryBuilder.with(NewsItemActionState.PARAM_EDITION_ID, editionId);
+        return daoService.findWithNamedQuery(NewsItemActionState.FIND_BY_EDITION, criteria.parameters());
+    }
+
+    @Override
+    public List<NewsItemActionState> findNewsItemActionStates(Long editionId, Long newsItemId) {
+        QueryBuilder criteria = QueryBuilder
+                .with(NewsItemActionState.PARAM_EDITION_ID, editionId)
+                .and(NewsItemActionState.PARAM_NEWS_ITEM_ID, newsItemId);
+        return daoService.findWithNamedQuery(NewsItemActionState.FIND_BY_EDITION_NEWSITEM, criteria.parameters());
+    }
+
+    @Override
+    public void clearNewsItemActionStateById(Long newsItemActionStateId) {
+        daoService.delete(NewsItemActionState.class, newsItemActionStateId);
+    }
+
+    @Override
+    public void clearNewsItemActionState(Long editionId) {
+        QueryBuilder criteria = QueryBuilder.with(NewsItemActionState.PARAM_EDITION_ID, editionId);
+        daoService.executeQuery(NewsItemActionState.DELETE_BY_EDITION, criteria);
+    }
+
+    @Override
+    public void clearNewsItemActionState(Long editionId, Long newsItemId) {
+        QueryBuilder criteria = QueryBuilder
+                .with(NewsItemActionState.PARAM_EDITION_ID, editionId)
+                .and(NewsItemActionState.PARAM_NEWS_ITEM_ID, newsItemId);
+        daoService.executeQuery(NewsItemActionState.DELETE_BY_EDITION_NEWSITEM, criteria);
+    }
+
     /**
      * Helper function for getting the current workflow user.
      *
