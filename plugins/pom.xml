@@ -17,6 +17,7 @@
         <module>plugin-atompub</module>
         <module>plugin-drupal</module>
         <module>plugin-wordpress</module>
+        <module>plugin-drupal2</module>
     </modules>
 
     <dependencies>
