@@ -27,7 +27,7 @@
             $.fn.convergeActivityStream.load(stream, page, size);
         });
 
-        moreLink.click();
+        $.fn.convergeActivityStream.load(stream, page, size);
 
         return this;
     };
