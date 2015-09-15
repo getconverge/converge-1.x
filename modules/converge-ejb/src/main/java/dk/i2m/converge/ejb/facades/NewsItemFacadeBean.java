@@ -1211,6 +1211,7 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
 
     @Override
     public NewsItemActionState findNewsItemActionState(Long editionId, Long newsItemId, String action) throws DataNotFoundException {
+        LOG.log(Level.FINER, "Looking for NewsItemActionState. Edition: {0}, NewsItem: {1}, Action: {2}", new Object[]{editionId, newsItemId, action});
         QueryBuilder criteria = QueryBuilder
                 .with(NewsItemActionState.PARAM_EDITION_ID, editionId)
                 .and(NewsItemActionState.PARAM_NEWS_ITEM_ID, newsItemId)
@@ -1220,7 +1221,6 @@ public class NewsItemFacadeBean implements NewsItemFacadeLocal {
 
     @Override
     public NewsItemActionState findNewsItemActionStateOrCreate(Long editionId, Long newsItemId, String action, String state, String data) {
-        LOG.log(Level.FINER, "Looking for NewsItemActionState. Edition: {0}, News Item: {1}, Action: {2}", new Object[]{editionId, newsItemId, action});
         NewsItemActionState newsItemActionState;
         try {
             newsItemActionState = findNewsItemActionState(editionId, newsItemId, action);
