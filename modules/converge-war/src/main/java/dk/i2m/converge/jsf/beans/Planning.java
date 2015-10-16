@@ -1,22 +1,23 @@
 /*
  *  Copyright (C) 2010 - 2012 Interactive Media Management
  *  Copyright (C) 2014 Allan Lykke Christensen
- * 
+ *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package dk.i2m.converge.jsf.beans;
 
+import dk.i2m.converge.core.content.NewsItemActionState;
 import dk.i2m.converge.core.workflow.WorkflowStateTransitionException;
 import dk.i2m.converge.core.DataNotFoundException;
 import dk.i2m.converge.core.annotations.OutletAction;
@@ -118,8 +119,10 @@ public class Planning implements UIEventListener {
 
     private DataModel editionLogEntries = new ListDataModel();
     private DataModel editionStates = new ListDataModel();
+    private DataModel actionStates = new ListDataModel();
     private DataModel logEntries = new ListDataModel();
     private DataModel newsItemEditionStates = new ListDataModel();
+    private DataModel newsItemActionStates = new ListDataModel();
 
     private final ResourceBundle bundle = JsfUtils.getResourceBundle(Bundle.i18n.name());
 
@@ -537,7 +540,7 @@ public class Planning implements UIEventListener {
         newsItemFacade.updatePlacement(assignment.getPlacementId(), assignment.
                 getStart(), assignment.getPosition());
     }
-    
+
     public void onRefreshEditionPlacements(ActionEvent event) {
         fetchEditions();
     }
@@ -852,6 +855,7 @@ public class Planning implements UIEventListener {
         this.selectedEditionView = selectedEditionView;
         onRefreshEditionLogEntries(null);
         onRefreshEditionStates(null);
+        onRefreshActionStates(null);
     }
 
     public List<OutletActionView> getSelectedOutletActions() {
@@ -889,6 +893,7 @@ public class Planning implements UIEventListener {
 
             onRefreshNewsItemLogEntries(null);
             onRefreshNewsItemEditionState(null);
+            onRefreshNewsItemActionState(null);
         } catch (DataNotFoundException ex) {
             JsfUtils.createMessage("frmPage", FacesMessage.SEVERITY_ERROR,
                     Bundle.i18n.name(), "Editions_NEWS_ITEM_COULD_NOT_BE_FOUND");
@@ -960,5 +965,40 @@ public class Planning implements UIEventListener {
         Long editionId = getSelectedEditionView().getId();
         newsItemFacade.clearNewsItemEditionState(editionId);
         onRefreshEditionStates(event);
+    }
+
+    public DataModel getActionStates() {
+        return this.actionStates;
+    }
+
+    public void onRefreshActionStates(ActionEvent event) {
+        Long editionId = getSelectedEditionView().getId();
+        List<NewsItemActionState> properties = newsItemFacade.findNewsItemActionStates(editionId);
+        this.actionStates = new ListDataModel(properties);
+    }
+
+    public DataModel getNewsItemActionStates() {
+        return this.newsItemActionStates;
+    }
+
+    public void onRefreshNewsItemActionState(ActionEvent event) {
+        Long newsItemId = getSelectedNewsItemPlacement().getNewsItem().getId();
+        Long editionId = getSelectedNewsItemPlacement().getEdition().getId();
+        List<NewsItemActionState> properties = newsItemFacade.findNewsItemActionStates(editionId, newsItemId);
+        newsItemActionStates = new ListDataModel(properties);
+    }
+
+    public void onDeleteNewsItemActionStates(ActionEvent event) {
+        Long newsItemId = getSelectedNewsItemPlacement().getNewsItem().getId();
+        Long editionId = getSelectedNewsItemPlacement().getEdition().getId();
+        LOG.log(Level.FINE, "Clearing NewsItemActionState for Edition #{0} NewsItemId #{1}", new Object[]{editionId, newsItemId});
+        newsItemFacade.clearNewsItemActionState(editionId, newsItemId);
+        onRefreshNewsItemActionState(event);
+    }
+
+    public void onDeleteAllNewsItemActionState(ActionEvent event) {
+        Long editionId = getSelectedEditionView().getId();
+        newsItemFacade.clearNewsItemActionState(editionId);
+        onRefreshActionStates(event);
     }
 }

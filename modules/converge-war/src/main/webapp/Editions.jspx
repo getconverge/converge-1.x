@@ -42,7 +42,7 @@
                     <converge:moduleHeader moduleTitle="#{planning.editionTitle}" />
                     <div class="moduleContent">
                         <a4j:repeat value="#{planning.selectedEditions}" var="edition">
-                            
+
                             <div style="clear: both; padding-bottom: 12px;"></div>
 
                             <h:panelGrid columns="2" columnClasses="left, right" style="width: 100%">
@@ -51,7 +51,7 @@
                                         <f:param value="#{planning.selectedOutlet.title}" />
                                         <f:param value="#{edition.publicationDate}"/>
                                     </h:outputFormat>
-                                    
+
                                     <h:outputFormat value="#{i18n.Editions_EDITION_TITLE_CLOSED}" styleClass="editions_edition_title_closed" rendered="#{!edition.open}">
                                         <f:param value="#{planning.selectedOutlet.title}" />
                                         <f:param value="#{edition.publicationDate}"/>
@@ -73,7 +73,7 @@
 
                                 <rich:column styleClass="columnIcon center #{assignment.styleFg} bg-#{assignment.style}" headerClass="subColumnIcon">
                                     <f:facet name="header">
-                                        <a4j:commandLink ajaxSingle="true" reRender="dtEditionAssignments" actionListener="#{planning.onRefreshEditionPlacements}">  
+                                        <a4j:commandLink ajaxSingle="true" reRender="dtEditionAssignments" actionListener="#{planning.onRefreshEditionPlacements}">
                                             <h:graphicImage value="#{i18n.resource_ICON_REFRESH}" />
                                         </a4j:commandLink>
                                     </f:facet>
@@ -281,7 +281,7 @@
 
                                 <rich:tab id="tabState" label="#{i18n.Editions_EDITION_DETAILS_TAB_STATES}">
                                     <h:panelGrid columnClasses="tabSheet" style="padding: 10px; width: 100%">
-                                        <h:panelGroup layout="block" class="logEntryList"> 
+                                        <h:panelGroup layout="block" class="logEntryList">
 
                                             <h:panelGrid columns="2" columnClasses="left, right" style="width: 100%">
                                                 <h:outputText value="" />
@@ -292,7 +292,7 @@
                                             <rich:dataTable id="dtAllEditionStates" value="#{planning.editionStates}" var="state" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
                                                 <rich:column styleClass="columnIcon center" headerClass="columnIconHeader">
                                                     <f:facet name="header">
-                                                        <a4j:commandLink ajaxSingle="true" reRender="dtAllEditionStates" actionListener="#{planning.onRefreshEditionStates}">  
+                                                        <a4j:commandLink ajaxSingle="true" reRender="dtAllEditionStates" actionListener="#{planning.onRefreshEditionStates}">
                                                             <h:graphicImage value="#{i18n.resource_ICON_REFRESH}" />
                                                         </a4j:commandLink>
                                                     </f:facet>
@@ -323,11 +323,63 @@
                                         </h:panelGroup>
                                         <rich:spacer width="900" height="1" />
                                     </h:panelGrid>
-                                </rich:tab>                                                    
+                                </rich:tab>
+
+                                <rich:tab id="tabActionState" label="#{i18n.Editions_EDITION_DETAILS_TAB_ACTION_STATE}">
+                                    <h:panelGrid columnClasses="tabSheet" style="padding: 10px; width: 100%">
+                                        <h:panelGroup layout="block" class="logEntryList">
+                                            <h:panelGrid columns="2" columnClasses="left, right" style="width: 100%">
+                                                <h:outputText value="" />
+                                                <a4j:commandButton id="btnClearAllActionStates" styleClass="button dynamicButton" value="#{i18n.Editions_EDITION_DETAILS_TAB_ACTION_STATE_CLEAR_STATES}" title="#{i18n.Editions_EDITION_DETAILS_TAB_ACTION_STATE_CLEAR_STATES_TOOLTIP}" actionListener="#{planning.onDeleteAllNewsItemActionState}" reRender="dtAllActionStates" ajaxSingle="true" onclick="if (confirm('#{i18n.Editions_EDITION_DETAILS_TAB_ACTION_STATE_CLEAR_STATES_CONFIRM}') != true){ return false; };">
+                                                </a4j:commandButton>
+                                            </h:panelGrid>
+
+                                            <rich:dataTable id="dtAllActionStates" value="#{planning.actionStates}" var="state" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
+                                                <rich:column styleClass="columnIcon center" headerClass="columnIconHeader">
+                                                    <f:facet name="header">
+                                                        <a4j:commandLink ajaxSingle="true" reRender="dtAllActionStates" actionListener="#{planning.onRefreshActionStates}">
+                                                            <h:graphicImage value="#{i18n.resource_ICON_REFRESH}" />
+                                                        </a4j:commandLink>
+                                                    </f:facet>
+                                                    <h:graphicImage value="#{i18n.resource_ICON_LOG_ENTRY}" />
+                                                </rich:column>
+
+                                                <rich:column styleClass="" headerClass="">
+                                                    <f:facet name="header">
+                                                        <h:outputText value="News Item" />
+                                                    </f:facet>
+                                                    <h:outputText value="#{state.newsItem.id}" title="#{state.newsItem.title}" />
+                                                </rich:column>
+
+                                                <rich:column styleClass="" headerClass="">
+                                                    <f:facet name="header">
+                                                        <h:outputText value="Action" />
+                                                    </f:facet>
+                                                    <h:outputText value="#{state.action}" />
+                                                </rich:column>
+
+                                                <rich:column styleClass="" headerClass="">
+                                                    <f:facet name="header">
+                                                        <h:outputText value="State" />
+                                                    </f:facet>
+                                                    <h:outputText value="#{state.state}" />
+                                                </rich:column>
+
+                                                <rich:column styleClass="" headerClass="">
+                                                    <f:facet name="header">
+                                                        <h:outputText value="Data" />
+                                                    </f:facet>
+                                                    <h:outputText value="#{state.data}" />
+                                                </rich:column>
+                                            </rich:dataTable>
+                                        </h:panelGroup>
+                                        <rich:spacer width="900" height="1" />
+                                    </h:panelGrid>
+                                </rich:tab>
 
                                 <rich:tab id="tabEditionLog" label="#{i18n.Editions_EDITION_DETAILS_TAB_LOG}">
                                     <h:panelGrid columnClasses="tabSheet" style="padding: 10px; width: 100%">
-                                        <h:panelGroup layout="block" class="logEntryList"> 
+                                        <h:panelGroup layout="block" class="logEntryList">
 
                                             <h:panelGrid columns="2" columnClasses="left, right" style="width: 100%">
                                                 <h:outputText value="" />
@@ -339,7 +391,7 @@
                                             <rich:dataTable id="dtEditionLogEntries" value="#{planning.editionLogEntries}" var="logEntry" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
                                                 <rich:column styleClass="columnIcon center" headerClass="columnIconHeader">
                                                     <f:facet name="header">
-                                                        <a4j:commandLink ajaxSingle="true" reRender="dtEditionLogEntries" actionListener="#{planning.onRefreshEditionLogEntries}">  
+                                                        <a4j:commandLink ajaxSingle="true" reRender="dtEditionLogEntries" actionListener="#{planning.onRefreshEditionLogEntries}">
                                                             <h:graphicImage value="#{i18n.resource_ICON_REFRESH}" />
                                                         </a4j:commandLink>
                                                     </f:facet>
@@ -373,7 +425,7 @@
                                         </h:panelGroup>
                                         <rich:spacer width="900" height="1" />
                                     </h:panelGrid>
-                                </rich:tab>                                                
+                                </rich:tab>
 
                             </rich:tabPanel>
 
@@ -477,14 +529,14 @@
                                             <f:param name="content_css" value="css/wysiwyg.css" />
                                             <f:param name="gecko_spellcheck" value="true" />
                                             <f:param name="theme_advanced_path" value="false" />
-                                        </rich:editor>                                        
+                                        </rich:editor>
                                     </h:panelGrid>
                                 </rich:tab>
 
                                 <rich:tab id="tabActions" label="#{i18n.Editions_NEWS_ITEM_PLACEMENT_DETAILS_TAB_ACTIONS}">
                                     <h:panelGrid columnClasses="tabSheet" style="padding: 10px; width: 100%">
 
-                                        <h:panelGroup layout="block" class="actionList"> 
+                                        <h:panelGroup layout="block" class="actionList">
                                             <rich:dataTable id="dtActions" value="#{planning.selectedPlacementActions}" var="action" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
 
                                                 <rich:column styleClass="columnIcon center">
@@ -535,7 +587,7 @@
 
                                 <rich:tab id="tabState" label="#{i18n.Editions_NEWS_ITEM_PLACEMENT_DETAILS_TAB_STATE}">
                                     <h:panelGrid columnClasses="tabSheet" style="padding: 10px; width: 100%">
-                                        <h:panelGroup layout="block" class="logEntryList"> 
+                                        <h:panelGroup layout="block" class="logEntryList">
 
                                             <h:panelGrid columns="2" columnClasses="left, right" style="width: 100%">
                                                 <h:outputText value="" />
@@ -546,7 +598,7 @@
                                             <rich:dataTable id="dtNewsItemEditionStates" value="#{planning.newsItemEditionStates}" var="state" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
                                                 <rich:column styleClass="columnIcon center" headerClass="columnIconHeader">
                                                     <f:facet name="header">
-                                                        <a4j:commandLink ajaxSingle="true" reRender="dtNewsItemEditionStates" actionListener="#{planning.onRefreshNewsItemEditionState}">  
+                                                        <a4j:commandLink ajaxSingle="true" reRender="dtNewsItemEditionStates" actionListener="#{planning.onRefreshNewsItemEditionState}">
                                                             <h:graphicImage value="#{i18n.resource_ICON_REFRESH}" />
                                                         </a4j:commandLink>
                                                     </f:facet>
@@ -570,11 +622,56 @@
                                         </h:panelGroup>
                                         <rich:spacer width="900" height="1" />
                                     </h:panelGrid>
-                                </rich:tab>                                                    
+                                </rich:tab>
+
+                                <rich:tab id="tabActionState" label="#{i18n.Editions_NEWS_ITEM_PLACEMENT_DETAILS_TAB_ACTION_STATE}">
+                                    <h:panelGrid columnClasses="tabSheet" style="padding: 10px; width: 100%">
+                                        <h:panelGroup layout="block" class="logEntryList">
+                                            <h:panelGrid columns="2" columnClasses="left, right" style="width: 100%">
+                                                <h:outputText value="" />
+                                                <a4j:commandButton id="btnClearActionStates" styleClass="button dynamicButton" value="#{i18n.Editions_NEWS_ITEM_PLACEMENT_DETAILS_TAB_ACTION_STATE_CLEAR_STATES}" title="#{i18n.Editions_NEWS_ITEM_PLACEMENT_DETAILS_TAB_ACTION_STATE_CLEAR_STATES_TOOLTIP}" actionListener="#{planning.onDeleteNewsItemActionStates}" reRender="dtNewsItemActionStates" ajaxSingle="true" onclick="if (confirm('#{i18n.Editions_NEWS_ITEM_PLACEMENT_DETAILS_TAB_ACTION_STATE_CLEAR_STATES_CONFIRM}') != true){ return false; };">
+                                                </a4j:commandButton>
+                                            </h:panelGrid>
+
+                                            <rich:dataTable id="dtNewsItemActionStates" value="#{planning.newsItemActionStates}" var="state" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
+                                                <rich:column styleClass="columnIcon center" headerClass="columnIconHeader">
+                                                    <f:facet name="header">
+                                                        <a4j:commandLink ajaxSingle="true" reRender="dtNewsItemActionStates" actionListener="#{planning.onRefreshNewsItemActionState}">
+                                                            <h:graphicImage value="#{i18n.resource_ICON_REFRESH}" />
+                                                        </a4j:commandLink>
+                                                    </f:facet>
+                                                    <h:graphicImage value="#{i18n.resource_ICON_LOG_ENTRY}" />
+                                                </rich:column>
+
+                                                <rich:column styleClass="" headerClass="">
+                                                    <f:facet name="header">
+                                                        <h:outputText value="Action" />
+                                                    </f:facet>
+                                                    <h:outputText value="#{state.action}" />
+                                                </rich:column>
+
+                                                <rich:column styleClass="" headerClass="">
+                                                    <f:facet name="header">
+                                                        <h:outputText value="State" />
+                                                    </f:facet>
+                                                    <h:outputText value="#{state.state}" />
+                                                </rich:column>
+
+                                                <rich:column styleClass="" headerClass="">
+                                                    <f:facet name="header">
+                                                        <h:outputText value="Data" />
+                                                    </f:facet>
+                                                    <h:outputText value="#{state.data}" />
+                                                </rich:column>
+                                            </rich:dataTable>
+                                        </h:panelGroup>
+                                        <rich:spacer width="900" height="1" />
+                                    </h:panelGrid>
+                                </rich:tab>
 
                                 <rich:tab id="tabLog" label="#{i18n.Editions_NEWS_ITEM_PLACEMENT_DETAILS_TAB_LOG}">
                                     <h:panelGrid columnClasses="tabSheet" style="padding: 10px; width: 100%">
-                                        <h:panelGroup layout="block" class="logEntryList"> 
+                                        <h:panelGroup layout="block" class="logEntryList">
 
                                             <h:panelGrid columns="2" columnClasses="left, right" style="width: 100%">
                                                 <h:outputText value="" />
@@ -585,7 +682,7 @@
                                             <rich:dataTable id="dtLogEntries" value="#{planning.logEntries}" var="logEntry" styleClass="table" headerClass="tableHeader" rowClasses="odd, even">
                                                 <rich:column styleClass="columnIcon center" headerClass="columnIconHeader">
                                                     <f:facet name="header">
-                                                        <a4j:commandLink ajaxSingle="true" reRender="dtLogEntries" actionListener="#{planning.onRefreshNewsItemLogEntries}">  
+                                                        <a4j:commandLink ajaxSingle="true" reRender="dtLogEntries" actionListener="#{planning.onRefreshNewsItemLogEntries}">
                                                             <h:graphicImage value="#{i18n.resource_ICON_REFRESH}" />
                                                         </a4j:commandLink>
                                                     </f:facet>

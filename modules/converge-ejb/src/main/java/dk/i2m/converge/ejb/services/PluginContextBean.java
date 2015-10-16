@@ -23,6 +23,7 @@ import dk.i2m.converge.core.EnrichException;
 import dk.i2m.converge.core.Notification;
 import dk.i2m.converge.core.content.ContentTag;
 import dk.i2m.converge.core.content.NewsItem;
+import dk.i2m.converge.core.content.NewsItemActionState;
 import dk.i2m.converge.core.content.NewsItemEditionState;
 import dk.i2m.converge.core.content.NewsItemPlacement;
 import dk.i2m.converge.core.content.catalogue.Catalogue;
@@ -365,5 +366,25 @@ public class PluginContextBean implements PluginContextBeanLocal {
         } catch (DirectoryException ex) {
             throw new WorkflowStateTransitionException(ex);
         }
+    }
+
+    @Override
+    public NewsItemActionState addNewsItemActionState(Long editionId, Long newsItemId, String action, String state, String data) {
+        return newsItemFacade.addNewsItemActionState(editionId, newsItemId, action, state, data);
+    }
+
+    @Override
+    public NewsItemActionState updateNewsItemActionState(NewsItemActionState newsItemActionState) {
+        return newsItemFacade.updateNewsItemActionState(newsItemActionState);
+    }
+
+    @Override
+    public NewsItemActionState findNewsItemActionState(Long editionId, Long newsItemId, String action) throws DataNotFoundException {
+        return newsItemFacade.findNewsItemActionState(editionId, newsItemId, action);
+    }
+
+    @Override
+    public NewsItemActionState findNewsItemActionStateOrCreate(Long editionId, Long newsItemId, String action, String state, String data) {
+        return newsItemFacade.findNewsItemActionStateOrCreate(editionId, newsItemId, action, state, data);
     }
 }
