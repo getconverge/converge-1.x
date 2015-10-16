@@ -60,21 +60,14 @@ public class DrupalEditionActionIT {
 
     private static final Logger LOG = Logger.getLogger(DrupalEditionActionIT.class.getName());
 
-    private static final Integer TAXONOMY_ID = 2;
-
     private static final Long EDITION_ID = (long) (new Random().nextInt((1000 - 100) + 1) + 100);
     private static final Long NEWSITEM_ID = (long) (new Random().nextInt((1000 - 100) + 1) + 100);
     private static final Long SECTION_ID = (long) (new Random().nextInt((1000 - 100) + 1) + 100);
     private static final Long STATE_UPLOAD = 20L;
     private static final Long STATE_UPLOADED = 21L;
     private static final Long STATE_FAILED = 22L;
+    private static final Integer TAXONOMY_ID = 2;
 
-    private static final String SERVICE_ENDPOINT = "http://0.0.0.0:8888/api/converge";
-    private static final String NODE_TYPE = "article";
-    private static final String NODE_ALIAS = "node";
-    private static final String USER_ALIAS = "user";
-    private static final String USERNAME = "converge";
-    private static final String PASSWORD = "converge";
     private static final String MAPPING_FIELD = Helper.getFieldMapping();
     private static final String MAPPING_SECTION = Helper.getSectionMapping(SECTION_ID, TAXONOMY_ID);
 
@@ -84,7 +77,7 @@ public class DrupalEditionActionIT {
     public static void beforeClass() throws Exception {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url(SERVICE_ENDPOINT)
+                .url(Helper.SERVICE_ENDPOINT)
                 .build();
 
         try {
@@ -92,7 +85,7 @@ public class DrupalEditionActionIT {
             execute = response.code() == 200;
         } catch (IOException ex) {
             LOG.log(Level.WARNING, "Skipping test. Test site \"{0}\" is not available: {1}", new Object[]{
-                    SERVICE_ENDPOINT, ex.getMessage()});
+                    Helper.SERVICE_ENDPOINT, ex.getMessage()});
         }
     }
 
@@ -111,55 +104,65 @@ public class DrupalEditionActionIT {
 
         plugin.executePlacement(getPluginContext(), placement, placement.getEdition(), getAction());
 
-        DrupalServicesClient servicesClient = new DrupalServicesClient(SERVICE_ENDPOINT, USERNAME, PASSWORD);
+        DrupalServicesClient servicesClient = new DrupalServicesClient(
+                Helper.SERVICE_ENDPOINT, Helper.USERNAME, Helper.PASSWORD);
         servicesClient.loginUser();
 
         String[] fields = DrupalUtils.convertStringArrayA(Helper.getFieldMapping());
 
         String newsItemIdField = DrupalUtils.getKeyValue(fields, DrupalUtils.KEY_NEWSITEM_ID);
         Map<String, String> options = new LinkedHashMap<String, String>();
-        options.put("parameters[type]", NODE_TYPE);
+        options.put("parameters[type]", Helper.NODE_TYPE);
         options.put(String.format("parameters[%s]", newsItemIdField), String.valueOf(NEWSITEM_ID));
         List<NodeEntity> nodeEntities = servicesClient.indexNode(options);
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url(String.format("%s/%s/%d", SERVICE_ENDPOINT, NODE_ALIAS, nodeEntities.get(0).getId()))
+                .url(String.format("%s/%s/%d", Helper.SERVICE_ENDPOINT, Helper.NODE_ALIAS,
+                        nodeEntities.get(0).getId()))
                 .build();
 
         Response response = client.newCall(request).execute();
 
         JsonObject jsonObject = (JsonObject) new JsonParser().parse(response.body().string());
         String title = jsonObject.get("title").getAsString();
-        String body = jsonObject.get(DrupalUtils.getKeyValue(fields, DrupalUtils.KEY_BODY)).getAsJsonObject()
+        String body = jsonObject.get(DrupalUtils.getKeyValue(fields, DrupalUtils.KEY_BODY))
+                .getAsJsonObject()
                 .get("und").getAsJsonArray()
                 .get(0).getAsJsonObject()
                 .get("value").getAsString();
-        String date = jsonObject.get(DrupalUtils.getKeyValue(fields, DrupalUtils.KEY_DATE)).getAsJsonObject()
+        String date = jsonObject.get(DrupalUtils.getKeyValue(fields, DrupalUtils.KEY_DATE))
+                .getAsJsonObject()
                 .get("und").getAsJsonArray()
                 .get(0).getAsJsonObject()
                 .get("value").getAsString();
-        String byline = jsonObject.get(DrupalUtils.getKeyValue(fields, DrupalUtils.KEY_BYLINE)).getAsJsonObject()
+        String byline = jsonObject.get(DrupalUtils.getKeyValue(fields, DrupalUtils.KEY_BYLINE))
+                .getAsJsonObject()
                 .get("und").getAsJsonArray()
                 .get(0).getAsJsonObject()
                 .get("value").getAsString();
-        Integer section = jsonObject.get(DrupalUtils.getKeyValue(fields, DrupalUtils.KEY_SECTION)).getAsJsonObject()
+        Integer section = jsonObject.get(DrupalUtils.getKeyValue(fields, DrupalUtils.KEY_SECTION))
+                .getAsJsonObject()
                 .get("und").getAsJsonArray()
                 .get(0).getAsJsonObject()
                 .get("tid").getAsInt();
-        Integer editionId = jsonObject.get(DrupalUtils.getKeyValue(fields, DrupalUtils.KEY_EDITION_ID)).getAsJsonObject()
+        Integer editionId = jsonObject.get(DrupalUtils.getKeyValue(fields, DrupalUtils.KEY_EDITION_ID))
+                .getAsJsonObject()
                 .get("und").getAsJsonArray()
                 .get(0).getAsJsonObject()
                 .get("value").getAsInt();
-        Integer newsItemId = jsonObject.get(DrupalUtils.getKeyValue(fields, DrupalUtils.KEY_NEWSITEM_ID)).getAsJsonObject()
+        Integer newsItemId = jsonObject.get(DrupalUtils.getKeyValue(fields, DrupalUtils.KEY_NEWSITEM_ID))
+                .getAsJsonObject()
                 .get("und").getAsJsonArray()
                 .get(0).getAsJsonObject()
                 .get("value").getAsInt();
-        Integer start = jsonObject.get(DrupalUtils.getKeyValue(fields, DrupalUtils.KEY_START)).getAsJsonObject()
+        Integer start = jsonObject.get(DrupalUtils.getKeyValue(fields, DrupalUtils.KEY_START))
+                .getAsJsonObject()
                 .get("und").getAsJsonArray()
                 .get(0).getAsJsonObject()
                 .get("value").getAsInt();
-        Integer position = jsonObject.get(DrupalUtils.getKeyValue(fields, DrupalUtils.KEY_POSITION)).getAsJsonObject()
+        Integer position = jsonObject.get(DrupalUtils.getKeyValue(fields, DrupalUtils.KEY_POSITION))
+                .getAsJsonObject()
                 .get("und").getAsJsonArray()
                 .get(0).getAsJsonObject()
                 .get("value").getAsInt();
@@ -183,17 +186,28 @@ public class DrupalEditionActionIT {
         action.setId(1L);
         action.setLabel("Upload to Test Site");
         action.setActionClass(DrupalEditionAction.class.getName());
-        action.getProperties().add(new OutletEditionActionProperty(action, Property.SERVICE_ENDPOINT.name(), SERVICE_ENDPOINT));
-        action.getProperties().add(new OutletEditionActionProperty(action, Property.NODE_TYPE.name(), NODE_TYPE));
-        action.getProperties().add(new OutletEditionActionProperty(action, Property.ALIAS_NODE.name(), NODE_ALIAS));
-        action.getProperties().add(new OutletEditionActionProperty(action, Property.ALIAS_USER.name(), USER_ALIAS));
-        action.getProperties().add(new OutletEditionActionProperty(action, Property.USERNAME.name(), USERNAME));
-        action.getProperties().add(new OutletEditionActionProperty(action, Property.PASSWORD.name(), PASSWORD));
-        action.getProperties().add(new OutletEditionActionProperty(action, Property.MAPPING_FIELD.name(), MAPPING_FIELD));
-        action.getProperties().add(new OutletEditionActionProperty(action, Property.MAPPING_SECTION.name(), MAPPING_SECTION));
-        action.getProperties().add(new OutletEditionActionProperty(action, Property.STATE_UPLOAD.name(), String.valueOf(STATE_UPLOAD)));
-        action.getProperties().add(new OutletEditionActionProperty(action, Property.STATE_UPLOADED.name(), String.valueOf(STATE_UPLOADED)));
-        action.getProperties().add(new OutletEditionActionProperty(action, Property.STATE_FAILED.name(), String.valueOf(STATE_FAILED)));
+        action.getProperties().add(new OutletEditionActionProperty(
+                action, Property.SERVICE_ENDPOINT.name(), Helper.SERVICE_ENDPOINT));
+        action.getProperties().add(new OutletEditionActionProperty(
+                action, Property.NODE_TYPE.name(), Helper.NODE_TYPE));
+        action.getProperties().add(new OutletEditionActionProperty(
+                action, Property.ALIAS_NODE.name(), Helper.NODE_ALIAS));
+        action.getProperties().add(new OutletEditionActionProperty(
+                action, Property.ALIAS_USER.name(), Helper.USER_ALIAS));
+        action.getProperties().add(new OutletEditionActionProperty(
+                action, Property.USERNAME.name(), Helper.USERNAME));
+        action.getProperties().add(new OutletEditionActionProperty(
+                action, Property.PASSWORD.name(), Helper.PASSWORD));
+        action.getProperties().add(new OutletEditionActionProperty(
+                action, Property.MAPPING_FIELD.name(), MAPPING_FIELD));
+        action.getProperties().add(new OutletEditionActionProperty(
+                action, Property.MAPPING_SECTION.name(), MAPPING_SECTION));
+        action.getProperties().add(new OutletEditionActionProperty(
+                action, Property.STATE_UPLOAD.name(), String.valueOf(STATE_UPLOAD)));
+        action.getProperties().add(new OutletEditionActionProperty(
+                action, Property.STATE_UPLOADED.name(), String.valueOf(STATE_UPLOADED)));
+        action.getProperties().add(new OutletEditionActionProperty(
+                action, Property.STATE_FAILED.name(), String.valueOf(STATE_FAILED)));
 
         return action;
     }

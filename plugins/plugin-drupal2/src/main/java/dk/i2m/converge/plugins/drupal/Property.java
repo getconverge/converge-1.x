@@ -37,4 +37,5 @@ public enum Property {
     STATE_UPLOADED,
     USERNAME,
     FORCE_SYNC,
+    FORCE_SYNC_RENDITION,
 }

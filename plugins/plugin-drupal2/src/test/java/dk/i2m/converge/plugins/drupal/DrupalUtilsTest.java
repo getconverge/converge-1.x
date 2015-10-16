@@ -354,7 +354,7 @@ public class DrupalUtilsTest {
         expected.put(String.format("field_values[%d][title]", 0), caption);
         expected.put(String.format("field_values[%d][alt]", 0), caption);
 
-        Map<String, Object> actual = DrupalUtils.fileParams(newsItem, renditionName);
+        Map<String, Object> actual = DrupalUtils.fileParams(newsItem, renditionName, null);
 
         assertEquals(expected, actual);
     }
@@ -374,7 +374,7 @@ public class DrupalUtilsTest {
         NewsItem newsItem = Helper.getNewsItem(1L);
         newsItem.getMediaAttachments().add(mediaAttachment);
 
-        Map<String, Object> params = DrupalUtils.fileParams(newsItem, renditionName);
+        Map<String, Object> params = DrupalUtils.fileParams(newsItem, renditionName, null);
 
         assertTrue(params.isEmpty());
     }
@@ -396,7 +396,7 @@ public class DrupalUtilsTest {
         NewsItem newsItem = Helper.getNewsItem(1L);
         newsItem.getMediaAttachments().add(mediaAttachment);
 
-        Map<String, Object> params = DrupalUtils.fileParams(newsItem, renditionName);
+        Map<String, Object> params = DrupalUtils.fileParams(newsItem, renditionName, null);
 
         assertTrue(params.isEmpty());
     }

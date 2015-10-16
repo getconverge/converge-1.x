@@ -30,6 +30,13 @@ import java.util.GregorianCalendar;
 
 public class Helper {
 
+    public static final String SERVICE_ENDPOINT = "http://0.0.0.0:8888/thestar/api/converge";
+    public static final String NODE_TYPE = "article";
+    public static final String NODE_ALIAS = "node";
+    public static final String USER_ALIAS = "user";
+    public static final String USERNAME = "converge";
+    public static final String PASSWORD = "converge";
+
     public static NewsItemPlacement getPlacement(Long id) {
         NewsItemPlacement placement = new NewsItemPlacement();
         placement.setId(id);

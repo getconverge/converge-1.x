@@ -21,6 +21,7 @@ package dk.i2m.converge.plugins.drupal;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
+import dk.i2m.converge.core.DataNotFoundException;
 import dk.i2m.converge.core.annotations.OutletAction;
 import dk.i2m.converge.core.content.NewsItem;
 import dk.i2m.converge.core.content.NewsItemActionState;
@@ -41,6 +42,7 @@ import retrofit.RetrofitError;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -65,15 +67,20 @@ public class DrupalEditionAction implements EditionAction {
     private final ResourceBundle bundle = ResourceBundle.getBundle("dk.i2m.converge.plugins.drupal.Messages");
 
     private DrupalServicesClient servicesClient;
-    private OutletEditionAction editionAction;
-    private PluginContext pluginContext;
     private Edition edition;
     private Gson gson = new Gson();
+    private OutletEditionAction editionAction;
+    private PluginContext pluginContext;
 
     private Map<String, String> availableProperties;
     private Map<String, String> sectionMapping = new HashMap<String, String>();
 
     private String[] fieldMapping;
+    // Sync NewsItems in certain states
+    private String[] forceSync = null;
+    // Fallback renditions
+    private String[] forceRendition = null;
+
     private String nodeType;
     private String renditionName;
 
@@ -244,20 +251,19 @@ public class DrupalEditionAction implements EditionAction {
     private boolean initialize(NewsItem newsItem) {
         boolean valid = true;
 
+        List<String> names = new ArrayList<String>();
+        names.add(Property.SERVICE_ENDPOINT.name());
+        names.add(Property.USERNAME.name());
+        names.add(Property.PASSWORD.name());
+        names.add(Property.MAPPING_FIELD.name());
+        names.add(Property.MAPPING_SECTION.name());
+        names.add(Property.NODE_TYPE.name());
+        names.add(Property.STATE_UPLOAD.name());
+        names.add(Property.STATE_UPLOADED.name());
+        names.add(Property.STATE_FAILED.name());
+
         try {
             Map<String, String> properties = editionAction.getPropertiesAsMap();
-
-            List<String> names = new ArrayList<String>();
-            names.add(Property.SERVICE_ENDPOINT.name());
-            names.add(Property.USERNAME.name());
-            names.add(Property.PASSWORD.name());
-            names.add(Property.MAPPING_FIELD.name());
-            names.add(Property.MAPPING_SECTION.name());
-            names.add(Property.NODE_TYPE.name());
-            names.add(Property.STATE_UPLOAD.name());
-            names.add(Property.STATE_UPLOADED.name());
-            names.add(Property.STATE_FAILED.name());
-
             DrupalUtils.checkProperties(properties, names);
 
             String endpoint = properties.get(Property.SERVICE_ENDPOINT.name());
@@ -267,15 +273,15 @@ public class DrupalEditionAction implements EditionAction {
             String nodeAlias = properties.get(Property.ALIAS_NODE.name());
             String fields = properties.get(Property.MAPPING_FIELD.name());
             String sections = properties.get(Property.MAPPING_SECTION.name());
+            String forceSync = properties.get(Property.FORCE_SYNC.name());
+            String forceRendition = properties.get(Property.FORCE_SYNC_RENDITION.name());
 
             if (!fields.contains(DrupalUtils.KEY_NEWSITEM_ID)) {
                 throw new IllegalArgumentException("\"MAPPING_FIELD\" must contain a NEWSITEM_ID map");
             }
-
             if (DrupalUtils.convertStringMap(fields) == null) {
                 throw new IllegalArgumentException("\"MAPPING_FIELD\" property is badly formatted");
             }
-
             if (DrupalUtils.convertStringMap(sections) == null) {
                 throw new IllegalArgumentException("\"MAPPING_SECTION\" property is badly formatted");
             }
@@ -285,8 +291,18 @@ public class DrupalEditionAction implements EditionAction {
             Long failedState = NumberUtils.toLong(properties.get(Property.STATE_FAILED.name()));
 
             if (uploadState == 0 || uploadedState == 0 || failedState == 0) {
-                throw new IllegalArgumentException(
-                        "\"UPLOAD_STATE|STATE_UPLOADED|STATE_FAILED \" must be valid Workflow State ids");
+                throw new IllegalArgumentException("\"UPLOAD_STATE|STATE_UPLOADED|STATE_FAILED \" must be valid " +
+                        "Workflow State IDs");
+            }
+
+            if (forceSync != null) {
+                // Sync NewsItems in certain states, bypassing workflow actions
+                this.forceSync = DrupalUtils.convertStringArrayA(forceSync);
+
+                if (forceRendition != null) {
+                    // FORCE_SYNC fallback renditions
+                    this.forceRendition = DrupalUtils.convertStringArrayA(forceRendition);
+                }
             }
 
             fieldMapping = DrupalUtils.convertStringArrayA(fields);
@@ -308,7 +324,7 @@ public class DrupalEditionAction implements EditionAction {
     }
 
     /**
-     * Validate if a NewsItem is in a right state to be processed.
+     * Validate if a NewsItem is in the right state to be processed.
      *
      * @param newsItem
      * @param section
@@ -317,12 +333,22 @@ public class DrupalEditionAction implements EditionAction {
     private boolean validate(NewsItem newsItem, Section section) {
         boolean valid = true;
 
-        if (!newsItem.getCurrentState().getId().equals(workflowUploadState)) {
-            // Ignore NewsItem if it hasn't reached the UPLOAD_STATE
+        if (forceSync != null) {
+            // Check FORCE_SYNC property for workflow state ids
+            String workflowStateId = String.valueOf(newsItem.getCurrentState().getId());
+            if (!Arrays.asList(forceSync).contains(workflowStateId)) {
+                logActivity(LogSeverity.WARNING, LogKey.INCOMPLETE_STATE, new Object[]{
+                    newsItem.getCurrentState().getName()}, newsItem);
+                valid = false;
+            }
+        } else if (!newsItem.getCurrentState().getId().equals(workflowUploadState)) {
+            // Ignore NewsItem if it hasn't reached UPLOAD_STATE
             logActivity(LogSeverity.WARNING, LogKey.INCOMPLETE_STATE, new Object[]{
                     newsItem.getCurrentState().getName()}, newsItem);
             valid = false;
-        } else if (section == null) {
+        }
+
+        if (section == null) {
             // Ignore NewsItem if the section is not set
             logActivity(LogSeverity.WARNING, LogKey.MISSING_SECTION, new Object[]{
                     null}, newsItem);
@@ -371,6 +397,23 @@ public class DrupalEditionAction implements EditionAction {
         Map<String, String> nodeParams = DrupalUtils.nodeParams(placement, nodeType, fieldMapping, sectionMapping);
         List<NodeEntity> nodeEntities;
 
+        if (forceSync != null) {
+            try {
+                NewsItemActionState actionState = pluginContext.findNewsItemActionState(edition.getId(),
+                        newsItem.getId(), getClass().getName());
+                if (actionState.getState().equals(STATE_UPLOADED)) {
+                    // forceSync skips workflow transitions - compare versions
+                    Long version = getStateData(actionState).getVersion();
+                    if (version != null && version == newsItem.getUpdated().getTimeInMillis()) {
+                        logActivity(LogSeverity.WARNING, LogKey.NODE_UP_TO_DATE, new Object[]{}, newsItem);
+                        return;
+                    }
+                }
+            } catch (DataNotFoundException ex) {
+                // Continue
+            }
+        }
+
         try {
             String newsItemIdField = DrupalUtils.getKeyValue(fieldMapping, DrupalUtils.KEY_NEWSITEM_ID);
             Map<String, String> options = new LinkedHashMap<String, String>();
@@ -388,13 +431,12 @@ public class DrupalEditionAction implements EditionAction {
             return;
         }
 
-        Map<String, Object> fileParams = DrupalUtils.fileParams(newsItem, renditionName);
+        Map<String, Object> fileParams = DrupalUtils.fileParams(newsItem, renditionName, forceRendition);
         NodeEntity nodeEntity = null;
 
         // Avoid duplicate action states. See findNewsItemActionStateOrCreate
-        NewsItemActionState actionState = pluginContext.findNewsItemActionStateOrCreate(
-                edition.getId(), newsItem.getId(), getClass().getName(), STATE_UPLOADING,
-                gson.toJson(new NewsItemStateData()));
+        NewsItemActionState actionState = pluginContext.findNewsItemActionStateOrCreate(edition.getId(),
+                newsItem.getId(), getClass().getName(), STATE_UPLOADING, gson.toJson(new NewsItemStateData()));
 
         try {
             if (!nodeEntities.isEmpty()) {
@@ -404,8 +446,8 @@ public class DrupalEditionAction implements EditionAction {
                 // FIXME: Remove existing files from the node, this only
                 // applies if the NewsItem has 0 images, otherwise normal image
                 // uploads replace already uploaded images.
-                // FIXME: NodeResource.attachFile with an empty body, will
-                // throw an error on Drupal.
+                // FIXME: NodeResource.attachFile with an empty body, throws an
+                // error on Drupal.
 
                 NodeEntity indexEntity = nodeEntities.get(0);
 
@@ -421,7 +463,7 @@ public class DrupalEditionAction implements EditionAction {
             }
 
             String imageField = DrupalUtils.getKeyValue(fieldMapping, DrupalUtils.KEY_IMAGE);
-            // Attach files to a node on Drupal.
+            // Attach files to a node on Drupal
             servicesClient.attachFiles(nodeEntity, imageField, fileParams);
             workflowTransition(newsItem, workflowUploadedState);
             actionState.setState(STATE_UPLOADED);
@@ -480,6 +522,11 @@ public class DrupalEditionAction implements EditionAction {
      * @param step     {@link dk.i2m.converge.core.workflow.WorkflowStep} id
      */
     private void workflowTransition(NewsItem newsItem, Long step) {
+        if (forceSync != null) {
+            // Don't transition the workflow
+            return;
+        }
+
         try {
             pluginContext.workflowTransition(newsItem.getId(), UserAccount.SYSTEM_ACCOUNT, step);
         } catch (WorkflowStateTransitionException ex) {
@@ -497,13 +544,17 @@ public class DrupalEditionAction implements EditionAction {
      * @param newsItem
      */
     private void logActivity(LogSeverity severity, LogKey message, Object[] arguments, NewsItem newsItem) {
+        if (forceSync != null && severity != LogSeverity.SEVERE) {
+            // Don't log non-SEVERE errors
+            return;
+        }
+
         if (pluginContext == null) {
             LOG.log(Level.SEVERE, "PluginContext not yet set. Cannot log");
             return;
         }
 
         List<LogSubject> subjects = new ArrayList<LogSubject>();
-
         LogSubject logEdition = new LogSubject(Edition.class.getName(), String.valueOf(edition.getId()));
         subjects.add(logEdition);
 

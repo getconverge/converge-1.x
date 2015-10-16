@@ -270,9 +270,10 @@ public class DrupalUtils {
      * Name and value parts for a multi-part request.
      *
      * @param newsItem
+     * @param forceRendition
      * @return
      */
-    protected static Map<String, Object> fileParams(NewsItem newsItem, String renditionName) {
+    protected static Map<String, Object> fileParams(NewsItem newsItem, String renditionName, String[] forceRendition) {
         Map<String, Object> fileParams = new LinkedHashMap<String, Object>();
         Tika tika = new Tika();
         int index = 0;
@@ -283,12 +284,31 @@ public class DrupalUtils {
             // Verify that the mediaItem exists and renditions are attached
             if (mediaItem != null && mediaItem.isRenditionsAttached()) {
                 try {
-                    // Generated renditions have duplicate filenames. To avoid
-                    // this, set the upload filename
-                    MediaItemRendition rendition = mediaItem.findRendition(renditionName);
+                    MediaItemRendition rendition = null;
+
+                    if (forceRendition != null) {
+                        // FORCE_SYNC fallback renditions
+                        for (String rnd : forceRendition) {
+                            try {
+                                rendition = mediaItem.findRendition(rnd);
+                                break;
+                            } catch (RenditionNotFoundException ex) {
+                                // Continue
+                            }
+                        }
+
+                        if (rendition == null) {
+                            throw new RenditionNotFoundException();
+                        }
+                    } else {
+                        rendition = mediaItem.findRendition(renditionName);
+                    }
+
                     File file = new File(rendition.getFileLocation());
                     // FIXME: Use a better file check, avoid IOException
                     String mediaType = tika.detect(file); // rendition.getContentType();
+                    // Generated renditions have duplicate filenames. To avoid
+                    // this, set the upload filename
                     String fileName = String.format("%d.%s", mediaItem.getId(), rendition.getExtension());
                     String caption = StringUtils.abbreviate(attachment.getCaption(), TITLE_LENGTH_MEDIA_ITEM);
                     NamedTypedFile typedFile = new NamedTypedFile(mediaType, file, fileName);

@@ -60,17 +60,9 @@ public class DrupalServicesClientIT {
 
     private static final Logger LOG = Logger.getLogger(DrupalServicesClientIT.class.getName());
 
-    private static final Integer TAXONOMY_ID = 2;
-
     private static final Long NEWSITEM_ID = (long) (new Random().nextInt((1000 - 100) + 1) + 100);
     private static final Long SECTION_ID = (long) (new Random().nextInt((1000 - 100) + 1) + 100);
-
-    private static final String SERVICE_ENDPOINT = "http://0.0.0.0:8888/api/converge";
-    private static final String NODE_TYPE = "article";
-    private static final String NODE_ALIAS = "node";
-    private static final String USER_ALIAS = "user";
-    private static final String USERNAME = "converge";
-    private static final String PASSWORD = "converge";
+    private static final Integer TAXONOMY_ID = 2;
 
     private static boolean execute;
 
@@ -83,7 +75,7 @@ public class DrupalServicesClientIT {
     public static void beforeClass() throws Exception {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url(SERVICE_ENDPOINT)
+                .url(Helper.SERVICE_ENDPOINT)
                 .build();
 
         try {
@@ -91,16 +83,16 @@ public class DrupalServicesClientIT {
             execute = response.code() == 200;
         } catch (IOException ex) {
             LOG.log(Level.WARNING, "Skipping test. Test site \"{0}\" is not available: {1}", new Object[]{
-                    SERVICE_ENDPOINT, ex.getMessage()});
+                    Helper.SERVICE_ENDPOINT, ex.getMessage()});
         }
     }
 
     @Before
     public void setUp() throws Exception {
         if (execute) {
-            servicesClient = new DrupalServicesClient(SERVICE_ENDPOINT, USERNAME, PASSWORD);
-            servicesClient.setNodeAlias(NODE_ALIAS);
-            servicesClient.setUserAlias(USER_ALIAS);
+            servicesClient = new DrupalServicesClient(Helper.SERVICE_ENDPOINT, Helper.USERNAME, Helper.PASSWORD);
+            servicesClient.setNodeAlias(Helper.NODE_ALIAS);
+            servicesClient.setUserAlias(Helper.USER_ALIAS);
             servicesClient.loginUser();
         }
     }
@@ -140,7 +132,7 @@ public class DrupalServicesClientIT {
 
         String newsItemIdField = DrupalUtils.getKeyValue(getFieldMapping(), DrupalUtils.KEY_NEWSITEM_ID);
         Map<String, String> options = new LinkedHashMap<String, String>();
-        options.put("parameters[type]", NODE_TYPE);
+        options.put("parameters[type]", Helper.NODE_TYPE);
         options.put(String.format("parameters[%s]", newsItemIdField), String.valueOf(NEWSITEM_ID));
         List<NodeEntity> nodeEntities = servicesClient.indexNode(options);
 
@@ -174,7 +166,7 @@ public class DrupalServicesClientIT {
 
         NodeEntity create = servicesClient.createNode(getNodeParams());
         String imageField = DrupalUtils.getKeyValue(getFieldMapping(), DrupalUtils.KEY_IMAGE);
-        Map<String, Object> params = DrupalUtils.fileParams(newsItem, renditionName);
+        Map<String, Object> params = DrupalUtils.fileParams(newsItem, renditionName, null);
 
         servicesClient.attachFiles(create, imageField, params);
     }
@@ -189,7 +181,7 @@ public class DrupalServicesClientIT {
         String sectionMapping = Helper.getSectionMapping(SECTION_ID, TAXONOMY_ID);
         Map<String, String> sections = DrupalUtils.convertStringMap(sectionMapping);
 
-        return DrupalUtils.nodeParams(placement, NODE_TYPE, fields, sections);
+        return DrupalUtils.nodeParams(placement, Helper.NODE_TYPE, fields, sections);
     }
 
     private String[] getFieldMapping() {

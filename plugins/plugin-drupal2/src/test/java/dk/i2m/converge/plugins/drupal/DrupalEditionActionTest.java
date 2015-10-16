@@ -74,7 +74,7 @@ public class DrupalEditionActionTest {
          DrupalEditionAction action = new DrupalEditionAction();
          Map<String, String> availableProperties = action.getAvailableProperties();
 
-         assertEquals(12, availableProperties.size());
+         assertEquals(14, availableProperties.size());
     }
 
     @Test
