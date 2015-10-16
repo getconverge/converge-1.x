@@ -100,9 +100,9 @@ public class WpEditionAction implements EditionAction {
         LOG_PROCESSING_PLACEMENT,
         LOG_PLACEMENT_UPLOADED,
         LOG_NEWS_ITEM_INCOMPLETE,
-        LOG_ERROR_PROCESS_PLACEMENT, 
-        LOG_COULD_NOT_TRANSITION_WORKFLOW, 
-        LOG_IMAGE_UPLOAD_MISSING_RENDITION, 
+        LOG_ERROR_PROCESS_PLACEMENT,
+        LOG_COULD_NOT_TRANSITION_WORKFLOW,
+        LOG_IMAGE_UPLOAD_MISSING_RENDITION,
         LOG_IMAGE_UPLOAD_FAILED
     }
 
@@ -287,7 +287,13 @@ public class WpEditionAction implements EditionAction {
         stateUploadDate.setValue(new Date().toString());
 
         boolean exist = false;
-        Integer postId = Integer.valueOf(stateWpId.getValue());
+        Integer postId;
+
+        try {
+            postId = Integer.valueOf(stateWpId.getValue());
+        } catch (NumberFormatException ex) {
+            postId = null;
+        }
 
         try {
             if (postId != null) {
