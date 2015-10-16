@@ -33,7 +33,7 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 @Entity
 @Table(name = "log_entry")
 @NamedQueries({
-    @NamedQuery(name = LogEntry.FIND_BY_ENTITY, query = "SELECT l FROM LogEntry l JOIN l.subjects s WHERE s.entity = :" + LogEntry.PARAMETER_ENTITY + " AND s.entityId = :" + LogEntry.PARAMETER_ENTITY_ID + " ORDER BY l.date DESC"),
+    @NamedQuery(name = LogEntry.FIND_BY_ENTITY, query = "SELECT l FROM LogEntry l JOIN l.subjects s WHERE s.entity = :" + LogEntry.PARAMETER_ENTITY + " AND s.entityId = :" + LogEntry.PARAMETER_ENTITY_ID + " ORDER BY l.id DESC"),
 
     // Would like to implement an effecient way of deleting LogEntries, but the 
     // below query is translated to the below SQL statement and fails with 
