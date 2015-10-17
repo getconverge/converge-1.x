@@ -402,10 +402,10 @@
             <!-- <id>m2.modularity.net.au Releases</id> -->
             <!-- <url>http://m2.modularity.net.au/releases/</url> -->
         <!-- </repository> -->
-        <repository>
-            <id>osafoundation.org</id>
-            <url>http://builds.osafoundation.org/maven2/</url>
-        </repository>
+        <!-- <repository> --> <!-- Error: Connection to http://builds.osafoundation.org refused -->
+            <!-- <id>osafoundation.org</id> -->
+            <!-- <url>http://builds.osafoundation.org/maven2/</url> -->
+        <!-- </repository> -->
         <repository>
             <id>jboss-public-repository-group</id>
             <name>JBoss Public Maven Repository Group</name>
@@ -415,7 +415,7 @@
         <repository>
             <id>xuggleRepository</id>
             <name>Xuggle Repository</name>
-            <url>http://xuggle.googlecode.com/svn/trunk/repo/share/java</url>
+            <url>http://xuggle.googlecode.com/svn/trunk/repo/share/java/</url>
         </repository>
     </repositories>
     <properties />
