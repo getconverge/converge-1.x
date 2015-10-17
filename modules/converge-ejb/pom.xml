@@ -395,9 +395,13 @@
             <url>https://m2.converge.googlecode.com/hg/</url>
         </repository-->
         <repository>
-            <id>m2.modularity.net.au Releases</id>
-            <url>http://m2.modularity.net.au/releases/</url>
+            <id>opencastproject.org</id>
+            <url>http://repository.opencastproject.org/nexus/content/repositories/public/</url>
         </repository>
+        <!-- <repository>  --> <!-- Error: Unknown host m2.modularity.net.au -->
+            <!-- <id>m2.modularity.net.au Releases</id> -->
+            <!-- <url>http://m2.modularity.net.au/releases/</url> -->
+        <!-- </repository> -->
         <repository>
             <id>osafoundation.org</id>
             <url>http://builds.osafoundation.org/maven2/</url>
