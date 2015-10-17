@@ -35,7 +35,7 @@ import dk.i2m.converge.core.workflow.Edition;
 import dk.i2m.converge.core.workflow.OutletEditionAction;
 import dk.i2m.converge.core.workflow.Section;
 import dk.i2m.converge.core.workflow.WorkflowStateTransitionException;
-import dk.i2m.drupal.services.entities.NodeEntity;
+import dk.i2m.converge.plugins.drupal.entities.NodeEntity;
 import org.apache.commons.lang.math.NumberUtils;
 import retrofit.RetrofitError;
 
@@ -338,7 +338,7 @@ public class DrupalEditionAction implements EditionAction {
             String workflowStateId = String.valueOf(newsItem.getCurrentState().getId());
             if (!Arrays.asList(forceSync).contains(workflowStateId)) {
                 logActivity(LogSeverity.WARNING, LogKey.INCOMPLETE_STATE, new Object[]{
-                    newsItem.getCurrentState().getName()}, newsItem);
+                        newsItem.getCurrentState().getName()}, newsItem);
                 valid = false;
             }
         } else if (!newsItem.getCurrentState().getId().equals(workflowUploadState)) {

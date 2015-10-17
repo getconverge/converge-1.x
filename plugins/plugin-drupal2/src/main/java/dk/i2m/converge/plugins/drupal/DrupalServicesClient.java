@@ -19,13 +19,13 @@
 
 package dk.i2m.converge.plugins.drupal;
 
-import dk.i2m.drupal.services.converters.EntityConverter;
-import dk.i2m.drupal.services.entities.NodeEntity;
-import dk.i2m.drupal.services.entities.SessionEntity;
-import dk.i2m.drupal.services.entities.UserEntity;
-import dk.i2m.drupal.services.interceptors.SessionInterceptor;
-import dk.i2m.drupal.services.resources.NodeResource;
-import dk.i2m.drupal.services.resources.UserResource;
+import dk.i2m.converge.plugins.drupal.converters.EntityConverter;
+import dk.i2m.converge.plugins.drupal.entities.NodeEntity;
+import dk.i2m.converge.plugins.drupal.entities.SessionEntity;
+import dk.i2m.converge.plugins.drupal.entities.UserEntity;
+import dk.i2m.converge.plugins.drupal.interceptors.SessionInterceptor;
+import dk.i2m.converge.plugins.drupal.resources.NodeResource;
+import dk.i2m.converge.plugins.drupal.resources.UserResource;
 import retrofit.RestAdapter;
 
 import java.util.List;

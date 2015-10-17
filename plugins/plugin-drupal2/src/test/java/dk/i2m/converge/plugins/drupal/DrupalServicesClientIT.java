@@ -27,7 +27,7 @@ import dk.i2m.converge.core.content.NewsItemMediaAttachment;
 import dk.i2m.converge.core.content.NewsItemPlacement;
 import dk.i2m.converge.core.content.catalogue.MediaItem;
 import dk.i2m.converge.core.content.catalogue.MediaItemRendition;
-import dk.i2m.drupal.services.entities.NodeEntity;
+import dk.i2m.converge.plugins.drupal.entities.NodeEntity;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.junit.After;
@@ -155,6 +155,7 @@ public class DrupalServicesClientIT {
 
         MediaItem mediaItem = mock(MediaItem.class);
         when(mediaItem.getId()).thenReturn(7357L);
+        when(mediaItem.isRenditionsAttached()).thenReturn(true);
         when(mediaItem.findRendition(renditionName)).thenReturn(rendition);
 
         NewsItemMediaAttachment mediaAttachment = new NewsItemMediaAttachment();

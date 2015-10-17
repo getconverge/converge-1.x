@@ -32,7 +32,7 @@ import dk.i2m.converge.core.workflow.OutletEditionAction;
 import dk.i2m.converge.core.workflow.OutletEditionActionProperty;
 import dk.i2m.converge.core.workflow.WorkflowState;
 import dk.i2m.converge.core.workflow.WorkflowStep;
-import dk.i2m.drupal.services.entities.NodeEntity;
+import dk.i2m.converge.plugins.drupal.entities.NodeEntity;
 import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;

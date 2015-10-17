@@ -34,16 +34,18 @@
   <packaging>jar</packaging>
 
   <name>Plug-in - Drupal2</name>
-  <description>Plug-in for uploading NewsItem's to a Drupal Services REST Server module.</description>
+  <description>Plug-in for uploading NewsItem's to a Drupal instance.</description>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.sourceEncoding>UTF-8</project.reporting.sourceEncoding>
+
+    <!-- Compilation, Dependencies, Test Dependencies -->
     <java.version>1.6</java.version>
-    <services.version>2.0.0-SNAPSHOT</services.version>
+    <retrofit.version>1.9.0</retrofit.version>
     <beanutils.version>1.8.3</beanutils.version>
-    <junit.version>4.12</junit.version>
     <tika.version>1.10</tika.version>
+    <junit.version>4.12</junit.version>
     <okhttp.version>2.5.0</okhttp.version>
     <mockito.version>1.10.19</mockito.version>
     <commons.version>1.3.2</commons.version>
@@ -57,9 +59,14 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>dk.i2m.drupal.services</groupId>
-      <artifactId>services-api</artifactId>
-      <version>${services.version}</version>
+      <groupId>com.squareup.retrofit</groupId>
+      <artifactId>retrofit</artifactId>
+      <version>${retrofit.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+      <version>${beanutils.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.tika</groupId>
