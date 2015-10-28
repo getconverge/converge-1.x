@@ -161,7 +161,7 @@ public class DrupalServicesClientIT {
 
         NewsItemMediaAttachment mediaAttachment = new NewsItemMediaAttachment();
         mediaAttachment.setMediaItem(mediaItem);
-        mediaAttachment.setCaption("Test file");
+        mediaAttachment.setCaption("Test NewsItem File");
 
         NewsItem newsItem = TestHelper.getNewsItem(1L);
         newsItem.getMediaAttachments().add(mediaAttachment);

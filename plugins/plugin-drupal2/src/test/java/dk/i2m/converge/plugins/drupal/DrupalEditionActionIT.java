@@ -225,7 +225,7 @@ public class DrupalEditionActionIT {
     private WorkflowState getCurrentState() {
         WorkflowState state = new WorkflowState();
         state.setId(STATE_UPLOAD);
-        state.setName("Upload to Test");
+        state.setName("Upload to Site");
         state.getNextStates().add(getOptionSuccess(state));
         state.getNextStates().add(getOptionFailed(state));
 

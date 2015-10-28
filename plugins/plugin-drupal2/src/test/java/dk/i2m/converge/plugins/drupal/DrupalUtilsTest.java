@@ -275,9 +275,9 @@ public class DrupalUtilsTest {
         SimpleDateFormat sdf = new SimpleDateFormat(DrupalUtils.DATE_FORMAT);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        String title = "Test NewsItem title";
+        String title = "Test NewsItem Title";
         String nodeType = "article";
-        String body = "<p>Test NewsItem story.</p>";
+        String body = "<p>Test NewsItem Story.</p>";
         String date = sdf.format(calendar.getTime());
 
         String fieldTitle = "title";
@@ -331,7 +331,7 @@ public class DrupalUtilsTest {
 
         String extension = FilenameUtils.getExtension(testFile.getAbsolutePath());
         String fileName = String.format("%d.%s", mediaItemId, extension);
-        String caption = "Test NewsItem file";
+        String caption = "Test NewsItem File";
         String renditionName = "test";
 
         MediaItemRendition rendition = mock(MediaItemRendition.class);

@@ -72,7 +72,7 @@ public class TestHelper {
     public static Section getSection(Long id) {
         Section section = new Section();
         section.setId(id);
-        section.setName("Test NewsItem section");
+        section.setName("Test NewsItem Section");
 
         return section;
     }
@@ -80,9 +80,9 @@ public class TestHelper {
     public static NewsItem getNewsItem(Long id) {
         NewsItem newsItem = new NewsItem();
         newsItem.setId(id);
-        newsItem.setTitle("Test NewsItem title");
-        newsItem.setStory("<p>Test NewsItem story.</p>");
-        newsItem.setByLine("By Test NewsItem byline");
+        newsItem.setTitle("Test NewsItem Title");
+        newsItem.setStory("<p>Test NewsItem Story.</p>");
+        newsItem.setByLine("By Test NewsItem ByLine");
         newsItem.setUpdated(Calendar.getInstance());
 
         return newsItem;
