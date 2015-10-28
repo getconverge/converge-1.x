@@ -68,8 +68,8 @@ public class DrupalEditionActionIT {
     private static final Long STATE_FAILED = 22L;
     private static final Integer TAXONOMY_ID = 2;
 
-    private static final String MAPPING_FIELD = Helper.getFieldMapping();
-    private static final String MAPPING_SECTION = Helper.getSectionMapping(SECTION_ID, TAXONOMY_ID);
+    private static final String MAPPING_FIELD = TestHelper.getFieldMapping();
+    private static final String MAPPING_SECTION = TestHelper.getSectionMapping(SECTION_ID, TAXONOMY_ID);
 
     private static boolean execute;
 
@@ -77,7 +77,7 @@ public class DrupalEditionActionIT {
     public static void beforeClass() throws Exception {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url(Helper.SERVICE_ENDPOINT)
+                .url(TestHelper.SERVICE_ENDPOINT)
                 .build();
 
         try {
@@ -85,7 +85,7 @@ public class DrupalEditionActionIT {
             execute = response.code() == 200;
         } catch (IOException ex) {
             LOG.log(Level.WARNING, "Skipping test. Test site \"{0}\" is not available: {1}", new Object[]{
-                    Helper.SERVICE_ENDPOINT, ex.getMessage()});
+                    TestHelper.SERVICE_ENDPOINT, ex.getMessage()});
         }
     }
 
@@ -94,31 +94,31 @@ public class DrupalEditionActionIT {
         Assume.assumeTrue(execute);
 
         DrupalEditionAction plugin = new DrupalEditionAction();
-        NewsItemPlacement placement = Helper.getPlacement(1L);
-        placement.setOutlet(Helper.getOutlet(1L));
-        placement.setEdition(Helper.getEdition(EDITION_ID));
-        placement.setSection(Helper.getSection(SECTION_ID));
-        NewsItem newsItem = Helper.getNewsItem(NEWSITEM_ID);
+        NewsItemPlacement placement = TestHelper.getPlacement(1L);
+        placement.setOutlet(TestHelper.getOutlet(1L));
+        placement.setEdition(TestHelper.getEdition(EDITION_ID));
+        placement.setSection(TestHelper.getSection(SECTION_ID));
+        NewsItem newsItem = TestHelper.getNewsItem(NEWSITEM_ID);
         newsItem.setCurrentState(getCurrentState());
         placement.setNewsItem(newsItem);
 
         plugin.executePlacement(getPluginContext(), placement, placement.getEdition(), getAction());
 
         DrupalServicesClient servicesClient = new DrupalServicesClient(
-                Helper.SERVICE_ENDPOINT, Helper.USERNAME, Helper.PASSWORD);
+                TestHelper.SERVICE_ENDPOINT, TestHelper.USERNAME, TestHelper.PASSWORD);
         servicesClient.loginUser();
 
-        String[] fields = DrupalUtils.convertStringArrayA(Helper.getFieldMapping());
+        String[] fields = DrupalUtils.convertStringArrayA(TestHelper.getFieldMapping());
 
         String newsItemIdField = DrupalUtils.getKeyValue(fields, DrupalUtils.KEY_NEWSITEM_ID);
         Map<String, String> options = new LinkedHashMap<String, String>();
-        options.put("parameters[type]", Helper.NODE_TYPE);
+        options.put("parameters[type]", TestHelper.NODE_TYPE);
         options.put(String.format("parameters[%s]", newsItemIdField), String.valueOf(NEWSITEM_ID));
         List<NodeEntity> nodeEntities = servicesClient.indexNode(options);
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url(String.format("%s/%s/%d", Helper.SERVICE_ENDPOINT, Helper.NODE_ALIAS,
+                .url(String.format("%s/%s/%d", TestHelper.SERVICE_ENDPOINT, TestHelper.NODE_ALIAS,
                         nodeEntities.get(0).getId()))
                 .build();
 
@@ -187,17 +187,17 @@ public class DrupalEditionActionIT {
         action.setLabel("Upload to Test Site");
         action.setActionClass(DrupalEditionAction.class.getName());
         action.getProperties().add(new OutletEditionActionProperty(
-                action, Property.SERVICE_ENDPOINT.name(), Helper.SERVICE_ENDPOINT));
+                action, Property.SERVICE_ENDPOINT.name(), TestHelper.SERVICE_ENDPOINT));
         action.getProperties().add(new OutletEditionActionProperty(
-                action, Property.NODE_TYPE.name(), Helper.NODE_TYPE));
+                action, Property.NODE_TYPE.name(), TestHelper.NODE_TYPE));
         action.getProperties().add(new OutletEditionActionProperty(
-                action, Property.ALIAS_NODE.name(), Helper.NODE_ALIAS));
+                action, Property.ALIAS_NODE.name(), TestHelper.NODE_ALIAS));
         action.getProperties().add(new OutletEditionActionProperty(
-                action, Property.ALIAS_USER.name(), Helper.USER_ALIAS));
+                action, Property.ALIAS_USER.name(), TestHelper.USER_ALIAS));
         action.getProperties().add(new OutletEditionActionProperty(
-                action, Property.USERNAME.name(), Helper.USERNAME));
+                action, Property.USERNAME.name(), TestHelper.USERNAME));
         action.getProperties().add(new OutletEditionActionProperty(
-                action, Property.PASSWORD.name(), Helper.PASSWORD));
+                action, Property.PASSWORD.name(), TestHelper.PASSWORD));
         action.getProperties().add(new OutletEditionActionProperty(
                 action, Property.MAPPING_FIELD.name(), MAPPING_FIELD));
         action.getProperties().add(new OutletEditionActionProperty(
