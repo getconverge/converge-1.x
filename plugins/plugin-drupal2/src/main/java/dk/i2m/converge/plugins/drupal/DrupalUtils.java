@@ -68,6 +68,7 @@ public class DrupalUtils {
     private static final String SEPARATOR_B = ":";
 
     private static final int TITLE_LENGTH_NEWS_ITEM = 255;
+    private static final int ALT_LENGTH_MEDIA_ITEM = 512;
     private static final int TITLE_LENGTH_MEDIA_ITEM = 1024;
 
     /**
@@ -205,6 +206,7 @@ public class DrupalUtils {
     protected static Map<String, String> nodeParams(NewsItemPlacement placement, String nodeType, String[] fields,
                                                     Map<String, String> sections) {
         Map<String, String> nodeParams = new LinkedHashMap<String, String>();
+        NodeEntity nodeEntity = new NodeEntity();
         FieldWrapper fieldWrapper = new FieldWrapper();
         Edition edition = placement.getEdition();
         NewsItem newsItem = placement.getNewsItem();
@@ -219,7 +221,6 @@ public class DrupalUtils {
         String start = getKeyValue(fields, KEY_START);
         String position = getKeyValue(fields, KEY_POSITION);
 
-        NodeEntity nodeEntity = new NodeEntity();
         nodeEntity.setType(nodeType);
         nodeEntity.setTitle(StringUtils.left(title, TITLE_LENGTH_NEWS_ITEM));
         nodeParams.putAll(new EntityConverter<NodeEntity>().convert(nodeEntity));
@@ -305,17 +306,19 @@ public class DrupalUtils {
                     }
 
                     File file = new File(rendition.getFileLocation());
-                    // FIXME: Use a better file check, avoid IOException
+                    // FIXME: Better file check, avoid IOException
                     String mediaType = tika.detect(file); // rendition.getContentType();
                     // Generated renditions have duplicate filenames. To avoid
-                    // this, set the upload filename
+                    // this, explicitly set the upload filename
                     String fileName = String.format("%d.%s", mediaItem.getId(), rendition.getExtension());
-                    String caption = StringUtils.abbreviate(attachment.getCaption(), TITLE_LENGTH_MEDIA_ITEM);
-                    NamedTypedFile typedFile = new NamedTypedFile(mediaType, file, fileName);
+
+                    NamedTypedFile typedFile = new NamedTypedFile(mediaType, file, fileName.toLowerCase());
+                    String fileAlt = StringUtils.abbreviate(attachment.getCaption(), ALT_LENGTH_MEDIA_ITEM);
+                    String fileTitle = StringUtils.abbreviate(attachment.getCaption(), TITLE_LENGTH_MEDIA_ITEM);
 
                     fileParams.put(String.format("files[%d]", index), typedFile);
-                    fileParams.put(String.format("field_values[%d][title]", index), caption);
-                    fileParams.put(String.format("field_values[%d][alt]", index), caption);
+                    fileParams.put(String.format("field_values[%d][alt]", index), fileAlt);
+                    fileParams.put(String.format("field_values[%d][title]", index), fileTitle);
 
                     index++;
                 } catch (RenditionNotFoundException ex) {

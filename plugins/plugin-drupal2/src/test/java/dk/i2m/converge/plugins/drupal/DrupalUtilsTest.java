@@ -254,7 +254,7 @@ public class DrupalUtilsTest {
         expected.putAll(fieldWrapper.wrap(fieldPosition, position));
 
         String[] fields = DrupalUtils.convertStringArrayA(fieldMapping);
-        String sectionMapping = Helper.getSectionMapping(sectionId, 404);
+        String sectionMapping = TestHelper.getSectionMapping(sectionId, 404);
         Map<String, String> sections = DrupalUtils.convertStringMap(sectionMapping);
         Map<String, String> actual = DrupalUtils.nodeParams(placement, nodeType, fields, sections);
 
@@ -275,10 +275,11 @@ public class DrupalUtilsTest {
         SimpleDateFormat sdf = new SimpleDateFormat(DrupalUtils.DATE_FORMAT);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        String title = "Test Sports Story";
+        String title = "Test NewsItem Title";
         String nodeType = "article";
-        String body = "<p>This is a test sports story</p>";
+        String body = "<p>Test NewsItem Story.</p>";
         String date = sdf.format(calendar.getTime());
+
         String fieldTitle = "title";
         String fieldType = "type";
         String fieldBody = "field_body";
@@ -304,7 +305,9 @@ public class DrupalUtilsTest {
         expected.putAll(fieldWrapper.wrap(fieldBody, body));
         expected.putAll(dateWrapper.wrap(fieldDate, date));
 
-        String fieldMapping = String.format("%s:%s, %s:%s", DrupalUtils.KEY_BODY, fieldBody, DrupalUtils.KEY_DATE, fieldDate);
+        String fieldMapping = String.format("%s:%s, %s:%s",
+                DrupalUtils.KEY_BODY, fieldBody,
+                DrupalUtils.KEY_DATE, fieldDate);
         String[] fields = DrupalUtils.convertStringArrayA(fieldMapping);
         Map<String, String> actual = DrupalUtils.nodeParams(placement, nodeType, fields, null);
 
@@ -328,7 +331,7 @@ public class DrupalUtilsTest {
 
         String extension = FilenameUtils.getExtension(testFile.getAbsolutePath());
         String fileName = String.format("%d.%s", mediaItemId, extension);
-        String caption = "Test file";
+        String caption = "Test NewsItem File";
         String renditionName = "test";
 
         MediaItemRendition rendition = mock(MediaItemRendition.class);
@@ -342,17 +345,17 @@ public class DrupalUtilsTest {
 
         NewsItemMediaAttachment mediaAttachment = new NewsItemMediaAttachment();
         mediaAttachment.setMediaItem(mediaItem);
-        mediaAttachment.setCaption("Test file");
+        mediaAttachment.setCaption(caption);
 
-        NewsItem newsItem = Helper.getNewsItem(1L);
+        NewsItem newsItem = TestHelper.getNewsItem(1L);
         newsItem.getMediaAttachments().add(mediaAttachment);
 
         NamedTypedFile typedFile = new NamedTypedFile("application/octet-stream", testFile, fileName);
 
         Map<String, Object> expected = new LinkedHashMap<String, Object>();
         expected.put(String.format("files[%d]", 0), typedFile);
-        expected.put(String.format("field_values[%d][title]", 0), caption);
         expected.put(String.format("field_values[%d][alt]", 0), caption);
+        expected.put(String.format("field_values[%d][title]", 0), caption);
 
         Map<String, Object> actual = DrupalUtils.fileParams(newsItem, renditionName, null);
 
@@ -371,7 +374,7 @@ public class DrupalUtilsTest {
         NewsItemMediaAttachment mediaAttachment = new NewsItemMediaAttachment();
         mediaAttachment.setMediaItem(mediaItem);
 
-        NewsItem newsItem = Helper.getNewsItem(1L);
+        NewsItem newsItem = TestHelper.getNewsItem(1L);
         newsItem.getMediaAttachments().add(mediaAttachment);
 
         Map<String, Object> params = DrupalUtils.fileParams(newsItem, renditionName, null);
@@ -393,7 +396,7 @@ public class DrupalUtilsTest {
         NewsItemMediaAttachment mediaAttachment = new NewsItemMediaAttachment();
         mediaAttachment.setMediaItem(mediaItem);
 
-        NewsItem newsItem = Helper.getNewsItem(1L);
+        NewsItem newsItem = TestHelper.getNewsItem(1L);
         newsItem.getMediaAttachments().add(mediaAttachment);
 
         Map<String, Object> params = DrupalUtils.fileParams(newsItem, renditionName, null);

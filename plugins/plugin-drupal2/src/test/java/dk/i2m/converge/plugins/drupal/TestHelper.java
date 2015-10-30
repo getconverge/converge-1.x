@@ -28,7 +28,7 @@ import dk.i2m.converge.core.workflow.Section;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class Helper {
+public class TestHelper {
 
     public static final String SERVICE_ENDPOINT = "http://0.0.0.0:8888/thestar/api/converge";
     public static final String NODE_TYPE = "article";
@@ -72,7 +72,7 @@ public class Helper {
     public static Section getSection(Long id) {
         Section section = new Section();
         section.setId(id);
-        section.setName("Test Section");
+        section.setName("Test NewsItem Section");
 
         return section;
     }
@@ -81,8 +81,8 @@ public class Helper {
         NewsItem newsItem = new NewsItem();
         newsItem.setId(id);
         newsItem.setTitle("Test NewsItem Title");
-        newsItem.setStory("<p>This is a test sports story</p>");
-        newsItem.setByLine("By Test");
+        newsItem.setStory("<p>Test NewsItem Story.</p>");
+        newsItem.setByLine("By Test NewsItem ByLine");
         newsItem.setUpdated(Calendar.getInstance());
 
         return newsItem;

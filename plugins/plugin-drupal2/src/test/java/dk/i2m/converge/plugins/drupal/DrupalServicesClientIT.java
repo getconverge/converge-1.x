@@ -75,7 +75,7 @@ public class DrupalServicesClientIT {
     public static void beforeClass() throws Exception {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url(Helper.SERVICE_ENDPOINT)
+                .url(TestHelper.SERVICE_ENDPOINT)
                 .build();
 
         try {
@@ -83,16 +83,17 @@ public class DrupalServicesClientIT {
             execute = response.code() == 200;
         } catch (IOException ex) {
             LOG.log(Level.WARNING, "Skipping test. Test site \"{0}\" is not available: {1}", new Object[]{
-                    Helper.SERVICE_ENDPOINT, ex.getMessage()});
+                    TestHelper.SERVICE_ENDPOINT, ex.getMessage()});
         }
     }
 
     @Before
     public void setUp() throws Exception {
         if (execute) {
-            servicesClient = new DrupalServicesClient(Helper.SERVICE_ENDPOINT, Helper.USERNAME, Helper.PASSWORD);
-            servicesClient.setNodeAlias(Helper.NODE_ALIAS);
-            servicesClient.setUserAlias(Helper.USER_ALIAS);
+            servicesClient = new DrupalServicesClient(TestHelper.SERVICE_ENDPOINT, TestHelper.USERNAME,
+                    TestHelper.PASSWORD);
+            servicesClient.setNodeAlias(TestHelper.NODE_ALIAS);
+            servicesClient.setUserAlias(TestHelper.USER_ALIAS);
             servicesClient.loginUser();
         }
     }
@@ -132,7 +133,7 @@ public class DrupalServicesClientIT {
 
         String newsItemIdField = DrupalUtils.getKeyValue(getFieldMapping(), DrupalUtils.KEY_NEWSITEM_ID);
         Map<String, String> options = new LinkedHashMap<String, String>();
-        options.put("parameters[type]", Helper.NODE_TYPE);
+        options.put("parameters[type]", TestHelper.NODE_TYPE);
         options.put(String.format("parameters[%s]", newsItemIdField), String.valueOf(NEWSITEM_ID));
         List<NodeEntity> nodeEntities = servicesClient.indexNode(options);
 
@@ -160,9 +161,9 @@ public class DrupalServicesClientIT {
 
         NewsItemMediaAttachment mediaAttachment = new NewsItemMediaAttachment();
         mediaAttachment.setMediaItem(mediaItem);
-        mediaAttachment.setCaption("Test file");
+        mediaAttachment.setCaption("Test NewsItem File");
 
-        NewsItem newsItem = Helper.getNewsItem(1L);
+        NewsItem newsItem = TestHelper.getNewsItem(1L);
         newsItem.getMediaAttachments().add(mediaAttachment);
 
         NodeEntity create = servicesClient.createNode(getNodeParams());
@@ -173,20 +174,20 @@ public class DrupalServicesClientIT {
     }
 
     private Map<String, String> getNodeParams() {
-        NewsItemPlacement placement = Helper.getPlacement(1L);
-        placement.setEdition(Helper.getEdition(1L));
-        placement.setSection(Helper.getSection(SECTION_ID));
-        placement.setNewsItem(Helper.getNewsItem(NEWSITEM_ID));
+        NewsItemPlacement placement = TestHelper.getPlacement(1L);
+        placement.setEdition(TestHelper.getEdition(1L));
+        placement.setSection(TestHelper.getSection(SECTION_ID));
+        placement.setNewsItem(TestHelper.getNewsItem(NEWSITEM_ID));
 
         String[] fields = getFieldMapping();
-        String sectionMapping = Helper.getSectionMapping(SECTION_ID, TAXONOMY_ID);
+        String sectionMapping = TestHelper.getSectionMapping(SECTION_ID, TAXONOMY_ID);
         Map<String, String> sections = DrupalUtils.convertStringMap(sectionMapping);
 
-        return DrupalUtils.nodeParams(placement, Helper.NODE_TYPE, fields, sections);
+        return DrupalUtils.nodeParams(placement, TestHelper.NODE_TYPE, fields, sections);
     }
 
     private String[] getFieldMapping() {
-        String mapping = Helper.getFieldMapping();
+        String mapping = TestHelper.getFieldMapping();
 
         return DrupalUtils.convertStringArrayA(mapping);
     }
