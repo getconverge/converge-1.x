@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>dk.i2m.converge</groupId>
     <artifactId>converge</artifactId>
-    <version>1.1.18</version>
+    <version>1.1.19-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Converge</name>
     <inceptionYear>2006</inceptionYear>
@@ -26,7 +26,7 @@
         <url>https://github.com/getconverge/converge-1.x</url>
         <developerConnection>scm:git:https://github.com/getconverge/converge-1.x.git</developerConnection>
         <connection>scm:git:https://github.com/getconverge/converge-1.x.git</connection>
-        <tag>converge-1.1.18</tag>
+        <tag>HEAD</tag>
     </scm>
     
     <issueManagement>
