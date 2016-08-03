@@ -40,6 +40,8 @@ import java.net.URLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Newswire decoder for RSS feeds. The decoder has a single property, the
@@ -62,11 +64,17 @@ public class RssDecoder implements NewswireDecoder {
      * Number of seconds to wait for the feed to be downloaded.
      */
     public static final int READ_TIMEOUT = 60 * 3;
+    /**
+     * Format used in properties file to express the creation date of the plugin.
+     */
+    private final String FORMAT = "yyyy-MM-dd HH:mm:ss";
+    private static final Logger LOG = Logger.getLogger(RssDecoder.class.getName());
     private Map<String, String> availableProperties = null;
-    private ResourceBundle bundle = ResourceBundle.getBundle("dk.i2m.converge.plugins.decoders.rss.Messages");
+    private final ResourceBundle bundle = ResourceBundle.getBundle("dk.i2m.converge.plugins.decoders.rss.Messages");
     private PluginContext pluginContext;
     private NewswireService newswireService;
     private boolean useOpenCalais = false;
+    
 
     /**
      * Creates a new instance of {@link RssDecoder}.
@@ -180,15 +188,16 @@ public class RssDecoder implements NewswireDecoder {
      */
     @Override
     public Date getDate() {
-        final String FORMAT = "yyyy-MM-dd HH:mm:ss";
         try {
-
             SimpleDateFormat format = new SimpleDateFormat(FORMAT);
             return format.parse(bundle.getString("PLUGIN_BUILD_TIME"));
         } catch (ParseException ex) {
+            LOG.log(Level.FINE, "Could not read plug-in build time");
+            LOG.log(Level.FINEST, ex.getMessage(), ex);
             return Calendar.getInstance().getTime();
         }
     }
+    
 
     /**
      * {@inheritDoc }
