@@ -24,7 +24,7 @@ Converge can also operate on proprietary platforms using Microsoft Windows Serve
 
 ## Installing Converge
 
-You'll find the [installation guide for Converge in the wiki](Installation Guide).
+You'll find the [installation guide for Converge in the wiki](https://github.com/getconverge/converge-1.x/wiki/Installation-Guide).
 
 ## More Information
 
