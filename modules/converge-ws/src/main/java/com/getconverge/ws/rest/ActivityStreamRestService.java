@@ -71,16 +71,17 @@ public class ActivityStreamRestService extends AbstractRestService {
         authCheck(security);
         String username = security.getUserPrincipal().getName();
         int start = DEFAULT_START;
+        Integer activitiesPerPage = size;
 
-        if (size == null) {
-            size = DEFAULT_SIZE;
+        if (activitiesPerPage == null) {
+            activitiesPerPage = DEFAULT_SIZE;
         }
 
         if (page != null) {
-            start = page * size;
+            start = page * activitiesPerPage;
         }
 
-        return activityStreamFacade.getActivityStream(username, start, size);
+        return activityStreamFacade.getActivityStream(username, start, activitiesPerPage);
     }
 
     private ActivityStreamFacadeLocal lookupActivityStreamFacadeLocal() {
