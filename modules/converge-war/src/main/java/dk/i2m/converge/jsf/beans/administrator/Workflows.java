@@ -155,8 +155,6 @@ public class Workflows extends BaseBean {
 
     public void setSelectedWorkflowStep(WorkflowStep selectedWorkflowStep) {
         this.selectedWorkflowStep = selectedWorkflowStep;
-
-
     }
 
     public String getSelectedWorkflowStepTab() {
@@ -171,22 +169,18 @@ public class Workflows extends BaseBean {
      * Determines if the {@link Workflow} is in <em>edit</em> or <em>add</em>
      * mode.
      *
-     * @return <code>true</code> if the {@link Workflow} is in <em>edit</em>
-     *         mode and <code>false</code> if in <em>add</em> mode
+     * @return {@code true} if the {@link Workflow} is in <em>edit</em>
+     *         mode and {@code false} if in <em>add</em> mode
      */
     public boolean isEditMode() {
-        if (selected == null || selected.getId() == null) {
-            return false;
-        } else {
-            return true;
-        }
+        return !(selected == null || selected.getId() == null);
     }
 
     /**
      * Determines if the {@link Workflow} is in <em>add</em> mode.
      *
-     * @return <code>true</code> if the {@link Workflow} is in <em>add</em> mode
-     *         and <code>false</code> if in <em>edit</em> mode
+     * @return {@code true} if the {@link Workflow} is in <em>add</em> mode
+     *         and {@code false} if in <em>edit</em> mode
      */
     public boolean isAddMode() {
         return !isEditMode();
@@ -196,24 +190,18 @@ public class Workflows extends BaseBean {
      * Determines if the {@link WorkflowState} is in <em>edit</em> or <em>add</em>
      * mode.
      *
-     * @return <code>true</code> if the {@link WorkflowState} is in <em>edit</em>
-     *         mode and <code>false</code> if in <em>add</em> mode
+     * @return {@code true} if the {@link WorkflowState} is in <em>edit</em>
+     *         mode and {@code false} if in <em>add</em> mode
      */
     public boolean isWorkflowStateEditMode() {
-        if (selectedWorkflowState == null || selectedWorkflowState.getId()
-                == null) {
-            return false;
-        } else {
-            return true;
-        }
-
+        return !(selectedWorkflowState == null || selectedWorkflowState.getId() == null);
     }
 
     /**
      * Determines if the {@link WorkflowState} is in <em>add</em> mode.
      *
-     * @return <code>true</code> if the {@link WorkflowState} is in <em>add</em> mode
-     *         and <code>false</code> if in <em>edit</em> mode
+     * @return {@code true} if the {@link WorkflowState} is in <em>add</em> mode
+     *         and {@code false} if in <em>edit</em> mode
      */
     public boolean isWorkflowStateAddMode() {
         return !isWorkflowStateEditMode();
