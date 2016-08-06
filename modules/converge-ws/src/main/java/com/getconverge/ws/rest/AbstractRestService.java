@@ -34,7 +34,7 @@ public abstract class AbstractRestService {
      * @throws WebApplicationException If the user is not logged in
      */
     public void authCheck(SecurityContext securityContext) {
-        if (securityContext.getUserPrincipal() == null) {
+        if (securityContext == null || securityContext.getUserPrincipal() == null) {
             throw new WebApplicationException(Status.UNAUTHORIZED);
         }
     }
