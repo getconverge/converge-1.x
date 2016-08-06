@@ -46,8 +46,6 @@ import javax.ws.rs.core.SecurityContext;
 public class ActivityStreamRestService extends AbstractRestService {
 
     private static final Logger LOG = Logger.getLogger(ActivityStreamRestService.class.getName());
-    private static final Integer DEFAULT_START = 0;
-    private static final Integer DEFAULT_SIZE = 25;
     private final ActivityStreamFacadeLocal activityStreamFacade = lookupActivityStreamFacadeLocal();
 
     /**

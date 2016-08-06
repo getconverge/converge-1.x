@@ -28,6 +28,11 @@ import javax.ws.rs.core.SecurityContext;
  */
 public abstract class AbstractRestService {
 
+    /** Default start of paging results. */
+    protected static final Integer DEFAULT_START = 0;
+    /** Default number of results per page. */
+    protected static final Integer DEFAULT_SIZE = 25;
+
     /**
      * Checks if the user has logged in.
      *
