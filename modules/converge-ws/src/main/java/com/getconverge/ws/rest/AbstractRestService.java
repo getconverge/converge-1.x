@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Allan Lykke Christensen
+ * Copyright (C) 2014 - 2016 Allan Lykke Christensen
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,8 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
 /**
- * Abstract base class for REST services.
+ * Abstract base class for REST services providing common functions such as
+ * authentication.
  *
  * @author Allan Lykke Christensen
  */
